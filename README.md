@@ -4,23 +4,22 @@
 [![Hosting: Cloudflare Pages](https://img.shields.io/badge/Hosting-Cloudflare%20Pages-orange)](https://pages.cloudflare.com/)
 [![Database: Supabase](https://img.shields.io/badge/Database-Supabase-green)](https://supabase.com/)
 
-本專案為**新竹縣第四屆兒童及少年諮詢代表（以下簡稱「竹縣少代」）**之官方門戶網站與公開表單中心。網站設計旨在提供縣內兒少與大眾了解少代會運作機制、成員簡介與提案成果，同時整合動態公開表單系統，便利表單發布與兒少意見蒐集。
+本專案為**新竹縣第四屆兒童及少年諮詢代表（以下簡稱「竹縣少代」）**之官方門戶網站、議題徵求中心與**直覺式自訂表單管理系統**。網站旨在提供縣內兒少了解少代會運作機制與提案成果，同時配備類似 Google 表單體驗的後台管理介面，讓幹部能零程式碼快速建立各式議題徵求表單並管理回應。
 
 ---
 
 ## 📌 專案定位與核心設計原則
 
-1. **靜態門戶與極低維護負擔 (Low Maintenance Cost)**
-   - 官方網站主體內容（少代介紹、組織架構、法規規範、歷年提案與常見問題）採靜態化設計。
-   - 資訊一次性佈署後無需頻繁修改程式碼，減輕幹部與後續維護人員的維運成本。
+1. **極致簡單的自訂表單後台 (Google Forms-like Admin Builder)**
+   - **拖拉與點擊式設計**：提供直覺的表單建構器，支援多種題型（單選、多選、簡答、長文、日期、檔案上傳等）。
+   - **動態發布與開關**：一鍵切換議題徵求開放/關閉狀態，並可設定表單截止時間。
+   - **回應統計與匯出**：後台提供直觀的數據統計圖表，並支援一鍵匯出 CSV / Excel 方便統計兒少意見。
 
-2. **動態表單中心 (Dynamic Open Forms)**
-   - 結合 **Supabase** 開放式資料庫服務，表單列表與填寫狀態由資料庫動態驅動。
-   - 可隨時透過 Supabase 後台新增、關閉或管理公開表單，無需重新發布網站。
+2. **靜態門戶與低維護負擔 (Low Maintenance Portal)**
+   - 官網主體（少代介紹、組織架構、歷年提案與常見問題）採靜態化設計，避免無謂的後端維運成本。
 
-3. **極致效能與安全性 (Performance & Security)**
-   - 前端採用輕量化靜態架構，無龐大伺服器成本。
-   - 全站資料寫入均通過 Supabase **Row Level Security (RLS)** 政策控管，保障個資安全。
+3. **個資安全與權限隔離 (Row Level Security)**
+   - 使用 **Supabase Auth** 與 **Row Level Security (RLS)** 進行安全防護，嚴格限制只有通過身分驗證的少代管理員才能進入後台編輯表單與查看回應。
 
 ---
 
@@ -28,21 +27,30 @@
 
 ```mermaid
 graph TD
-    A[使用者 / 縣內兒少] -->|瀏覽靜態頁面| B[Cloudflare Pages / GitHub Pages]
-    A -->|檢視開放表單 / 提交回應| C[Supabase Client JavaScript SDK]
-    
-    subgraph Frontend [前端網站架構]
-        B --> D[主頁及靜態資訊門戶]
-        B --> E[公開表單列表與填寫頁面]
+    subgraph Client [前台 - 縣內兒少與大眾]
+        A[官方網站靜態門戶]
+        B[動態議題表單填寫頁]
     end
 
-    subgraph Backend [Supabase 後端服務]
-        C -->|REST API / Realtime| F[Supabase Database - PostgreSQL]
-        F --> G[(forms 表單設定)]
-        F --> H[(form_submissions 提交紀錄)]
-        F --> I[(announcements 公告歷史)]
-        C -->|Row Level Security| J[RLS 存取權限控管]
+    subgraph Admin [後台 - 少代管理員]
+        C[Supabase Auth 登入驗證]
+        D[Google 表單風格 - 拖拉表單建立器]
+        E[表單回應查看與數據匯出儀表板]
     end
+
+    subgraph Backend [Supabase 後端與雲端託管]
+        F[Cloudflare Pages / GitHub Pages]
+        G[Supabase Database - PostgreSQL]
+        H[(forms 表單結構與 JSONB 題型)]
+        I[(form_submissions 兒少回應)]
+        J[Supabase Storage - 上傳附件]
+    end
+
+    A --> F
+    B -->|取得表單題目 / 提交答案| G
+    C -->|身分驗證| Admin
+    D -->|新增/修改表單 Schema| H
+    E -->|讀取與統計回應| I
 ```
 
 ---
@@ -51,74 +59,132 @@ graph TD
 
 | 架構層級 | 技術方案 | 說明 |
 | :--- | :--- | :--- |
-| **前端門戶** | HTML5 / Vanilla CSS / Modern JS (ES6+) 或 Vite | 零負擔靜態載入，優異的 SEO 與瀏覽體驗 |
-| **後端與資料庫** | [Supabase](https://supabase.com/) (PostgreSQL) | 提供即時 API、身份驗證、資料庫存取及 RLS 安全控管 |
-| **託管與部署** | [Cloudflare Pages](https://pages.cloudflare.com/) / GitHub Pages | 自動化 CI/CD、免費 HTTPS 與全球 Edge CDN 加速 |
-| **圖示與樣式** | Remix Icon / Google Fonts (Inter, Outfit) | 現代化視覺設計與無障礙網頁體驗 |
+| **前台門戶與表單** | Vite + React / HTML5 + Vanilla JS | 輕量、快速載入，最佳化行動端與電腦端填寫體驗 |
+| **後台管理介面** | React + TailwindCSS / Lucide Icons | 提供直覺順暢的 Google 表單風格 UI 與拖拉操作 |
+| **後端與資料庫** | [Supabase](https://supabase.com/) (PostgreSQL) | 儲存動態表單 JSONB Schema、回應數據與權限控管 |
+| **檔案儲存** | Supabase Storage | 存放兒少填寫表單時上傳的附件或證明文件 |
+| **託管與部署** | [Cloudflare Pages](https://pages.cloudflare.com/) / GitHub Pages | 免費自動化 CDN 部署與自訂網域 |
 
 ---
 
-## 🗄️ 資料庫模型設計 (Supabase Database Schema)
+## 🗄️ 動態表單資料庫模型設計 (Form Builder Schema)
 
-以下為 Supabase PostgreSQL 之表結構設計：
+為了達到像 Google 表單般靈活自訂題型的效果，資料庫設計採用 **JSONB Schema** 結構，實現零程式碼修訂題目的超高擴充性。
 
-### 1. 表單主表 (`forms`)
-用於管理前台顯示的公開表單資訊。
+### 1. 表單結構主表 (`forms`)
+紀錄表單標題、說明、狀態與所有題目欄位（JSONB 結構）。
 
 ```sql
 CREATE TABLE public.forms (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    form_url TEXT, -- 外部表單連結 (如 Google Forms) 或內建表單代碼
-    is_open BOOLEAN DEFAULT true,
+    slug VARCHAR(100) UNIQUE,              -- 自訂網址代碼 (例如: /forms/youth-issue-2026)
+    is_published BOOLEAN DEFAULT false,   -- 是否發布
+    is_open BOOLEAN DEFAULT true,         -- 是否開放填寫
     start_date TIMESTAMPTZ DEFAULT now(),
-    end_date TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT now()
+    end_date TIMESTAMPTZ,                 -- 截止填寫時間
+    fields JSONB NOT NULL DEFAULT '[]',   -- 關鍵：動態題目欄位定義 (格式見下方說明)
+    theme_settings JSONB DEFAULT '{}',    -- 視覺主題 (背景色、標頭圖等)
+    created_by UUID REFERENCES auth.users(id),
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
 );
 
--- RLS 權限：允許所有人讀取已開放的表單
+-- RLS 權限：
+-- 1. 所有人可讀取已發布且開放中的表單
+-- 2. 僅少代管理員 (Authenticated Admin) 可新增、修改、刪除表單
 ALTER TABLE public.forms ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public read for active forms" ON public.forms
-    FOR SELECT USING (is_open = true);
+
+CREATE POLICY "Public read open forms" ON public.forms
+    FOR SELECT USING (is_published = true AND is_open = true);
+
+CREATE POLICY "Admin full access" ON public.forms
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
 ```
 
-### 2. 表單提交紀錄表 (`form_submissions`)
-若使用內建表單時，收集兒少填寫的回應。
+#### 💡 `fields` (JSONB) 題目欄位結構範例：
+後台建構器產生的題目 JSON 結構如下：
+```json
+[
+  {
+    "id": "field_101",
+    "type": "single_choice",
+    "label": "請選擇您的就讀階段",
+    "placeholder": "",
+    "required": true,
+    "options": ["國小", "國中", "高中職", "大專院校", "其他"]
+  },
+  {
+    "id": "field_102",
+    "type": "multiple_choice",
+    "label": "您最關心的兒少議題有哪些？（可複選）",
+    "required": true,
+    "options": ["教育與校園權益", "休閒娛樂與公共空間", "心理健康與輔導", "交通安全", "社會參與"]
+  },
+  {
+    "id": "field_103",
+    "type": "long_text",
+    "label": "具體建議與意見說明",
+    "placeholder": "請詳細說明您的想法與建議...",
+    "required": false
+  },
+  {
+    "id": "field_104",
+    "type": "file_upload",
+    "label": "佐證資料上傳（選填）",
+    "required": false
+  }
+]
+```
+
+### 2. 表單回應紀錄表 (`form_submissions`)
+儲存兒少填寫的回應內容。
 
 ```sql
 CREATE TABLE public.form_submissions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     form_id UUID REFERENCES public.forms(id) ON DELETE CASCADE,
-    respondent_name VARCHAR(100),
-    contact_email VARCHAR(255),
-    answers JSONB NOT NULL, -- 彈性儲存問答內容
+    answers JSONB NOT NULL,               -- 儲存格式: {"field_101": "高中職", "field_102": ["交通安全"]}
+    respondent_ip VARCHAR(45),
     submitted_at TIMESTAMPTZ DEFAULT now()
 );
 
--- RLS 權限：僅允許公眾新增 (INSERT)，不開放公開讀取 (SELECT)
+-- RLS 權限：
+-- 1. 所有人均可提交回應 (INSERT)
+-- 2. 僅授權管理員 (Authenticated Admin) 可檢視與匯出回應 (SELECT)
 ALTER TABLE public.form_submissions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public insert" ON public.form_submissions
+
+CREATE POLICY "Public submit responses" ON public.form_submissions
     FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Admin view submissions" ON public.form_submissions
+    FOR SELECT TO authenticated USING (true);
 ```
 
-### 3. 少代成員資料表 (`representatives`) — 可選靜態/動態管理
-用於展示第四屆成員簡介與小組分工。
+---
 
-```sql
-CREATE TABLE public.representatives (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(100) NOT NULL,
-    group_name VARCHAR(100), -- 如：教育文化組、社會權益組
-    role VARCHAR(100),       -- 如：召集人、副召集人、代表
-    avatar_url TEXT,
-    bio TEXT,
-    order_index INT DEFAULT 0
-);
+## 🎨 後台自訂表單流程 (Google Forms-like Workflow)
 
-ALTER TABLE public.representatives ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public read" ON public.representatives
-    FOR SELECT USING (true);
+```
+[ 幹部登入後台 ] 
+      │
+      ▼
+[ 新增議題徵求表單 ] 
+      │
+      ├──> 設定表單名稱、說明與截止日期
+      │
+      ├──> 拖拉與增刪題目 (單選/多選/簡答/長答/檔案上傳)
+      │
+      ├──> 實時預覽填寫效果
+      │
+      └──> 一鍵點擊「發布表單」
+            │
+            ▼
+[ 前台自動呈現於「公開表單區」供兒少填寫 ]
+            │
+            ▼
+[ 後台檢視回應圖表 / 匯出 CSV 統計報告 ]
 ```
 
 ---
@@ -128,50 +194,40 @@ CREATE POLICY "Allow public read" ON public.representatives
 ```
 .
 ├── index.html              # 官方網站主頁 (門戶與簡介)
-├── forms.html              # 公開表單列表與動態中心
-├── about.html              # 關於第四屆少代、組織與組織章程
-├── achievements.html       # 歷年提案與成果展示
+├── forms.html              # 前台：公開議題表單列表
+├── form-view.html          # 前台：動態表單填寫頁面
+├── admin/
+│   ├── index.html          # 後台：管理員登入頁
+│   ├── dashboard.html      # 後台：表單總覽儀表板與狀態開關
+│   ├── builder.html        # 後台：Google 表單風格之拖拉表單建立器
+│   └── responses.html      # 後台：回應統計數據與 CSV 匯出
 ├── css/
-│   ├── main.css            # 全站核心樣式與變數定義
-│   └── components.css      # 卡片、按鈕、表單等元件樣式
+│   ├── main.css            # 全站核心視覺樣式
+│   └── builder.css         # 表單編輯器與拖拉互動樣式
 ├── js/
-│   ├── config.js           # Supabase 初始化設定 (URL & Anon Key)
-│   ├── forms.js            # 表單動態拉取與狀態判斷邏輯
-│   └── main.js             # 動態 UI 互動與導覽列邏輯
-├── assets/
-│   ├── images/             # 網站靜態圖片、Logo 與代表照片
-│   └── icons/              # 圖示資源
+│   ├── config.js           # Supabase 初始化與金鑰設定
+│   ├── builder.js          # 後台表單建構器邏輯 (拖拉、題目增刪)
+│   ├── form-render.js      # 前台根據 JSONB 自動渲染表單
+│   └── admin.js            # 管理員身分驗證與數據統計邏輯
 ├── README.md               # 本專案架構與維護說明
 └── .github/
     └── workflows/
-        └── deploy.yml      # GitHub Actions / Cloudflare 部署工作流
+        └── deploy.yml      # CI/CD 部署工作流
 ```
 
 ---
 
 ## 🚀 部署與營運指引 (Deployment Guide)
 
-### 選擇 1：Cloudflare Pages 部署 (推薦)
-1. 將此儲存庫連接至 **Cloudflare Dashboard** -> **Pages**。
-2. 設定 Build Settings：
-   - **Build Command**: （若為純靜態可留空，或使用 `npm run build`）
-   - **Build Output Directory**: `./` 或 `dist`
-3. 於 Cloudflare Pages 設定環境變數：
-   - `SUPABASE_URL`: 您的 Supabase 專案網址
-   - `SUPABASE_ANON_KEY`: 您的 Supabase 匿名存取 Key
+### 1. Supabase 專案設定
+1. 建立新的 Supabase Project。
+2. 進入 `SQL Editor` 執行本 README 中提供之 SQL 語法以創建表格與 RLS 權限。
+3. 於 `Authentication` 新增少代管理員帳號。
 
-### 選擇 2：GitHub Pages 部署
-1. 開啟 GitHub 儲存庫設定 `Settings` -> `Pages`。
-2. Source 選擇 `Deploy from a branch`。
-3. Branch 選擇 `main` / Root (`/`)。
-4. 儲存後即可自動完成部署。
-
----
-
-## 🔒 隱私與安全說明
-
-- 本專案絕不公開任何填寫表單個資。
-- Supabase 後台僅供授權之管理者登入，前台僅透過 `ANON_KEY` 進行權限受限之操作。
+### 2. 網站部署 (Cloudflare Pages)
+1. 將本 Repository 連結至 **Cloudflare Pages**。
+2. 在環境變數中設定 `VITE_SUPABASE_URL` 與 `VITE_SUPABASE_ANON_KEY`。
+3. 部署完成後即可擁有自訂網址並啟用後台管理。
 
 ---
 
