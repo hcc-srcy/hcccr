@@ -322,11 +322,15 @@
 
 .questions-shell {
   position: relative;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .questions-list {
   display: grid;
   gap: 14px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .questions-shell.is-locked .questions-list {
@@ -366,6 +370,10 @@
 }
 
 .question-card {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
   scroll-margin-top: 18px;
 }
 
@@ -382,6 +390,7 @@
   padding: 0;
   font-size: 1rem;
   font-weight: 800;
+  overflow-wrap: anywhere;
 }
 
 .required-mark {
@@ -393,11 +402,13 @@
   margin: 6px 0 0;
   color: var(--muted);
   font-size: 0.85rem;
+  overflow-wrap: anywhere;
 }
 
 .options-list {
   display: grid;
   gap: 11px;
+  min-width: 0;
   margin-top: 18px;
 }
 
@@ -405,8 +416,14 @@
   display: grid;
   grid-template-columns: 20px 1fr;
   gap: 11px;
+  min-width: 0;
   align-items: start;
   cursor: pointer;
+}
+
+.option-row span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .option-row input {

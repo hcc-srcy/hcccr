@@ -65,6 +65,8 @@ test("password survey rejects and accepts access password", async ({ page }) => 
   const errors = watchPageErrors(page);
   await page.goto("/surveys/school-lunch-2026");
   await expect(page.locator("[data-consent-card]")).toBeHidden();
+  await expect(page.locator("[data-question]")).toHaveCount(0);
+  await expect(page.locator("[data-response-form]")).toHaveCount(0);
   await page.locator("#access-password").fill("wrong");
   await page.getByRole("button", { name: "驗證密碼" }).click();
   await expect(page.locator("[data-password-error]")).toContainText("不正確");
@@ -72,6 +74,13 @@ test("password survey rejects and accepts access password", async ({ page }) => 
   await page.getByRole("button", { name: "驗證密碼" }).click();
   await expect(page.locator("[data-consent-card]")).toBeVisible();
   await expect(page.locator("[data-question]")).toHaveCount(5);
+  const cardsStayInsideForm = await page.locator("[data-question]").evaluateAll((cards) => cards.every((card) => {
+    const formBox = card.closest("[data-response-form]").getBoundingClientRect();
+    const cardBox = card.getBoundingClientRect();
+    return cardBox.left >= formBox.left && cardBox.right <= formBox.right;
+  }));
+  expect(cardsStayInsideForm).toBe(true);
+  await expectNoHorizontalOverflow(page);
   expect(errors).toEqual([]);
 });
 

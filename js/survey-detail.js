@@ -31,15 +31,8 @@
   function render() {
     document.title = `${form.title}｜新竹縣第四屆兒少諮詢代表`;
     const needsPassword = form.visibility === "public_password" && !passwordVerified;
-    root.innerHTML = `
-      <article class="survey-header-card">
-        <div class="meta-row"><span class="tag tag--accent">${window.HCCCR.escapeHtml(form.category)}</span>${form.is_edited ? '<span class="tag">已編輯</span>' : ""}${needsPassword ? '<span class="tag tag--warning"><i data-lucide="lock-keyhole"></i> 需活動密碼</span>' : ""}</div>
-        <h1>${window.HCCCR.escapeHtml(form.title)}</h1><p>${window.HCCCR.escapeHtml(form.description)}</p>
-        <div class="survey-meta"><span><i data-lucide="clock-3"></i> 約 ${form.estimated_minutes || 3} 分鐘</span><span><i data-lucide="calendar-days"></i> 截止 ${window.HCCCR.formatDate(form.end_date)}</span>${form.is_edited ? `<span><i data-lucide="pencil-line"></i> 修訂於 ${window.HCCCR.formatDate(form.updated_at, true)}</span>` : ""}</div>
-      </article>
-      <div class="notice notice--demo" data-demo-only hidden style="margin-bottom:18px"><i data-lucide="flask-conical"></i><p>目前為示範模式，送出內容只暫存於這個瀏覽器分頁。</p></div>
-      ${needsPassword ? `<section class="password-card" data-password-gate><div class="gate-heading"><span class="gate-heading__icon"><i data-lucide="key-round"></i></span><div><h2>輸入活動密碼</h2><p>此調查限受邀參與者填寫。</p></div></div><form class="gate-body" data-password-form><label for="access-password">活動密碼</label><input id="access-password" name="password" type="password" autocomplete="one-time-code" required><p class="field-message" data-password-error></p><div class="gate-actions"><button class="button button--small" type="submit">驗證密碼 <i data-lucide="arrow-right"></i></button></div></form></section>` : ""}
-      <section class="consent-card" data-consent-card ${needsPassword ? "hidden" : ""}>
+    const responseMarkup = needsPassword ? "" : `
+      <section class="consent-card" data-consent-card>
         <div class="gate-heading"><span class="gate-heading__icon"><i data-lucide="shield-check"></i></span><div><h2>個資蒐集告知暨隱私權與服務條款</h2><p>同意後才會開始計算作答時間。</p></div></div>
         <div class="gate-body"><div class="consent-summary" tabindex="0"><p>本調查由新竹縣第四屆兒少諮詢代表辦理，填答資料用於兒少權益議題研究、統計與政策倡議。</p><ul><li>公開成果僅呈現去識別化統計，不公開個別原始回答。</li><li>請勿在自由文字欄位填寫姓名、班級、電話等識別資訊。</li><li>我們會記錄開始、送出時間及作答費時。</li></ul><p><a href="/terms" target="_blank" rel="noopener">閱讀完整隱私權與服務條款</a></p></div><label class="check-row"><input type="checkbox" data-consent-checkbox><span>我已閱讀並同意上述告知事項與隱私權條款</span></label></div>
       </section>
@@ -50,7 +43,16 @@
         </div>
         <div class="progress-line no-print" aria-hidden="true"><span data-progress></span></div>
         <div class="form-footer no-print"><p><span class="required-mark">*</span> 為必填問題</p><button class="button" type="submit" disabled data-submit>送出回答 <i data-lucide="send"></i></button></div>
-      </form>
+      </form>`;
+    root.innerHTML = `
+      <article class="survey-header-card">
+        <div class="meta-row"><span class="tag tag--accent">${window.HCCCR.escapeHtml(form.category)}</span>${form.is_edited ? '<span class="tag">已編輯</span>' : ""}${needsPassword ? '<span class="tag tag--warning"><i data-lucide="lock-keyhole"></i> 需活動密碼</span>' : ""}</div>
+        <h1>${window.HCCCR.escapeHtml(form.title)}</h1><p>${window.HCCCR.escapeHtml(form.description)}</p>
+        <div class="survey-meta"><span><i data-lucide="clock-3"></i> 約 ${form.estimated_minutes || 3} 分鐘</span><span><i data-lucide="calendar-days"></i> 截止 ${window.HCCCR.formatDate(form.end_date)}</span>${form.is_edited ? `<span><i data-lucide="pencil-line"></i> 修訂於 ${window.HCCCR.formatDate(form.updated_at, true)}</span>` : ""}</div>
+      </article>
+      <div class="notice notice--demo" data-demo-only hidden style="margin-bottom:18px"><i data-lucide="flask-conical"></i><p>目前為示範模式，送出內容只暫存於這個瀏覽器分頁。</p></div>
+      ${needsPassword ? `<section class="password-card" data-password-gate><div class="gate-heading"><span class="gate-heading__icon"><i data-lucide="key-round"></i></span><div><h2>輸入活動密碼</h2><p>此調查限受邀參與者填寫。</p></div></div><form class="gate-body" data-password-form><label for="access-password">活動密碼</label><input id="access-password" name="password" type="password" autocomplete="one-time-code" required><p class="field-message" data-password-error></p><div class="gate-actions"><button class="button button--small" type="submit">驗證密碼 <i data-lucide="arrow-right"></i></button></div></form></section>` : ""}
+      ${responseMarkup}
       <p class="survey-footnote">本問卷由新竹縣第四屆兒童及少年諮詢代表發布 · <a href="/terms">隱私權政策</a></p>`;
 
     bindEvents();
@@ -148,12 +150,13 @@
       }
     });
 
-    root.querySelector("[data-consent-checkbox]").addEventListener("change", (event) => {
+    root.querySelector("[data-consent-checkbox]")?.addEventListener("change", (event) => {
       if (event.target.checked) unlockQuestions();
       else lockQuestions();
     });
 
     const responseForm = root.querySelector("[data-response-form]");
+    if (!responseForm) return;
     responseForm.addEventListener("input", updateProgress);
     responseForm.addEventListener("change", updateProgress);
     responseForm.addEventListener("submit", async (event) => {
