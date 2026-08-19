@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>管理員登入｜竹縣少代</title>
+  <link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/admin.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script><script defer src="/js/env.js"></script><script defer src="/js/config.js"></script><script defer src="/js/data.js"></script><script defer src="/js/data-service.js"></script><script defer src="/js/common.js"></script><script defer src="/js/admin-auth.js"></script>
+</head>
+<body data-admin-page="login">
+  <main class="admin-login">
+    <section class="admin-login__form">
+      <div class="login-panel">
+        <a class="brand" href="/"><span class="brand__mark">少代</span><span class="brand__text"><strong>竹縣少代調查管理</strong><small>Survey Administration</small></span></a>
+        <h1>管理員登入</h1><p>輸入白名單信箱，我們會寄送一次性登入連結。</p>
+        <div class="notice notice--demo notice--spaced" data-demo-only hidden><i data-lucide="flask-conical"></i><p>示範模式不會寄信，輸入任意電子郵件即可預覽後台。</p></div>
+        <form class="login-form" data-login-form><label class="form-label">管理員電子郵件<input class="form-control" id="admin-email" name="email" type="email" autocomplete="email" placeholder="name@example.org" required></label><p class="field-message" data-login-message></p><button class="button" type="submit">寄送登入連結 <i data-lucide="mail"></i></button></form>
+        <p class="login-panel__footer"><a class="text-link" href="/"><i data-lucide="arrow-left"></i> 返回官方網站</a></p>
+      </div>
+    </section>
+    <aside class="admin-login__visual"><div><p class="eyebrow">新竹縣第四屆兒少諮詢代表</p><h2>把回應整理成<br>能行動的依據。</h2><p>建立調查、檢視統計與管理個別回應，所有後台操作僅限授權人員。</p></div></aside>
+  </main>
+</body>
+</html>

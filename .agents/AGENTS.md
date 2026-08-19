@@ -19,7 +19,7 @@
 - **網址路由**：
   - `/`：首頁（靜態門戶，包含導向 `/surveys` 之醒目按鈕）。
   - `/surveys`：議題調查總覽頁。
-  - `/surveys/{uuid}`：動態調查作答頁（需配置 Cloudflare `_redirects`：`/surveys/* -> /survey-detail.html`）。
+  - `/surveys/{uuid}`：動態調查作答頁（Cloudflare `_redirects` 使用 `/surveys/* -> /survey-detail`，由 clean URL 解析至 `survey-detail.html`，避免 `.html` 正規化造成重導）。
   - `/terms`：個人資料保護與隱私權政策條款全文。
 - **樣式規範**：Vanilla CSS，定義 CSS 變數（主題色、圓角、陰影），必須提供專屬 `@media print` 列印樣式。
 
@@ -31,6 +31,8 @@
   - `admin_users`: 授權管理員信箱。
   - `forms`: 表單定義，欄位 `fields` 採用 **JSONB 彈性結構**。
   - `form_submissions`: 作答紀錄，包含 `started_at`、`submitted_at` 與 `duration_seconds`（自動計算）。
+- **公開資料邊界**：匿名前台不得直接 `SELECT forms` 或讀取密碼欄位，必須透過 `list_public_forms`、`get_public_form` 與 `submit_form` RPC；活動密碼僅以 `pgcrypto` 雜湊保存。
+- **開發示範模式**：未配置 Supabase 時可使用 `sessionStorage` 示範資料，但 UI 必須清楚標示，且不得將示範資料誤認為正式提交。
 
 ---
 

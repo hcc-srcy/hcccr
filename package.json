@@ -1,0 +1,16 @@
+{
+  "name": "hcccr",
+  "version": "0.1.0",
+  "private": true,
+  "description": "新竹縣第四屆兒童及少年諮詢代表官方網站與議題調查系統",
+  "scripts": {
+    "dev": "wrangler pages dev . --port 8788",
+    "test": "playwright test",
+    "validate:html": "html-validate index.html surveys.html survey-detail.html terms.html admin/*.html"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "html-validate": "9.7.1",
+    "wrangler": "4.124.0"
+  }
+}

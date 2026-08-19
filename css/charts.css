@@ -1,0 +1,42 @@
+.analytics-filter-bar {
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.analytics-filter-bar .form-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.analytics-filter-bar .form-control {
+  width: auto;
+  min-width: 210px;
+}
+
+.filter-result {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.chart-empty {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .analytics-filter-bar .form-label {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .analytics-filter-bar .form-control {
+    width: 100%;
+  }
+}

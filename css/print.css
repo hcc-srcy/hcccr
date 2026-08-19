@@ -1,0 +1,66 @@
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  :root {
+    --ink: #000;
+    --muted: #333;
+    --line: #aaa;
+  }
+
+  body {
+    color: #000;
+    background: #fff;
+    font-size: 11pt;
+  }
+
+  .announcement,
+  .site-header,
+  .site-footer,
+  .button,
+  .page-actions,
+  .side-nav,
+  .toast-region,
+  .no-print,
+  [data-print-hidden] {
+    display: none !important;
+  }
+
+  .container,
+  .content-shell,
+  .prose {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .page-intro,
+  .section {
+    padding: 0 0 18pt;
+    background: white;
+    border: 0;
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  .question-card,
+  .response-block {
+    break-inside: avoid;
+  }
+
+  .question-card,
+  .survey-card,
+  .response-block {
+    box-shadow: none !important;
+    border: 1px solid #bbb !important;
+  }
+}
