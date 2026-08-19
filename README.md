@@ -4,68 +4,33 @@
 [![Hosting: Cloudflare Pages](https://img.shields.io/badge/Hosting-Cloudflare%20Pages-orange)](https://pages.cloudflare.com/)
 [![Database: Supabase](https://img.shields.io/badge/Database-Supabase-green)](https://supabase.com/)
 
-本專案為**新竹縣第四屆兒童及少年諮詢代表（以下簡稱「竹縣少代」）**之官方門戶網站、議題徵求中心、**自訂表單後台建構器、隱私條款門檻、作答時間追蹤、多維數據圖表與列印管理系統**。網站旨在提供縣內兒少了解少代會運作機制與提案成果，包含前置隱私條款同意門檻、作答開始與結束時間紀錄、平均作答時間統計、`/surveys` 議題徵求中心、靈活權限控管（公開/密碼/不公開）、表單二次編輯與「已編輯」註記、多維度統計圖表（支援動態交叉條件篩選）、單筆列印與刪除等完整功能。
+本專案為**新竹縣第四屆兒童及少年諮詢代表（以下簡稱「竹縣少代會」）**之官方門戶與**不定期兒少議題調查系統 (Youth Issue Survey System)**。旨在針對縣內兒少關心之議題（如各校教學正常化調查、學生權益、校園設施等）發起不定期問卷研究。後台與前台作答均提供媲美 **Google 表單 (Google Forms)** 的極致流暢操作體驗。
 
 ---
 
 ## 📌 專案定位與核心設計原則
 
-1. **⏱️ 自動作答時間追蹤與平均作答時間統計 (Completion Time & Analytics)**
-   - **填答時間戳記**：兒少點開頁面同意條款並開始作答時記錄 `started_at`，點擊送出時記錄 `submitted_at`。
-   - **平均作答時間分析**：後台回應儀表板自動計算全體兒少的**平均作答時間（例如：3 分 45 秒）**，並可過濾秒速填答之異常垃圾回應。
+1. **📝 媲美 Google 表單的極致操作體驗 (Google Forms-like UX)**
+   - **後台 (Admin Builder)**：視覺化卡片式表單建構器，支援拖拉排序、題型選擇（單選、複選、簡答、長答、日期、檔案上傳）、必選填切換與實時預覽。
+   - **前台 (Respondent View)**：質感卡片式作答介面，清晰標示必填題目，填答過程順暢、響應式適配手機與電腦。
 
-2. **🔒 前置隱私權與服務條款門檻 (Privacy Policy & Terms Gate)**
-   - **擋在最前面**：在兒少填寫任何表單前，系統會強制彈出《個資蒐集告知暨隱私權與服務條款》同意門檻，勾選後方可解鎖作答。
+2. **🏫 專為不定期專題調查設計 (Periodic Issue Surveys)**
+   - 少代幹部可針對各類專題（例如：「新竹縣各校教學正常化實況調查」、「國高中學生課業壓力調查」）快速發起調查。
+   - 提供 `/surveys` 議題調查總覽頁與 `/surveys/{uuid}` 專屬作答網址。
 
-3. **✏️ 表單二次編輯與「已編輯」狀態追蹤 (Form Editing & "Edited" Badge)**
-   - **後台二次編輯**：管理員可隨時對已建立或發布的表單進行編輯。
-   - **「已編輯」標示**：修訂後自動更新 `updated_at` 並標示「已編輯 (Edited)」與最後修訂時間。
+3. **🔒 三種權限控管與前置隱私條款門檻**
+   - 🌐 **公開 (Public)** / 🔑 **公開但需密碼 (Public Password)** / 🔒 **不公開連結 (Unlisted)**。
+   - **擋在最前面**：填答前強制呈現《個資蒐集告知暨隱私權條款》勾選門檻。
 
-4. **⚙️ 靈活題目設定 (必填/選填、單選/複選)**
-   - 支援獨立設定：**必填/選填 (Required/Optional)**、**單選/複選 (Radio/Checkbox)**、簡答、長答、日期、檔案上傳。
+4. **📊 摘要圖表與動態交叉條件篩選 (Analytics & Cross-Filtering)**
+   - 自動生成圓餅圖與長條圖，支援按學校/就讀階段（如：「篩選國中」）即時動態連動重繪其餘題目之統計圖表。
+   - 計算全體「平均作答時間」，並記錄 `started_at` 與 `submitted_at`。
 
-5. **靜態門戶與極低維護負擔 (Low Maintenance Portal)**
-   - 官方網站主體採靜態化設計，首頁配置醒目的「前往議題徵求中心 ➔」按鈕，引導使用者至 `/surveys` 頁面。
+5. **🖨️ 單筆與空白表單列印管理 (Print & Individual Response Actions)**
+   - 支援空白問卷一鍵列印（`@media print`）、單筆回應獨檢、一鍵列印/PDF 匯出與單獨刪除。
 
-6. **三種靈活的表單公開與存取權限 (Visibility Control)**
-   - 🌐 **公開 (Public)** / 🔑 **公開但需密碼 (Public with Password)** / 🔒 **不公開連結 (Unlisted)**。
-
-7. **多維數據統計與動態交叉條件篩選分析 (Response Analytics & Cross-Filtering)**
-   - 📊 **三種檢視視角**：支援「摘要圖表 (Summary)」、「個別回應 (Individual)」與「明細表格 (Spreadsheet)」三種模式。
-   - 🔀 **交叉條件動態篩選**：點擊特定選項（例如「就讀階段 = 國中」），全頁其餘題目的統計圖表即時連動！
-
-8. **多元表單輸出與回應管理 (Print & Response Management)**
-   - 🖨️ 空白表單列印（套用 `@media print`）、單筆回應獨檢/列印/刪除。
-
-9. **安全無密碼後台認證 (Admin Auth Strategy)**
+6. **安全無密碼後台認證 (Admin Auth Strategy)**
    - 採用 **Supabase Auth (Magic Link 免密碼信箱驗證)** 搭配 **`admin_users` 白名單**。
-
----
-
-## 📊 三種回應檢視、平均作答時間與動態交叉篩選 (Response Analytics)
-
-```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│                        /admin/responses (回應分析與圖表中心)                             │
-├────────────────────────────────────────────────────────────────────────────────────────┤
-│  📈 關鍵數據指標:                                                                      │
-│  [ 總填答數: 128 份 ]      [ ⏱️ 平均作答時間: 4 分 12 秒 ]      [ 狀態: 進行中 (開放) ]     │
-├────────────────────────────────────────────────────────────────────────────────────────┤
-│ [ 📊 摘要統計圖表 ]     [ 👤 個別回應 (單筆檢視/列印/刪除) ]     [ 📋 明細表格 (Spreadsheet) ]│
-├────────────────────────────────────────────────────────────────────────────────────────┤
-│ 🔍 交叉條件篩選器 (Cross-filtering Filter Bar):                                         │
-│ ┌───────────────────────────┐ ┌───────────────────────────┐ ┌────────────────────────┐ │
-│ │ 篩選題目: [ 就讀階段 ▼ ] │ │ 選項: [ 國中 (35%) ▼ ]    │ │ [ 🧹 清除篩選重置 ]    │ │
-│ └───────────────────────────┘ └───────────────────────────┘ └────────────────────────┘ │
-│                                                                                        │
-│ 📌 當套用「就讀階段 = 國中」篩選時，全頁圖表與平均作答時間將即時動態連動：             │
-│                                                                                        │
-│   【議題：最關心的兒少議題 (國中生族群分布)】                                             │
-│   ■ 校園權益與課業壓力 ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ 65%                                           │
-│   ■ 交通安全與公車班次 ▓▓▓▓▓▓▓▓▓ 25%                                                   │
-│   ■ 休閒娛樂設施     ▓▓▓ 10%                                                       │
-└────────────────────────────────────────────────────────────────────────────────────────┘
-```
 
 ---
 
@@ -74,31 +39,30 @@
 ```
 ┌───────────────────────────────────────────────────────────────────┐
 │                          / (首頁 靜態門戶)                         │
-│   • 介紹第四屆少代、組織架構、歷年提案                               │
-│   • 醒目按鈕：[前往議題徵求中心 ➔] (導向 /surveys)                   │
+│   • 介紹第四屆少代、組織架構、歷年提案與最新消息                     │
+│   • 醒目按鈕：[前往兒少議題調查中心 ➔] (導向 /surveys)               │
 └─────────────────────────────────┬─────────────────────────────────┘
                                   │
                                   ▼
 ┌───────────────────────────────────────────────────────────────────┐
-│                      /surveys (議題徵求總覽頁)                     │
-│   • 顯示所有 Visibility = 'public' 或 'public_password' 之開放表單 │
+│                      /surveys (議題調查總覽頁)                     │
+│   • 展示目前開放之專題調查（例如：各校教學正常化調查）              │
 │   • 標示「已編輯 (Edited)」狀態與最後更新時間                     │
 └─────────────────────────────────┬─────────────────────────────────┘
-                                  │ 點擊卡片 或 專屬連結
+                                  │ 點擊問卷卡片 或 專屬網址
                                   ▼
 ┌───────────────────────────────────────────────────────────────────┐
 │                     /surveys/{uuid} (表單作答頁)                   │
 │                                                                   │
 │   📌 步驟 1【同意條款並觸發計時開始】:                              │
 │      [✓] 我已閱讀並同意《新竹縣少代個資蒐集與隱私權保護條款》      │
-│      ➔ 系統自動記錄 started_at = 2026-08-18T23:50:00Z             │
+│      ➔ 自動記錄 started_at                                        │
 │                                                                   │
-│   📌 步驟 2【存取權限與題目作答】:                                  │
+│   📌 步驟 2【Google 表單體驗作答】:                                 │
 │      - 驗證「必填 (Required)」、「單選」與「複選」                 │
 │                                                                   │
 │   📌 步驟 3【送出表單並記錄結束時間】:                              │
-│      ➔ 系統自動記錄 submitted_at = 2026-08-18T23:54:12Z            │
-│      ➔ 計算本筆作答費時 252 秒 (4 分 12 秒)                         │
+│      ➔ 自動記錄 submitted_at & 計算作答費時                        │
 └───────────────────────────────────────────────────────────────────┘
 ```
 
@@ -128,13 +92,13 @@ CREATE TABLE public.forms (
     is_edited BOOLEAN DEFAULT false,                  -- 是否曾經編輯過 (顯示「已編輯」)
     start_date TIMESTAMPTZ DEFAULT now(),
     end_date TIMESTAMPTZ,                             -- 截止時間
-    fields JSONB NOT NULL DEFAULT '[]',               -- 題目定義 (含 required, single/multiple choice)
+    fields JSONB NOT NULL DEFAULT '[]',               -- 題目定義 (JSON)
     created_by UUID REFERENCES auth.users(id),
     created_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 3. 表單回應紀錄表 (記錄開始時間、送出時間與作答費時)
+-- 3. 表單回應紀錄表
 CREATE TABLE public.form_submissions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     form_id UUID REFERENCES public.forms(id) ON DELETE CASCADE,
@@ -175,39 +139,30 @@ CREATE POLICY "Admin manage submissions" ON public.form_submissions
 
 ```
 .
-├── index.html              # 首頁 (靜態門戶與 [前往議題徵求] 按鈕)
-├── surveys.html            # /surveys - 公開表單總覽頁面 (顯示「已編輯」標示)
-├── survey-detail.html      # /surveys/{uuid} - 隱私條款門檻 + 時間追蹤 + 作答頁
-├── terms.html              # 全站個人資料蒐集與隱私權條款全文
+├── index.html              # 首頁 (靜態門戶與 [前往議題調查] 按鈕)
+├── surveys.html            # /surveys - 議題調查總覽頁面
+├── survey-detail.html      # /surveys/{uuid} - Google 表單體驗作答頁
+├── terms.html              # 全站個人資料保護與隱私權條款全文
 ├── admin/
 │   ├── index.html          # 後台 Magic Link 無密碼登入
-│   ├── dashboard.html      # 後台表單總覽、狀態開關與編輯進入點
-│   ├── builder.html        # 拖拉式表單建構與二次編輯器 (必/選填、單/複選)
-│   ├── responses.html      # 平均作答時間統計、摘要圖表、交叉條件分析與回應管理
-│   └── response-detail.html# 單筆回應獨檢 (含個人作答費時)、單列印與刪除
+│   ├── dashboard.html      # 後台調查總覽、狀態開關與編輯進入點
+│   ├── builder.html        # 類 Google 表單拖拉式建構與編輯器
+│   ├── responses.html      # 摘要圖表、交叉條件分析與回應管理
+│   └── response-detail.html# 單筆回應獨檢、單列印與刪除
 ├── css/
 │   ├── main.css            # 核心視覺樣式
 │   ├── print.css           # 列印專屬樣式表 (`@media print`)
 │   └── charts.css          # 統計圖表與交叉分析儀表板樣式
 ├── js/
 │   ├── config.js           # Supabase 初始化與驗證設定
-│   ├── surveys.js          # 表單總覽邏輯
-│   ├── survey-detail.js    # 隱私條款門檻驗證、計時開始/送出與作答頁邏輯
-│   ├── builder.js          # 後台建構與二次編輯邏輯 (必/選填、單/複選切換)
-│   ├── admin-charts.js     # Chart.js 統計圖表、平均作答時間與動態交叉篩選邏輯
+│   ├── surveys.js          # 調查總覽邏輯
+│   ├── survey-detail.js    # Google 表單作答、條款與時間追蹤邏輯
+│   ├── builder.js          # 後台表單建構與編輯邏輯
+│   ├── admin-charts.js     # Chart.js 統計圖表與動態交叉篩選邏輯
 │   └── admin-responses.js  # 單筆回應查詢、列印與單刪邏輯
 ├── README.md               # 本專案架構說明
 └── _redirects              # Cloudflare Pages 路由規則
 ```
-
----
-
-## 🚀 部署與營運指引 (Deployment Guide)
-
-### 選擇 1：Cloudflare Pages 部署 (推薦)
-1. 將 Repository 連結至 **Cloudflare Pages**。
-2. 在環境變數中設定 `VITE_SUPABASE_URL` 與 `VITE_SUPABASE_ANON_KEY`。
-3. Cloudflare Pages 自動讀取 `_redirects` 處理 `/surveys/*` 路由。
 
 ---
 
