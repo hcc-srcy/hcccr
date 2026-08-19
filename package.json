@@ -4,6 +4,7 @@
   "private": true,
   "description": "新竹縣第四屆兒童及少年諮詢代表官方網站與議題調查系統",
   "scripts": {
+    "build:pages": "node scripts/build-github-pages.js",
     "dev": "wrangler pages dev . --port 8788",
     "test": "playwright test",
     "validate:html": "html-validate index.html surveys.html survey-detail.html terms.html admin/*.html"

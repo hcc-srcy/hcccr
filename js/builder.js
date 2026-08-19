@@ -53,8 +53,7 @@
 
   function updateFixedUrl() {
     const slug = builder.elements.slug.value.trim() || form?.id || "new-survey";
-    const base = window.APP_CONFIG.siteUrl && window.APP_CONFIG.siteUrl !== "null" ? window.APP_CONFIG.siteUrl : window.location.origin;
-    const url = `${base}/surveys/${encodeURIComponent(slug)}`;
+    const url = new URL(window.HCCCR.getSurveyHref({ slug }), `${window.location.origin}/`).href;
     document.querySelector("[data-fixed-url]").value = url;
     document.querySelector("[data-preview-link]").href = url;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=${encodeURIComponent(url)}`;
@@ -198,7 +197,7 @@
     document.querySelectorAll("[data-save-form]").forEach((button) => { button.disabled = true; });
     try {
       form = await window.HCCCR_DATA.saveForm(payload);
-      history.replaceState({}, "", `/admin/builder.html?id=${encodeURIComponent(form.id)}`);
+      history.replaceState({}, "", `${window.HCCCR.appUrl("/admin/builder.html")}?id=${encodeURIComponent(form.id)}`);
       document.querySelector("[data-builder-title]").textContent = "編輯調查";
       updateFixedUrl();
       window.HCCCR.showToast("調查已儲存。")

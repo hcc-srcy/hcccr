@@ -1,6 +1,6 @@
 # 新竹縣第四屆兒童及少年諮詢代表官方網站
 
-[![Hosting: Cloudflare Pages](https://img.shields.io/badge/Hosting-Cloudflare%20Pages-f38020)](https://pages.cloudflare.com/)
+[![Hosting: GitHub Pages](https://img.shields.io/badge/Hosting-GitHub%20Pages-222222)](https://hcc-srcy.github.io/hcccr/)
 [![Database: Supabase](https://img.shields.io/badge/Database-Supabase-3fcf8e)](https://supabase.com/)
 
 本專案是新竹縣第四屆兒童及少年諮詢代表（竹縣少代）的官方門戶與不定期兒少議題調查系統。前台提供固定網址問卷、隱私同意門檻及響應式填答介面；後台提供表單建構、QR Code、動態統計、單筆回應列印與刪除。
@@ -9,7 +9,7 @@
 
 第一版可操作前端已完成，包含：
 
-- 官方首頁、調查總覽、完整隱私條款及 Cloudflare Pages 路由。
+- 官方首頁、調查總覽、完整隱私條款及 GitHub Pages 自動部署。
 - `public`、`public_password`、`unlisted` 三種存取模式。
 - 同意條款後才解除題目鎖定，並記錄 `started_at`、`submitted_at` 與作答費時。
 - 單選、複選、簡答、長答及日期題型，含必填驗證與空白問卷列印。
@@ -47,7 +47,26 @@ npx wrangler pages dev .
 
 ## Supabase 設定
 
-1. 建立 Supabase 專案，在 SQL Editor 執行 [`supabase/schema.sql`](supabase/schema.sql)。
+### 取得瀏覽器端金鑰
+
+1. 前往 [Supabase Dashboard](https://supabase.com/dashboard) 建立專案。
+2. 進入該專案的 **Project Settings → API**（新版介面可能顯示 **API Keys**）。
+3. 複製 **Project URL**，以及 `sb_publishable_...` 開頭的 **Publishable key**；若專案仍使用舊版金鑰，則複製 `anon public` key。
+4. 編輯 [`js/env.js`](js/env.js)：
+
+```js
+window.HCCCR_ENV = {
+  SUPABASE_URL: "https://PROJECT_REF.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_...",
+  SITE_URL: "https://hcc-srcy.github.io/hcccr",
+};
+```
+
+Publishable/Anon Key 本來就會出現在瀏覽器端，安全性由 RLS 與資料庫函式控制。**請勿**填入 `service_role`、`sb_secret_...`、資料庫密碼或 Resend API Key。
+
+### 初始化資料庫
+
+1. 在 Supabase **SQL Editor → New query** 貼上並執行完整的 [`supabase/schema.sql`](supabase/schema.sql)。這會建立 `admin_users`、`forms`、`form_submissions`、RLS Policies、`pgcrypto` 與前台/後台 RPC。
 2. 將管理員信箱以小寫加入白名單：
 
 ```sql
@@ -55,20 +74,24 @@ insert into public.admin_users (email)
 values ('admin@example.org');
 ```
 
-3. 編輯 [`js/env.js`](js/env.js)，填入專案 URL、Anon Key 及正式網站網址：
+3. 到 **Authentication → Users → Add user** 建立相同信箱的 Auth 使用者。網站設定 `shouldCreateUser: false`，未預先建立的信箱不會透過登入頁自行註冊。
+4. 到 **Authentication → URL Configuration** 設定：
+   - Site URL：`https://hcc-srcy.github.io/hcccr`
+   - Redirect URL：`https://hcc-srcy.github.io/hcccr/admin/dashboard.html`
+   - 本機開發 Redirect URL：`http://localhost:8788/admin/dashboard.html`
+5. 確認 **Authentication → Providers → Email** 已啟用 Email OTP / Magic Link。
 
-```js
-window.HCCCR_ENV = {
-  SUPABASE_URL: "https://PROJECT.supabase.co",
-  SUPABASE_ANON_KEY: "YOUR_PUBLIC_ANON_KEY",
-  SITE_URL: "https://example.pages.dev",
-};
-```
+### Resend SMTP
 
-4. 在 Supabase Authentication 設定 Site URL，並將本機與正式 `/admin/dashboard.html` 加入 Redirect URLs。
-5. 在 Supabase Auth 的 SMTP 設定中連接 Resend。Magic Link 由 Supabase Auth 產生，Resend 負責郵件傳送。
+正式寄送 Magic Link 時，先在 Resend 驗證寄件網域並建立 API Key，再到 Supabase **Project Settings → Authentication → SMTP Settings** 啟用自訂 SMTP：
 
-Supabase Anon Key 本來就會出現在瀏覽器端；安全性由 RLS 與資料庫函式控制。請勿將 `service_role` key、Resend API Key 或其他伺服器密鑰放進本專案。
+- Host：`smtp.resend.com`
+- Port：`465`（TLS）或 `587`（STARTTLS）
+- Username：`resend`
+- Password：Resend API Key
+- Sender email：Resend 已驗證網域下的寄件信箱
+
+Resend API Key 只填在 Supabase SMTP 後台，不可寫入 GitHub 儲存庫。
 
 ## 資料安全設計
 
@@ -78,7 +101,15 @@ Supabase Anon Key 本來就會出現在瀏覽器端；安全性由 RLS 與資料
 - 後台資料表操作同時要求 Supabase Auth 身分及 `admin_users` 白名單。
 - `form_submissions.duration_seconds` 由資料庫依起訖時間產生。
 
-## 部署到 Cloudflare Pages
+## 部署到 GitHub Pages
+
+正式網址：<https://hcc-srcy.github.io/hcccr/>
+
+[`pages.yml`](.github/workflows/pages.yml) 會在 `main` 每次推送後執行 `npm run build:pages`，建立含 `/hcccr` 子路徑與 `404.html` 相容層的靜態成品，再自動部署至 GitHub Pages。GitHub Pages 不支援 Cloudflare `_redirects`，因此其問卷連結使用 `survey-detail.html?id={slug}`；既有 `/surveys/{slug}` 分享網址則由 `404.html` 相容處理。
+
+若 `js/env.js` 尚未填入 Supabase URL 與 Publishable/Anon Key，線上網站會清楚標示為示範模式，填答不會進入正式資料庫。
+
+## 部署到 Cloudflare Pages（選用）
 
 - Framework preset：`None`
 - Build command：留空
@@ -115,6 +146,8 @@ Supabase Anon Key 本來就會出現在瀏覽器端；安全性由 RLS 與資料
 │   ├── data-service.js
 │   └── 頁面互動程式
 ├── supabase/schema.sql
+├── scripts/build-github-pages.js
+├── .github/workflows/pages.yml
 ├── _redirects
 └── _headers
 ```

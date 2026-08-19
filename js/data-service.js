@@ -154,7 +154,10 @@
       async signInWithMagicLink(email) {
         const { data, error } = await client.auth.signInWithOtp({
           email,
-          options: { emailRedirectTo: `${window.APP_CONFIG.siteUrl}/admin/dashboard.html` },
+          options: {
+            emailRedirectTo: `${window.APP_CONFIG.siteUrl}/admin/dashboard.html`,
+            shouldCreateUser: false,
+          },
         });
         if (error) throw error;
         return data;

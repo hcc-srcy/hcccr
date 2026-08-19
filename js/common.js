@@ -25,8 +25,24 @@
       .replaceAll("'", "&#039;");
   }
 
+  function appUrl(path) {
+    const config = window.APP_CONFIG || {};
+    const basePath = config.basePath || "";
+    const match = String(path).match(/^([^?#]*)(.*)$/);
+    let pathname = match[1] || "/";
+    const suffix = match[2] || "";
+    if (!pathname.startsWith("/")) pathname = `/${pathname}`;
+    if (config.isGitHubPages) {
+      pathname = ({ "/surveys": "/surveys.html", "/terms": "/terms.html" })[pathname] || pathname;
+    }
+    return `${basePath}${pathname}${suffix}` || "/";
+  }
+
   function getSurveyHref(form) {
-    return `/surveys/${encodeURIComponent(form.slug || form.id)}`;
+    const identifier = encodeURIComponent(form.slug || form.id);
+    return window.APP_CONFIG?.isGitHubPages
+      ? appUrl(`/survey-detail.html?id=${identifier}`)
+      : appUrl(`/surveys/${identifier}`);
   }
 
   function showToast(message, type = "success") {
@@ -70,5 +86,5 @@
     window.lucide?.createIcons({ attrs: { "stroke-width": 1.8 } });
   });
 
-  window.HCCCR = { formatDate, formatDuration, escapeHtml, getSurveyHref, showToast };
+  window.HCCCR = { formatDate, formatDuration, escapeHtml, appUrl, getSurveyHref, showToast };
 })();

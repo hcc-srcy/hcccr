@@ -15,11 +15,12 @@
 ## ⚙️ 架構與技術約束 (Architectural Constraints)
 
 ### 1. 前端架構
-- **部署平台**：Cloudflare Pages (優先) 或 GitHub Pages。
+- **正式部署平台**：GitHub Pages，網址為 `https://hcc-srcy.github.io/hcccr/`；由 `.github/workflows/pages.yml` 自動部署。Cloudflare Pages 保留為選用部署平台。
+- **Pages 子路徑**：原始碼維持站點根路徑語意；`scripts/build-github-pages.js` 產生含 `/hcccr` 前綴的 `.site` 成品。動態 JavaScript 連結必須使用 `HCCCR.appUrl()` 或 `HCCCR.getSurveyHref()`，不得直接新增根路徑字串。
 - **網址路由**：
   - `/`：首頁（靜態門戶，包含導向 `/surveys` 之醒目按鈕）。
   - `/surveys`：議題調查總覽頁。
-  - `/surveys/{uuid}`：動態調查作答頁（Cloudflare `_redirects` 使用 `/surveys/* -> /survey-detail`，由 clean URL 解析至 `survey-detail.html`，避免 `.html` 正規化造成重導）。
+  - `/surveys/{uuid}`：動態調查作答頁。Cloudflare 由 `_redirects` 重寫；GitHub Pages 的 200 回應連結使用 `/hcccr/survey-detail.html?id={uuid}`，並以部署成品的 `404.html` 相容既有漂亮網址。
   - `/terms`：個人資料保護與隱私權政策條款全文。
 - **樣式規範**：Vanilla CSS，定義 CSS 變數（主題色、圓角、陰影），必須提供專屬 `@media print` 列印樣式。
 

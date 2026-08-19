@@ -17,7 +17,7 @@
     try {
       await window.HCCCR_DATA.signInWithMagicLink(email);
       if (window.HCCCR_DATA.mode === "demo") {
-        const target = new URLSearchParams(window.location.search).get("returnTo") || "/admin/dashboard.html";
+        const target = new URLSearchParams(window.location.search).get("returnTo") || window.HCCCR.appUrl("/admin/dashboard.html");
         window.location.href = target;
       } else {
         message.style.color = "var(--success)";

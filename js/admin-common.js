@@ -5,7 +5,7 @@
   const session = await window.HCCCR_DATA.getAdminSession();
   if (!session) {
     const returnTo = encodeURIComponent(window.location.pathname + window.location.search);
-    window.location.replace(`/admin/?returnTo=${returnTo}`);
+    window.location.replace(`${window.HCCCR.appUrl("/admin/")}?returnTo=${returnTo}`);
     return;
   }
 
@@ -16,7 +16,7 @@
 
   document.querySelectorAll("[data-sign-out]").forEach((button) => button.addEventListener("click", async () => {
     await window.HCCCR_DATA.signOut();
-    window.location.href = "/admin/";
+    window.location.href = window.HCCCR.appUrl("/admin/");
   }));
 
   const sidebar = document.querySelector("[data-admin-sidebar]");

@@ -100,7 +100,7 @@ textarea.form-control {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url("/assets/guanxi-hero.webp");
+  background-image: url("../assets/guanxi-hero.webp");
   background-size: cover;
   background-position: center;
   opacity: 0.3;
