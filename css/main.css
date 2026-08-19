@@ -209,7 +209,8 @@ a {
   color: var(--primary);
 }
 
-.site-nav .nav-cta {
+.site-nav .nav-cta,
+.site-nav .nav-cta[aria-current="page"] {
   min-height: 42px;
   display: inline-flex;
   align-items: center;

@@ -32,6 +32,7 @@ test("homepage and survey directory render", async ({ page }, testInfo) => {
 
   await page.goto("/surveys");
   await expect(page.getByRole("heading", { name: "兒少議題調查中心" })).toBeVisible();
+  await expect(page.locator(".site-nav .nav-cta")).toHaveCSS("color", "rgb(255, 255, 255)");
   await expect(page.locator("[data-survey-list] .survey-card")).toHaveCount(2);
   await expectNoHorizontalOverflow(page);
   expect(errors).toEqual([]);
