@@ -393,6 +393,14 @@
   overflow-wrap: anywhere;
 }
 
+.question-card legend {
+  float: left;
+}
+
+.question-card > legend + * {
+  clear: both;
+}
+
 .required-mark {
   margin-left: 4px;
   color: var(--accent-dark);

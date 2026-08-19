@@ -80,6 +80,13 @@ test("password survey rejects and accepts access password", async ({ page }) => 
     return cardBox.left >= formBox.left && cardBox.right <= formBox.right;
   }));
   expect(cardsStayInsideForm).toBe(true);
+  const legendsStayInsideCards = await page.locator("fieldset[data-question]").evaluateAll((cards) => cards.every((card) => {
+    const cardBox = card.getBoundingClientRect();
+    const legendBox = card.querySelector("legend").getBoundingClientRect();
+    const paddingTop = Number.parseFloat(getComputedStyle(card).paddingTop);
+    return legendBox.top >= cardBox.top + paddingTop;
+  }));
+  expect(legendsStayInsideCards).toBe(true);
   await expectNoHorizontalOverflow(page);
   expect(errors).toEqual([]);
 });
