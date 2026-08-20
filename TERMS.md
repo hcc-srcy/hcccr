@@ -46,7 +46,7 @@
 本網站為確保傳輸安全與穩定營運，委託以下符合國際安全標準之第三方基礎設施服務處理資料：
 
 1. **GitHub Pages (靜態網站託管)**：
-   提供本網站 HTML、CSS、JavaScript 與公開圖片的靜態傳輸，不作為調查回答資料庫。GitHub 可能依其基礎設施政策處理必要的連線記錄。
+   提供本網站 HTML、CSS、JavaScript 與公開圖片的靜態傳輸，並可能透過自訂網域 `hcccr.bond` 對外提供服務；GitHub Pages 不作為調查回答資料庫。GitHub 可能依其基礎設施政策處理必要的連線記錄。
 2. **Supabase (資料庫與雲端儲存)**：
    本網站之調查問卷資料庫與安全驗證均託管於 Supabase。資料庫部署 Row Level Security (RLS) 權限控管，確保個人資料隔離防護。
 3. **Resend (系統通訊郵件服務)**：

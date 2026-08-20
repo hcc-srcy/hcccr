@@ -17,6 +17,7 @@
 ### 1. 前端架構
 - **正式部署平台**：GitHub Pages，網址為 `https://hcc-srcy.github.io/hcccr/`；由 `.github/workflows/pages.yml` 自動部署。Cloudflare Pages 保留為選用部署平台。
 - **Pages 子路徑**：原始碼維持站點根路徑語意；`scripts/build-github-pages.js` 產生含 `/hcccr` 前綴的 `.site` 成品。動態 JavaScript 連結必須使用 `HCCCR.appUrl()` 或 `HCCCR.getSurveyHref()`，不得直接新增根路徑字串。
+- **自訂網域切換**：`hcccr.bond` 啟用前使用 `/hcccr`；啟用時透過 Actions Variables 設定 `PAGES_BASE_PATH=/` 與 `PAGES_CUSTOM_DOMAIN=hcccr.bond`，部署成品需包含 `CNAME`。Supabase 公開設定由 `HCCCR_SUPABASE_URL`、`HCCCR_SUPABASE_ANON_KEY` Actions Variables 注入。
 - **網址路由**：
   - `/`：首頁（靜態門戶，包含導向 `/surveys` 之醒目按鈕）。
   - `/surveys`：議題調查總覽頁。

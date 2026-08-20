@@ -9,6 +9,9 @@ const repository = process.env.GITHUB_REPOSITORY || "hcc-srcy/hcccr";
 const repositoryName = repository.split("/").pop();
 const configuredBase = process.env.PAGES_BASE_PATH || `/${repositoryName}`;
 const basePath = configuredBase === "/" ? "" : `/${configuredBase.replace(/^\/+|\/+$/g, "")}`;
+const customDomain = String(process.env.PAGES_CUSTOM_DOMAIN || "").trim().toLowerCase();
+const supabaseUrl = String(process.env.HCCCR_SUPABASE_URL || "").trim();
+const supabaseAnonKey = String(process.env.HCCCR_SUPABASE_ANON_KEY || "").trim();
 const entries = [
   "admin",
   "assets",
@@ -59,9 +62,18 @@ const runtimeConfig = path.join(output, "js", "env.js");
 fs.appendFileSync(runtimeConfig, `
 window.HCCCR_ENV.BASE_PATH = ${JSON.stringify(basePath)};
 window.HCCCR_ENV.GITHUB_PAGES = true;
+window.HCCCR_ENV.SUPABASE_URL = ${JSON.stringify(supabaseUrl)};
+window.HCCCR_ENV.SUPABASE_ANON_KEY = ${JSON.stringify(supabaseAnonKey)};
+window.HCCCR_ENV.SITE_URL = ${JSON.stringify(customDomain ? `https://${customDomain}` : "")};
 `);
 fs.copyFileSync(path.join(output, "survey-detail.html"), path.join(output, "404.html"));
 fs.writeFileSync(path.join(output, ".nojekyll"), "");
+if (customDomain) {
+  if (!/^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(customDomain)) {
+    throw new Error("PAGES_CUSTOM_DOMAIN is not a valid hostname");
+  }
+  fs.writeFileSync(path.join(output, "CNAME"), `${customDomain}\n`);
+}
 
 const unresolved = [];
 walkForUnresolved(output);

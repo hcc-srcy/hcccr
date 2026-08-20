@@ -52,15 +52,17 @@ npx wrangler pages dev .
 1. 前往 [Supabase Dashboard](https://supabase.com/dashboard) 建立專案。
 2. 進入該專案的 **Project Settings → API**（新版介面可能顯示 **API Keys**）。
 3. 複製 **Project URL**，以及 `sb_publishable_...` 開頭的 **Publishable key**；若專案仍使用舊版金鑰，則複製 `anon public` key。
-4. 編輯 [`js/env.js`](js/env.js)：
+4. 本機或非 GitHub Pages 部署可編輯 [`js/env.js`](js/env.js)：
 
 ```js
 window.HCCCR_ENV = {
   SUPABASE_URL: "https://PROJECT_REF.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_...",
-  SITE_URL: "https://hcc-srcy.github.io/hcccr",
+  SITE_URL: "",
 };
 ```
+
+正式 GitHub Pages 由 Actions Variables `HCCCR_SUPABASE_URL` 與 `HCCCR_SUPABASE_ANON_KEY` 在建置時注入，不需要把正式設定寫入本機示範環境。`SITE_URL` 留空時會依目前正式網域自動判斷。
 
 Publishable/Anon Key 本來就會出現在瀏覽器端，安全性由 RLS 與資料庫函式控制。**請勿**填入 `service_role`、`sb_secret_...`、資料庫密碼或 Resend API Key。
 
@@ -108,6 +110,10 @@ Resend API Key 只填在 Supabase SMTP 後台，不可寫入 GitHub 儲存庫。
 [`pages.yml`](.github/workflows/pages.yml) 會在 `main` 每次推送後執行 `npm run build:pages`，建立含 `/hcccr` 子路徑與 `404.html` 相容層的靜態成品，再自動部署至 GitHub Pages。GitHub Pages 不支援 Cloudflare `_redirects`，因此其問卷連結使用 `survey-detail.html?id={slug}`；既有 `/surveys/{slug}` 分享網址則由 `404.html` 相容處理。
 
 若 `js/env.js` 尚未填入 Supabase URL 與 Publishable/Anon Key，線上網站會清楚標示為示範模式，填答不會進入正式資料庫。
+
+### 自訂網域
+
+目前規劃的自訂網域為 `hcccr.bond`。Cloudflare DNS 應新增根網域 CNAME：名稱 `@`、目標 `hcc-srcy.github.io`，並先設為 **DNS only**。DNS 生效後，在 GitHub Pages 設定 Custom domain，再將 Actions Variables 設為 `PAGES_BASE_PATH=/` 與 `PAGES_CUSTOM_DOMAIN=hcccr.bond`；部署腳本會自動建立 `CNAME` 成品並將所有資源切換至網域根路徑。
 
 ## 部署到 Cloudflare Pages（選用）
 

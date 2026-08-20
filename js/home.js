@@ -6,6 +6,10 @@
     const forms = (await window.HCCCR_DATA.getForms())
       .filter((form) => form.is_open)
       .slice(0, 2);
+    if (!forms.length) {
+      list.innerHTML = '<p class="empty-state">目前沒有開放中的議題調查。</p>';
+      return;
+    }
     list.innerHTML = forms.map((form) => `
       <article class="survey-card">
         <div class="survey-card__meta">
