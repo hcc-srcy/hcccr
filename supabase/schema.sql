@@ -161,6 +161,14 @@ as $$
 declare
   target public.forms;
   saved public.form_submissions;
+  current_field jsonb;
+  branch_rule jsonb;
+  branch_action text;
+  branch_answer text;
+  reachable_ids text[] := array[]::text[];
+  saved_answers jsonb;
+  field_index integer := 0;
+  target_index integer;
 begin
   select * into target from public.forms where id = p_form_id;
   if target.id is null then raise exception 'Form not found'; end if;
@@ -174,13 +182,52 @@ begin
     and (p_access_password is null or extensions.crypt(p_access_password, target.access_password_hash) <> target.access_password_hash) then
     raise exception 'Invalid access password';
   end if;
+  if jsonb_typeof(p_answers) <> 'object' then
+    raise exception 'Answers must be an object';
+  end if;
   if p_started_at > now() or p_started_at < now() - interval '24 hours' then
     raise exception 'Invalid start time';
   end if;
+
+  while field_index < jsonb_array_length(target.fields) loop
+    current_field := target.fields -> field_index;
+    reachable_ids := array_append(reachable_ids, current_field ->> 'id');
+
+    if current_field ->> 'type' = 'radio'
+      and jsonb_typeof(current_field -> 'branching') = 'object'
+      and current_field -> 'branching' <> '{}'::jsonb then
+      branch_answer := p_answers ->> (current_field ->> 'id');
+      if coalesce(branch_answer, '') = '' then
+        field_index := field_index + 1;
+        continue;
+      end if;
+      branch_rule := current_field -> 'branching' -> branch_answer;
+      branch_action := coalesce(branch_rule ->> 'action', 'next');
+
+      if branch_action = 'screenout' then
+        raise exception 'Screened out response cannot be submitted';
+      elsif branch_action = 'submit' then
+        exit;
+      elsif branch_action = 'jump' then
+        select candidate.ordinality::integer - 1 into target_index
+        from jsonb_array_elements(target.fields) with ordinality as candidate(value, ordinality)
+        where candidate.value ->> 'id' = branch_rule ->> 'target_field_id'
+          and candidate.ordinality::integer - 1 > field_index
+        limit 1;
+        if target_index is null then raise exception 'Invalid branch target'; end if;
+        field_index := target_index;
+        continue;
+      end if;
+    end if;
+
+    field_index := field_index + 1;
+  end loop;
+
   if exists (
     select 1
     from jsonb_array_elements(target.fields) as field
-    where coalesce((field ->> 'required')::boolean, false)
+    where field ->> 'id' = any(reachable_ids)
+      and coalesce((field ->> 'required')::boolean, false)
       and (
         not (p_answers ? (field ->> 'id'))
         or p_answers -> (field ->> 'id') is null
@@ -190,8 +237,13 @@ begin
     raise exception 'Required answers are missing';
   end if;
 
+  select coalesce(jsonb_object_agg(answer.key, answer.value), '{}'::jsonb)
+  into saved_answers
+  from jsonb_each(p_answers) as answer(key, value)
+  where answer.key = any(reachable_ids);
+
   insert into public.form_submissions(form_id, agreed_terms, answers, started_at)
-  values (p_form_id, p_agreed_terms, p_answers, p_started_at)
+  values (p_form_id, p_agreed_terms, saved_answers, p_started_at)
   returning * into saved;
   return saved;
 end;

@@ -600,6 +600,63 @@ textarea.form-control {
   gap: 7px;
 }
 
+.branching-editor {
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.branching-editor summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  color: #34423e;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.branching-editor summary > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.branching-editor summary svg {
+  width: 16px;
+  height: 16px;
+}
+
+.branching-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.branching-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.8fr) minmax(170px, 1fr) minmax(190px, 1.2fr);
+  gap: 8px;
+  align-items: center;
+}
+
+.branching-row__option {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.branching-row .form-control {
+  min-width: 0;
+  min-height: 38px;
+  padding-block: 6px;
+  font-size: 0.8rem;
+}
+
 .option-editor {
   display: grid;
   grid-template-columns: 16px minmax(0, 1fr) 34px;
@@ -830,6 +887,33 @@ textarea.form-control {
     padding-inline: 14px;
   }
 
+  .admin-topbar__title {
+    min-width: 0;
+  }
+
+  .admin-topbar__title h1 {
+    overflow: hidden;
+    font-size: 0.95rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .admin-topbar__actions {
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  .admin-topbar__actions .admin-action-label {
+    display: none;
+  }
+
+  .admin-topbar__actions .button {
+    width: 40px;
+    min-height: 40px;
+    justify-content: center;
+    padding: 0;
+  }
+
   .admin-user span:not(.admin-user__avatar) {
     display: none;
   }
@@ -862,7 +946,8 @@ textarea.form-control {
 
   .settings-grid,
   .builder-sidebar,
-  .field-editor__row {
+  .field-editor__row,
+  .branching-row {
     grid-template-columns: 1fr;
   }
 

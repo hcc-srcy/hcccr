@@ -14,6 +14,15 @@
   let passwordVerified = false;
   let accessPassword = "";
 
+  function branchRule(field, answer) {
+    const rule = field.branching?.[answer];
+    return rule && ["jump", "screenout", "submit"].includes(rule.action) ? rule : { action: "next" };
+  }
+
+  function hasBranching(field) {
+    return field.type === "radio" && Object.keys(field.branching || {}).length > 0;
+  }
+
   function fieldMarkup(field, index) {
     const label = `${window.HCCCR.escapeHtml(field.label)}${field.required ? '<span class="required-mark" aria-label="必填">*</span>' : ""}`;
     const description = field.description ? `<p class="question-description">${window.HCCCR.escapeHtml(field.description)}</p>` : "";
@@ -47,6 +56,7 @@
           <div class="locked-overlay" data-locked-overlay><div class="locked-overlay__content"><i data-lucide="lock-keyhole"></i>請先完成上方條款同意</div></div>
           <div class="questions-list" data-questions-list inert>${form.fields.map(fieldMarkup).join("")}</div>
         </div>
+        <div data-branch-terminal hidden></div>
         <div class="progress-line no-print" aria-hidden="true"><span data-progress></span></div>
         <div class="form-footer no-print"><p><span class="required-mark">*</span> 為必填問題</p><button class="button" type="submit" disabled data-submit>送出回答 <i data-lucide="send"></i></button></div>
       </form>`;
@@ -79,7 +89,7 @@
     shell.classList.remove("is-locked");
     root.querySelector("[data-locked-overlay]").hidden = true;
     root.querySelector("[data-questions-list]").inert = false;
-    root.querySelector("[data-submit]").disabled = false;
+    applyBranching();
   }
 
   function lockQuestions() {
@@ -90,6 +100,8 @@
     root.querySelector("[data-locked-overlay]").hidden = false;
     root.querySelector("[data-questions-list]").inert = true;
     root.querySelector("[data-submit]").disabled = true;
+    const terminal = root.querySelector("[data-branch-terminal]");
+    if (terminal) terminal.hidden = true;
   }
 
   function getAnswer(field) {
@@ -98,14 +110,110 @@
     return root.querySelector(`[name="${CSS.escape(field.id)}"]`)?.value.trim() || "";
   }
 
+  function calculateFlow() {
+    const visibleIds = [];
+    const visited = new Set();
+    let terminal = null;
+    let blocked = false;
+    let index = 0;
+
+    while (index < form.fields.length && !visited.has(index)) {
+      visited.add(index);
+      const field = form.fields[index];
+      visibleIds.push(field.id);
+      if (!hasBranching(field)) {
+        index += 1;
+        continue;
+      }
+
+      const answer = getAnswer(field);
+      if (!answer) {
+        if (field.required) {
+          blocked = true;
+          break;
+        }
+        index += 1;
+        continue;
+      }
+      const rule = branchRule(field, answer);
+      if (rule.action === "screenout" || rule.action === "submit") {
+        terminal = { action: rule.action, fieldId: field.id };
+        break;
+      }
+      if (rule.action === "jump") {
+        const targetIndex = form.fields.findIndex((candidate) => candidate.id === rule.target_field_id);
+        if (targetIndex > index) {
+          index = targetIndex;
+          continue;
+        }
+      }
+      index += 1;
+    }
+    return { visibleIds, terminal, blocked };
+  }
+
+  function clearQuestion(question) {
+    question.querySelectorAll("input").forEach((input) => {
+      if (["radio", "checkbox"].includes(input.type)) input.checked = false;
+      else input.value = "";
+    });
+    question.querySelectorAll("textarea").forEach((textarea) => { textarea.value = ""; });
+    question.classList.remove("has-error");
+    question.querySelector("[data-field-error]")?.replaceChildren();
+  }
+
+  function renderTerminal(terminal) {
+    const container = root.querySelector("[data-branch-terminal]");
+    if (!container) return;
+    if (!terminal) {
+      container.hidden = true;
+      container.replaceChildren();
+      return;
+    }
+    const screenout = terminal.action === "screenout";
+    container.hidden = false;
+    container.innerHTML = `<section class="password-card branch-terminal-card">
+      <div class="gate-heading"><span class="gate-heading__icon"><i data-lucide="${screenout ? "circle-stop" : "send"}"></i></span><div><h2>${screenout ? "本次填答到此結束" : "可以送出目前回答"}</h2><p>${screenout ? "依據你的選擇，這份回答不會送出，也不會納入統計。" : "後續題目不需填寫，確認後會送出目前有效的回答。"}</p></div></div>
+      <div class="gate-actions"><button class="button button--small" type="button" data-branch-end="${terminal.action}">${screenout ? "結束問卷" : "確認並送出"} <i data-lucide="${screenout ? "arrow-right" : "send"}"></i></button></div>
+    </section>`;
+  }
+
+  function applyBranching({ scrollFrom = "" } = {}) {
+    const flow = calculateFlow();
+    const visible = new Set(flow.visibleIds);
+    form.fields.forEach((field) => {
+      const question = root.querySelector(`[data-question="${CSS.escape(field.id)}"]`);
+      if (!question) return;
+      const shouldShow = visible.has(field.id);
+      if (!shouldShow && !question.hidden) clearQuestion(question);
+      question.hidden = !shouldShow;
+    });
+    renderTerminal(flow.terminal);
+    const submit = root.querySelector("[data-submit]");
+    if (submit) {
+      submit.hidden = Boolean(flow.terminal || flow.blocked);
+      submit.disabled = !unlocked || Boolean(flow.terminal || flow.blocked);
+    }
+    updateProgress();
+    window.lucide?.createIcons();
+
+    if (!scrollFrom) return;
+    const sourceIndex = flow.visibleIds.indexOf(scrollFrom);
+    const target = flow.terminal
+      ? root.querySelector("[data-branch-terminal]")
+      : root.querySelector(`[data-question="${CSS.escape(flow.visibleIds[sourceIndex + 1] || "")}"]`);
+    if (target) window.setTimeout(() => target.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" }), 100);
+  }
+
   function validate() {
     let firstInvalid = null;
     const answers = {};
     form.fields.forEach((field) => {
+      const question = root.querySelector(`[data-question="${CSS.escape(field.id)}"]`);
+      if (!question || question.hidden) return;
       const answer = getAnswer(field);
       answers[field.id] = answer;
       const empty = Array.isArray(answer) ? answer.length === 0 : !answer;
-      const question = root.querySelector(`[data-question="${CSS.escape(field.id)}"]`);
       const message = question.querySelector("[data-field-error]");
       const invalid = field.required && empty;
       question.classList.toggle("has-error", invalid);
@@ -121,16 +229,45 @@
   }
 
   function updateProgress() {
-    const completed = form.fields.filter((field) => {
+    const visibleFields = form.fields.filter((field) => !root.querySelector(`[data-question="${CSS.escape(field.id)}"]`)?.hidden);
+    const completed = visibleFields.filter((field) => {
       const answer = getAnswer(field);
       return Array.isArray(answer) ? answer.length > 0 : Boolean(answer);
     }).length;
-    root.querySelector("[data-progress]").style.width = `${Math.round((completed / form.fields.length) * 100)}%`;
+    root.querySelector("[data-progress]").style.width = `${visibleFields.length ? Math.round((completed / visibleFields.length) * 100) : 0}%`;
   }
 
   function referenceCode(date, id) {
     const stamp = date.toISOString().slice(0, 10).replaceAll("-", "");
     return `${stamp}-${String(id).replaceAll("-", "").slice(-6).toUpperCase()}`;
+  }
+
+  function finishScreenout() {
+    root.innerHTML = `<section class="success-panel"><span class="success-panel__icon"><i data-lucide="check"></i></span><h2>本次填答已結束</h2><p>你的回答沒有送出，也不會納入這份問卷的統計。</p><div><a class="button" href="${window.HCCCR.appUrl("/surveys")}">返回調查中心 <i data-lucide="arrow-right"></i></a></div></section>`;
+    window.lucide?.createIcons();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function submitResponse(trigger) {
+    if (!unlocked || !startedAt) return;
+    const answers = validate();
+    if (!answers) return;
+    const submittedAt = new Date();
+    const originalMarkup = trigger.innerHTML;
+    trigger.disabled = true;
+    trigger.textContent = "正在送出…";
+    try {
+      const saved = await window.HCCCR_DATA.saveSubmission({ form_id: form.id, agreed_terms: true, answers, started_at: startedAt, submitted_at: submittedAt.toISOString(), duration_seconds: Math.max(1, Math.round((submittedAt - new Date(startedAt)) / 1000)), access_password: accessPassword });
+      root.innerHTML = `<section class="success-panel"><span class="success-panel__icon"><i data-lucide="check"></i></span><h2>回答已送出</h2><p>謝謝你分享真實經驗。請記下回應識別碼，以便日後提出資料權利申請。</p><span class="reference-code">${referenceCode(submittedAt, saved.id)}</span><div><a class="button" href="${window.HCCCR.appUrl("/surveys")}">返回調查中心 <i data-lucide="arrow-right"></i></a></div></section>`;
+      window.lucide?.createIcons();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (error) {
+      trigger.disabled = false;
+      trigger.innerHTML = originalMarkup;
+      window.HCCCR.showToast("送出失敗，請檢查網路後再試一次。", "error");
+      window.lucide?.createIcons();
+      console.error(error);
+    }
   }
 
   function bindEvents() {
@@ -164,29 +301,23 @@
     const responseForm = root.querySelector("[data-response-form]");
     if (!responseForm) return;
     responseForm.addEventListener("input", updateProgress);
-    responseForm.addEventListener("change", updateProgress);
+    responseForm.addEventListener("change", (event) => {
+      updateProgress();
+      if (event.target.type !== "radio") return;
+      const field = form.fields.find((candidate) => candidate.id === event.target.dataset.fieldId);
+      if (field && hasBranching(field)) applyBranching({ scrollFrom: field.id });
+    });
+    responseForm.addEventListener("click", (event) => {
+      const branchEnd = event.target.closest("[data-branch-end]");
+      if (!branchEnd || !unlocked) return;
+      if (branchEnd.dataset.branchEnd === "screenout") finishScreenout();
+      else submitResponse(branchEnd);
+    });
     responseForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      if (!unlocked || !startedAt) return;
-      const answers = validate();
-      if (!answers) return;
-      const submittedAt = new Date();
-      const submit = root.querySelector("[data-submit]");
-      submit.disabled = true;
-      submit.textContent = "正在送出…";
-      try {
-        const saved = await window.HCCCR_DATA.saveSubmission({ form_id: form.id, agreed_terms: true, answers, started_at: startedAt, submitted_at: submittedAt.toISOString(), duration_seconds: Math.max(1, Math.round((submittedAt - new Date(startedAt)) / 1000)), access_password: accessPassword });
-        root.innerHTML = `<section class="success-panel"><span class="success-panel__icon"><i data-lucide="check"></i></span><h2>回答已送出</h2><p>謝謝你分享真實經驗。請記下回應識別碼，以便日後提出資料權利申請。</p><span class="reference-code">${referenceCode(submittedAt, saved.id)}</span><div><a class="button" href="${window.HCCCR.appUrl("/surveys")}">返回調查中心 <i data-lucide="arrow-right"></i></a></div></section>`;
-        window.lucide?.createIcons();
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } catch (error) {
-        submit.disabled = false;
-        submit.innerHTML = '送出回答 <i data-lucide="send"></i>';
-        window.HCCCR.showToast("送出失敗，請檢查網路後再試一次。", "error");
-        window.lucide?.createIcons();
-        console.error(error);
-      }
+      submitResponse(root.querySelector("[data-submit]"));
     });
+    applyBranching();
   }
 
   try {

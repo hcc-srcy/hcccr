@@ -13,6 +13,7 @@
 - `public`、`public_password`、`unlisted` 三種存取模式。
 - 同意條款後才解除題目鎖定，並記錄 `started_at`、`submitted_at` 與作答費時。
 - 單選、複選、簡答、長答及日期題型，含必填驗證；空白問卷列印入口僅顯示於管理後台。
+- 單選題支援條件式流程：下一題、向後跳到指定題、結束不計入及確認後直接送出；前台維持單頁平滑捲動。
 - Magic Link 後台入口、調查儀表板、拖曳式題目排序及固定網址 QR Code。
 - 摘要圖表、就讀階段交叉篩選、個別回應、明細表格、篩選後 Excel 匯出、單筆列印及刪除。
 - 未設定 Supabase 時自動進入示範模式，測試資料只存在目前分頁的 `sessionStorage`。
@@ -84,6 +85,8 @@ values ('admin@example.org');
 5. 確認 **Authentication → Providers → Email** 已啟用 Email OTP / Magic Link。
 
 若建立密碼型問卷時出現 `function gen_salt(unknown) does not exist`，代表舊版 RPC 沒有指向 Supabase 的 `extensions` schema。重新執行最新版 [`supabase/schema.sql`](supabase/schema.sql) 即可更新函式，不會刪除既有問卷或回應。
+
+升級條件式跳題功能時也必須重新執行最新版 `schema.sql`。更新後 `submit_form` 會在資料庫端重算有效路徑，只驗證並保存實際經過的題目；執行 schema 不會刪除既有資料。
 
 ### Resend SMTP
 

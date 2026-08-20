@@ -576,9 +576,18 @@
     flex-direction: column-reverse;
   }
 
-  .form-footer .button {
+.form-footer .button {
     width: 100%;
   }
+}
+
+.branch-terminal-card {
+  margin-top: 18px;
+  border-left: 4px solid var(--primary);
+}
+
+.branch-terminal-card .gate-actions {
+  padding: 0 20px 20px;
 }
 
 @media print {

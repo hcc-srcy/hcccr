@@ -94,6 +94,49 @@ test("password survey rejects and accepts access password", async ({ page }) => 
   expect(errors).toEqual([]);
 });
 
+test("conditional branching jumps, screens out, and submits the active path", async ({ page }) => {
+  const errors = watchPageErrors(page);
+  await page.goto("/");
+  await page.evaluate(() => {
+    const forms = JSON.parse(JSON.stringify(window.HCCCR_SEED.forms));
+    forms[0].fields[0].branching = {
+      國小: { action: "jump", target_field_id: "normal_status" },
+      高中職: { action: "submit" },
+      其他: { action: "screenout" },
+    };
+    sessionStorage.setItem("hcccr_demo_forms", JSON.stringify(forms));
+  });
+
+  await page.goto("/surveys/normal-teaching-2026");
+  await page.locator("[data-consent-checkbox]").check();
+  await expect(page.locator("[data-question]:visible")).toHaveCount(1);
+  await page.locator('input[name="stage"][value="國小"]').check();
+  await expect(page.locator('[data-question="normal_status"]')).toBeVisible();
+  await expect(page.locator('[data-question="area"]')).toBeHidden();
+  await expect(page.locator('[data-question="school"]')).toBeHidden();
+  await expect.poll(() => page.locator('[data-question="normal_status"]').evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    return box.top < window.innerHeight && box.bottom > 0;
+  })).toBe(true);
+
+  await page.locator('input[name="stage"][value="其他"]').check();
+  await expect(page.getByRole("heading", { name: "本次填答到此結束" })).toBeVisible();
+  await page.getByRole("button", { name: "結束問卷" }).click();
+  await expect(page.getByRole("heading", { name: "本次填答已結束" })).toBeVisible();
+  const screenedOutCount = await page.evaluate(() => JSON.parse(sessionStorage.getItem("hcccr_demo_submissions") || JSON.stringify(window.HCCCR_SEED.submissions)).length);
+  expect(screenedOutCount).toBe(8);
+
+  await page.goto("/surveys/normal-teaching-2026");
+  await page.locator("[data-consent-checkbox]").check();
+  await page.locator('input[name="stage"][value="高中職"]').check();
+  await expect(page.getByRole("heading", { name: "可以送出目前回答" })).toBeVisible();
+  await page.getByRole("button", { name: "確認並送出" }).click();
+  await expect(page.getByRole("heading", { name: "回答已送出" })).toBeVisible();
+  const savedAnswers = await page.evaluate(() => JSON.parse(sessionStorage.getItem("hcccr_demo_submissions"))[0].answers);
+  expect(savedAnswers).toEqual({ stage: "高中職" });
+  expect(errors).toEqual([]);
+});
+
 test("admin demo login, dashboard, builder and analytics work", async ({ page }) => {
   const errors = watchPageErrors(page);
   await page.context().addInitScript(() => {
@@ -109,6 +152,11 @@ test("admin demo login, dashboard, builder and analytics work", async ({ page })
 
   await page.goto("/admin/builder.html?id=f8a7b8c9-d0e1-4f2a-9b3c-4d5e6f708192");
   await expect(page.locator('input[name="title"]')).toHaveValue("校園教學正常化實況調查");
+  const firstBranchingEditor = page.locator('[data-field-index="0"] [data-branching-editor]');
+  await firstBranchingEditor.locator("summary").click();
+  await firstBranchingEditor.locator("[data-branch-action]").first().selectOption("jump");
+  await expect(firstBranchingEditor.locator("[data-branch-target]").first()).toBeVisible();
+  await expect(firstBranchingEditor.locator("[data-branch-target]").first()).toHaveValue("area");
   const before = await page.locator("[data-field-index]").count();
   await page.locator("[data-add-field]").click();
   await expect(page.locator("[data-field-index]")).toHaveCount(before + 1);

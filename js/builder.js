@@ -35,6 +35,40 @@
     return window.HCCCR.escapeHtml(value);
   }
 
+  function branchRule(field, option) {
+    const rule = field.branching?.[option];
+    return rule && ["jump", "screenout", "submit"].includes(rule.action) ? rule : { action: "next" };
+  }
+
+  function branchingMarkup(field, fieldIndex) {
+    if (field.type !== "radio") return "";
+    const laterFields = fields.slice(fieldIndex + 1);
+    const configured = (field.options || []).filter((option) => branchRule(field, option).action !== "next").length;
+    return `<details class="branching-editor" data-branching-editor>
+      <summary><span><i data-lucide="split"></i> 跳題邏輯</span><span class="tag">${configured} 個設定</span></summary>
+      <div class="branching-list">
+        ${(field.options || []).map((option, optionIndex) => {
+          const rule = branchRule(field, option);
+          return `<div class="branching-row">
+            <span class="branching-row__option" title="${escape(option)}">${escape(option)}</span>
+            <label class="sr-only" for="branch-action-${field.id}-${optionIndex}">${escape(option)}的後續動作</label>
+            <select class="form-control" id="branch-action-${field.id}-${optionIndex}" data-branch-action="${optionIndex}">
+              <option value="next" ${rule.action === "next" ? "selected" : ""}>前往下一題</option>
+              ${laterFields.length ? `<option value="jump" ${rule.action === "jump" ? "selected" : ""}>跳到指定題目</option>` : ""}
+              <option value="screenout" ${rule.action === "screenout" ? "selected" : ""}>結束，不納入統計</option>
+              <option value="submit" ${rule.action === "submit" ? "selected" : ""}>結束並送出</option>
+            </select>
+            <label class="sr-only" for="branch-target-${field.id}-${optionIndex}">${escape(option)}要跳到的題目</label>
+            <select class="form-control" id="branch-target-${field.id}-${optionIndex}" data-branch-target="${optionIndex}" ${rule.action === "jump" ? "" : "hidden"}>
+              <option value="">選擇目標題目</option>
+              ${laterFields.map((target, targetIndex) => `<option value="${escape(target.id)}" ${rule.target_field_id === target.id ? "selected" : ""}>第 ${fieldIndex + targetIndex + 2} 題｜${escape(target.label)}</option>`).join("")}
+            </select>
+          </div>`;
+        }).join("")}
+      </div>
+    </details>`;
+  }
+
   function renderFields() {
     document.querySelector("[data-field-count]").textContent = `${fields.length} 題`;
     list.innerHTML = fields.map((field, index) => `
@@ -44,6 +78,7 @@
           <div class="field-editor__row"><label class="form-label">題目<input class="form-control" data-field-prop="label" value="${escape(field.label)}"></label><label class="form-label">題型<select class="form-control" data-field-prop="type">${Object.entries(typeLabels).map(([value, label]) => `<option value="${value}" ${field.type === value ? "selected" : ""}>${label}</option>`).join("")}</select></label></div>
           <label class="form-label">補充說明（選填）<input class="form-control" data-field-prop="description" value="${escape(field.description || "")}"></label>
           ${optionTypes.has(field.type) ? `<div class="options-editor" data-options>${(field.options || []).map((option, optionIndex) => `<div class="option-editor"><span class="option-editor__dot"></span><input class="form-control" data-option-index="${optionIndex}" value="${escape(option)}" aria-label="選項 ${optionIndex + 1}"><button class="icon-button" type="button" data-remove-option="${optionIndex}" title="刪除選項"><i data-lucide="x"></i></button></div>`).join("")}<button class="button button--secondary button--small" type="button" data-add-option style="justify-self:start"><i data-lucide="plus"></i> 新增選項</button></div>` : ""}
+          ${branchingMarkup(field, index)}
           <div class="toggle-row"><div><strong>必填</strong><small>填答者必須完成此題</small></div><label class="switch"><input type="checkbox" data-field-prop="required" ${field.required ? "checked" : ""}><span></span></label></div>
         </div>
         <div class="field-editor__actions"><button class="icon-button" type="button" data-move="up" title="上移" ${index === 0 ? "disabled" : ""}><i data-lucide="arrow-up"></i></button><button class="icon-button" type="button" data-move="down" title="下移" ${index === fields.length - 1 ? "disabled" : ""}><i data-lucide="arrow-down"></i></button><button class="icon-button" type="button" data-remove-field title="刪除題目"><i data-lucide="trash-2"></i></button></div>
@@ -103,16 +138,51 @@
       const prop = event.target.dataset.fieldProp;
       field[prop] = event.target.type === "checkbox" ? event.target.checked : event.target.value;
     }
-    if (event.target.dataset.optionIndex !== undefined) field.options[Number(event.target.dataset.optionIndex)] = event.target.value;
+    if (event.target.dataset.optionIndex !== undefined) {
+      const optionIndex = Number(event.target.dataset.optionIndex);
+      const previousOption = field.options[optionIndex];
+      field.options[optionIndex] = event.target.value;
+      if (previousOption !== event.target.value && field.branching?.[previousOption]) {
+        field.branching[event.target.value] = field.branching[previousOption];
+        delete field.branching[previousOption];
+      }
+    }
   });
 
   list.addEventListener("change", (event) => {
-    if (event.target.dataset.fieldProp !== "type") return;
     const editor = event.target.closest("[data-field-index]");
-    const field = fields[Number(editor.dataset.fieldIndex)];
+    if (!editor) return;
+    const fieldIndex = Number(editor.dataset.fieldIndex);
+    const field = fields[fieldIndex];
+    if (event.target.dataset.branchAction !== undefined) {
+      const option = field.options[Number(event.target.dataset.branchAction)];
+      const action = event.target.value;
+      field.branching ||= {};
+      if (action === "next") delete field.branching[option];
+      else if (action === "jump") {
+        const firstTarget = fields[fieldIndex + 1]?.id || "";
+        field.branching[option] = { action, target_field_id: branchRule(field, option).target_field_id || firstTarget };
+      } else field.branching[option] = { action };
+      if (!Object.keys(field.branching).length) delete field.branching;
+      renderFields();
+      list.querySelector(`[data-field-index="${fieldIndex}"] [data-branching-editor]`)?.setAttribute("open", "");
+      return;
+    }
+    if (event.target.dataset.branchTarget !== undefined) {
+      const option = field.options[Number(event.target.dataset.branchTarget)];
+      field.branching ||= {};
+      field.branching[option] = { action: "jump", target_field_id: event.target.value };
+      return;
+    }
+    if (event.target.dataset.optionIndex !== undefined) {
+      renderFields();
+      return;
+    }
+    if (event.target.dataset.fieldProp !== "type") return;
     field.type = event.target.value;
     if (optionTypes.has(field.type) && !field.options) field.options = ["選項 1", "選項 2"];
     if (!optionTypes.has(field.type)) delete field.options;
+    if (field.type !== "radio") delete field.branching;
     renderFields();
   });
 
@@ -123,7 +193,14 @@
     const action = event.target.closest("button");
     if (!action) return;
     if (action.hasAttribute("data-remove-field")) {
+      const removedId = fields[index].id;
       fields.splice(index, 1);
+      fields.forEach((field) => {
+        Object.entries(field.branching || {}).forEach(([option, rule]) => {
+          if (rule.target_field_id === removedId) delete field.branching[option];
+        });
+        if (field.branching && !Object.keys(field.branching).length) delete field.branching;
+      });
       if (!fields.length) fields.push(defaultField());
       renderFields();
     } else if (action.dataset.move) moveField(index, action.dataset.move);
@@ -131,7 +208,12 @@
       fields[index].options.push(`選項 ${fields[index].options.length + 1}`);
       renderFields();
     } else if (action.dataset.removeOption !== undefined) {
+      const removedOption = fields[index].options[Number(action.dataset.removeOption)];
       fields[index].options.splice(Number(action.dataset.removeOption), 1);
+      if (fields[index].branching) {
+        delete fields[index].branching[removedOption];
+        if (!Object.keys(fields[index].branching).length) delete fields[index].branching;
+      }
       renderFields();
     }
   });
@@ -179,6 +261,16 @@
     if (!builder.reportValidity()) return;
     if (!fields.every((field) => field.label.trim())) {
       window.HCCCR.showToast("每一題都需要題目文字。", "error");
+      return;
+    }
+    const invalidBranch = fields.find((field, fieldIndex) => Object.entries(field.branching || {}).some(([option, rule]) => {
+      if (!field.options?.includes(option) || !["jump", "screenout", "submit"].includes(rule.action)) return true;
+      if (rule.action !== "jump") return false;
+      const targetIndex = fields.findIndex((candidate) => candidate.id === rule.target_field_id);
+      return targetIndex <= fieldIndex;
+    }));
+    if (invalidBranch) {
+      window.HCCCR.showToast(`「${invalidBranch.label}」的跳題目標需要重新設定。`, "error");
       return;
     }
     const visibility = document.querySelector("[data-visibility]").value;
