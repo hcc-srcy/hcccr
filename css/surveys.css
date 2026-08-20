@@ -333,6 +333,44 @@
   max-width: 100%;
 }
 
+.survey-section-heading {
+  min-width: 0;
+  padding: 24px 4px 8px;
+  border-top: 3px solid var(--primary);
+  scroll-margin-top: 18px;
+}
+
+.survey-section-heading:first-child {
+  padding-top: 16px;
+}
+
+.survey-section-heading > span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 850;
+}
+
+.survey-section-heading h2 {
+  margin: 0;
+  color: var(--primary-dark);
+  font-size: 1.35rem;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.survey-section-heading p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.survey-section-heading[hidden] {
+  display: none;
+}
+
 .questions-shell.is-locked .questions-list {
   filter: grayscale(0.35);
   opacity: 0.52;

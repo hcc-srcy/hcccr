@@ -17,6 +17,7 @@ const entries = [
   "assets",
   "css",
   "js",
+  "contact.html",
   "index.html",
   "LICENSE",
   "survey-detail.html",
@@ -36,7 +37,7 @@ function pagesPath(value) {
   const match = value.match(/^([^?#]*)(.*)$/);
   const pathname = match[1];
   const suffix = match[2] || "";
-  const mapped = ({ "/surveys": "/surveys.html", "/terms": "/terms.html" })[pathname] || pathname;
+  const mapped = ({ "/contact": "/contact.html", "/surveys": "/surveys.html", "/terms": "/terms.html" })[pathname] || pathname;
   return `${basePath}${mapped}${suffix}`;
 }
 

@@ -4,7 +4,7 @@
 
   const id = new URLSearchParams(window.location.search).get("id");
   const list = document.querySelector("[data-field-list]");
-  const typeLabels = { radio: "單選題", checkbox: "複選題", text: "簡答題", textarea: "長答題", date: "日期" };
+  const typeLabels = { radio: "單選題", checkbox: "複選題", text: "簡答題", textarea: "長答題", date: "日期", section: "區段" };
   const optionTypes = new Set(["radio", "checkbox"]);
   let form = null;
   let fields = [];
@@ -21,6 +21,9 @@
   }
 
   function defaultField(type = "radio") {
+    if (type === "section") {
+      return { id: newId(), type, label: "未命名區段", description: "" };
+    }
     return {
       id: newId(),
       type,
@@ -29,6 +32,14 @@
       required: false,
       ...(optionTypes.has(type) ? { options: ["選項 1", "選項 2"] } : {}),
     };
+  }
+
+  function defaultFields() {
+    return [defaultField("section"), defaultField()];
+  }
+
+  function isSection(field) {
+    return field.type === "section";
   }
 
   function escape(value) {
@@ -42,10 +53,14 @@
 
   function branchingMarkup(field, fieldIndex) {
     if (field.type !== "radio") return "";
-    const laterFields = fields.slice(fieldIndex + 1);
+    const usesSections = fields.some(isSection);
+    const laterSections = fields.slice(fieldIndex + 1).filter(isSection);
+    const legacyTargetIds = new Set(Object.values(field.branching || {}).filter((rule) => rule.action === "jump").map((rule) => rule.target_field_id));
+    const legacyTargets = fields.filter((candidate, candidateIndex) => candidateIndex > fieldIndex && !isSection(candidate) && legacyTargetIds.has(candidate.id));
+    const targets = usesSections ? [...legacyTargets, ...laterSections] : fields.slice(fieldIndex + 1);
     const configured = (field.options || []).filter((option) => branchRule(field, option).action !== "next").length;
     return `<details class="branching-editor" data-branching-editor>
-      <summary><span><i data-lucide="split"></i> 跳題邏輯</span><span class="tag">${configured} 個設定</span></summary>
+      <summary><span><i data-lucide="split"></i> ${usesSections ? "區段跳轉" : "跳題邏輯"}</span><span class="tag">${configured} 個設定</span></summary>
       <div class="branching-list">
         ${(field.options || []).map((option, optionIndex) => {
           const rule = branchRule(field, option);
@@ -53,15 +68,21 @@
             <span class="branching-row__option" title="${escape(option)}">${escape(option)}</span>
             <label class="sr-only" for="branch-action-${field.id}-${optionIndex}">${escape(option)}的後續動作</label>
             <select class="form-control" id="branch-action-${field.id}-${optionIndex}" data-branch-action="${optionIndex}">
-              <option value="next" ${rule.action === "next" ? "selected" : ""}>前往下一題</option>
-              ${laterFields.length ? `<option value="jump" ${rule.action === "jump" ? "selected" : ""}>跳到指定題目</option>` : ""}
+              <option value="next" ${rule.action === "next" ? "selected" : ""}>${usesSections ? "繼續填寫本區段" : "前往下一題"}</option>
+              ${targets.length ? `<option value="jump" ${rule.action === "jump" ? "selected" : ""}>${usesSections ? "前往指定區段" : "跳到指定題目"}</option>` : ""}
               <option value="screenout" ${rule.action === "screenout" ? "selected" : ""}>結束，不納入統計</option>
               <option value="submit" ${rule.action === "submit" ? "selected" : ""}>結束並送出</option>
             </select>
-            <label class="sr-only" for="branch-target-${field.id}-${optionIndex}">${escape(option)}要跳到的題目</label>
+            <label class="sr-only" for="branch-target-${field.id}-${optionIndex}">${escape(option)}要前往的${usesSections ? "區段" : "題目"}</label>
             <select class="form-control" id="branch-target-${field.id}-${optionIndex}" data-branch-target="${optionIndex}" ${rule.action === "jump" ? "" : "hidden"}>
-              <option value="">選擇目標題目</option>
-              ${laterFields.map((target, targetIndex) => `<option value="${escape(target.id)}" ${rule.target_field_id === target.id ? "selected" : ""}>第 ${fieldIndex + targetIndex + 2} 題｜${escape(target.label)}</option>`).join("")}
+              <option value="">選擇目標${usesSections ? "區段" : "題目"}</option>
+              ${targets.map((target) => {
+                const targetIndex = fields.indexOf(target);
+                const sectionNumber = fields.slice(0, targetIndex + 1).filter(isSection).length;
+                const questionNumber = fields.slice(0, targetIndex + 1).filter((candidate) => !isSection(candidate)).length;
+                const targetLabel = isSection(target) ? `第 ${sectionNumber} 區｜${escape(target.label)}` : `${usesSections ? "舊版跳題" : `第 ${questionNumber} 題`}｜${escape(target.label)}`;
+                return `<option value="${escape(target.id)}" ${rule.target_field_id === target.id ? "selected" : ""}>${targetLabel}</option>`;
+              }).join("")}
             </select>
           </div>`;
         }).join("")}
@@ -70,18 +91,20 @@
   }
 
   function renderFields() {
-    document.querySelector("[data-field-count]").textContent = `${fields.length} 題`;
+    const questionCount = fields.filter((field) => !isSection(field)).length;
+    const sectionCount = fields.filter(isSection).length;
+    document.querySelector("[data-field-count]").textContent = `${questionCount} 題・${sectionCount} 區段`;
     list.innerHTML = fields.map((field, index) => `
-      <article class="field-editor" draggable="true" data-field-index="${index}">
+      <article class="field-editor ${isSection(field) ? "field-editor--section" : ""}" draggable="true" data-field-index="${index}">
         <div class="drag-handle" title="拖曳排序"><i data-lucide="grip-vertical"></i></div>
         <div class="field-editor__body">
-          <div class="field-editor__row"><label class="form-label">題目<input class="form-control" data-field-prop="label" value="${escape(field.label)}"></label><label class="form-label">題型<select class="form-control" data-field-prop="type">${Object.entries(typeLabels).map(([value, label]) => `<option value="${value}" ${field.type === value ? "selected" : ""}>${label}</option>`).join("")}</select></label></div>
+          <div class="field-editor__row"><label class="form-label">${isSection(field) ? "區段標題" : "題目"}<input class="form-control" data-field-prop="label" value="${escape(field.label)}"></label><label class="form-label">類型<select class="form-control" data-field-prop="type">${Object.entries(typeLabels).map(([value, label]) => `<option value="${value}" ${field.type === value ? "selected" : ""}>${label}</option>`).join("")}</select></label></div>
           <label class="form-label">補充說明（選填）<input class="form-control" data-field-prop="description" value="${escape(field.description || "")}"></label>
           ${optionTypes.has(field.type) ? `<div class="options-editor" data-options>${(field.options || []).map((option, optionIndex) => `<div class="option-editor"><span class="option-editor__dot"></span><input class="form-control" data-option-index="${optionIndex}" value="${escape(option)}" aria-label="選項 ${optionIndex + 1}"><button class="icon-button" type="button" data-remove-option="${optionIndex}" title="刪除選項"><i data-lucide="x"></i></button></div>`).join("")}<button class="button button--secondary button--small" type="button" data-add-option style="justify-self:start"><i data-lucide="plus"></i> 新增選項</button></div>` : ""}
           ${branchingMarkup(field, index)}
-          <div class="toggle-row"><div><strong>必填</strong><small>填答者必須完成此題</small></div><label class="switch"><input type="checkbox" data-field-prop="required" ${field.required ? "checked" : ""}><span></span></label></div>
+          ${isSection(field) ? '<p class="field-editor__hint">單選題可跳到這個區段；被略過區段的題目不會驗證或儲存。</p>' : `<div class="toggle-row"><div><strong>必填</strong><small>填答者必須完成此題</small></div><label class="switch"><input type="checkbox" data-field-prop="required" ${field.required ? "checked" : ""}><span></span></label></div>`}
         </div>
-        <div class="field-editor__actions"><button class="icon-button" type="button" data-move="up" title="上移" ${index === 0 ? "disabled" : ""}><i data-lucide="arrow-up"></i></button><button class="icon-button" type="button" data-move="down" title="下移" ${index === fields.length - 1 ? "disabled" : ""}><i data-lucide="arrow-down"></i></button><button class="icon-button" type="button" data-remove-field title="刪除題目"><i data-lucide="trash-2"></i></button></div>
+        <div class="field-editor__actions"><button class="icon-button" type="button" data-move="up" title="上移" ${index === 0 ? "disabled" : ""}><i data-lucide="arrow-up"></i></button><button class="icon-button" type="button" data-move="down" title="下移" ${index === fields.length - 1 ? "disabled" : ""}><i data-lucide="arrow-down"></i></button><button class="icon-button" type="button" data-remove-field title="刪除${isSection(field) ? "區段" : "題目"}"><i data-lucide="trash-2"></i></button></div>
       </article>`).join("");
     window.lucide?.createIcons();
   }
@@ -117,7 +140,7 @@
     document.querySelector("[data-access-password]").value = form.access_password || "";
     document.querySelector("[data-is-open]").checked = form.is_open !== false;
     document.querySelector("[data-require-consent]").checked = form.require_terms_consent !== false;
-    fields = form.fields?.length ? JSON.parse(JSON.stringify(form.fields)) : [defaultField()];
+    fields = form.fields?.length ? JSON.parse(JSON.stringify(form.fields)) : defaultFields();
     syncVisibility();
     renderFields();
     updateFixedUrl();
@@ -160,7 +183,7 @@
       field.branching ||= {};
       if (action === "next") delete field.branching[option];
       else if (action === "jump") {
-        const firstTarget = fields[fieldIndex + 1]?.id || "";
+        const firstTarget = (fields.some(isSection) ? fields.slice(fieldIndex + 1).find(isSection) : fields[fieldIndex + 1])?.id || "";
         field.branching[option] = { action, target_field_id: branchRule(field, option).target_field_id || firstTarget };
       } else field.branching[option] = { action };
       if (!Object.keys(field.branching).length) delete field.branching;
@@ -183,6 +206,10 @@
     if (optionTypes.has(field.type) && !field.options) field.options = ["選項 1", "選項 2"];
     if (!optionTypes.has(field.type)) delete field.options;
     if (field.type !== "radio") delete field.branching;
+    if (isSection(field)) {
+      field.required = false;
+      if (field.label === "未命名問題") field.label = "未命名區段";
+    } else if (field.label === "未命名區段") field.label = "未命名問題";
     renderFields();
   });
 
@@ -201,7 +228,7 @@
         });
         if (field.branching && !Object.keys(field.branching).length) delete field.branching;
       });
-      if (!fields.length) fields.push(defaultField());
+      if (!fields.length) fields.push(...defaultFields());
       renderFields();
     } else if (action.dataset.move) moveField(index, action.dataset.move);
     else if (action.hasAttribute("data-add-option")) {
@@ -260,7 +287,7 @@
   async function save() {
     if (!builder.reportValidity()) return;
     if (!fields.every((field) => field.label.trim())) {
-      window.HCCCR.showToast("每一題都需要題目文字。", "error");
+      window.HCCCR.showToast("每個區段與題目都需要標題。", "error");
       return;
     }
     const invalidBranch = fields.find((field, fieldIndex) => Object.entries(field.branching || {}).some(([option, rule]) => {
@@ -294,7 +321,7 @@
       is_open: document.querySelector("[data-is-open]").checked,
       require_terms_consent: document.querySelector("[data-require-consent]").checked,
       fields,
-      estimated_minutes: Math.max(1, Math.ceil(fields.length * 0.55)),
+      estimated_minutes: Math.max(1, Math.ceil(fields.filter((field) => !isSection(field)).length * 0.55)),
     };
     document.querySelectorAll("[data-save-form]").forEach((button) => { button.disabled = true; });
     try {
@@ -325,7 +352,7 @@
       visibility: "public",
       is_open: true,
       require_terms_consent: true,
-      fields: [defaultField()],
+      fields: defaultFields(),
     };
     if (!form) throw new Error("FORM_NOT_FOUND");
     document.querySelector("[data-builder-title]").textContent = id ? "編輯調查" : "建立調查";

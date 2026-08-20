@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="聯絡新竹縣第四屆兒童及少年諮詢代表。">
+  <title>聯絡我們｜新竹縣第四屆兒少諮詢代表</title>
+  <link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/print.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <script defer src="/js/env.js"></script><script defer src="/js/config.js"></script><script defer src="/js/data.js"></script><script defer src="/js/content-config.js"></script><script defer src="/js/data-service.js"></script><script defer src="/js/common.js"></script><script defer src="/js/content-runtime.js"></script><script defer src="/js/contact.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳至主要內容</a>
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="/"><span class="brand__mark" aria-hidden="true">少代</span><span class="brand__text"><strong>新竹縣第四屆兒少諮詢代表</strong><small>Children &amp; Youth Advisory Representatives</small></span></a>
+      <nav class="site-nav" aria-label="主要導覽"><a href="/">首頁</a><a href="/terms">隱私與條款</a><a href="/contact" aria-current="page">聯絡我們</a><a class="nav-cta" href="/surveys"><i data-lucide="clipboard-list"></i> 議題調查</a></nav>
+      <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu"><i data-lucide="menu"></i><span class="sr-only">開啟選單</span></button>
+    </div>
+    <nav class="mobile-menu" id="mobile-menu" data-mobile-menu aria-label="行動版導覽" hidden><a href="/">首頁</a><a href="/terms">隱私與條款</a><a href="/contact" aria-current="page">聯絡我們</a><a href="/surveys">議題調查</a></nav>
+  </header>
+  <main id="main">
+    <header class="page-intro"><div class="container"><nav class="breadcrumbs" aria-label="麵包屑"><a href="/">首頁</a><span>/</span><span>聯絡我們</span></nav><p class="eyebrow" data-content-key="contact.eyebrow">與竹縣少代會聯繫</p><h1 data-content-key="contact.title">聯絡我們</h1><p class="page-intro__lead" data-content-key="contact.lead">如有調查、兒少權益議題、資料權利或網站使用問題，可透過下方表單聯絡。</p></div></header>
+    <section class="section section--soft">
+      <div class="container contact-layout">
+        <div class="contact-context">
+          <p class="eyebrow">安全聯繫</p>
+          <h2>訊息只會由授權管理員查看</h2>
+          <p data-content-key="contact.privacy_note">姓名、Email 與訊息僅用於處理本次聯絡，不會公開或用於行銷。</p>
+          <div class="notice"><i data-lucide="shield-check"></i><p>請勿在訊息中提供身分證字號、完整住址、帳號密碼等非必要敏感資料。</p></div>
+        </div>
+        <form class="contact-form" data-contact-form novalidate>
+          <div class="notice notice--demo" data-demo-only hidden><i data-lucide="flask-conical"></i><p>目前為示範模式，訊息只暫存在這個瀏覽器分頁。</p></div>
+          <div class="contact-form__grid">
+            <label><span>姓名或稱呼<span class="required-mark">*</span></span><input name="sender_name" type="text" maxlength="80" autocomplete="name" required></label>
+            <label><span>聯絡 Email<span class="required-mark">*</span></span><input name="sender_email" type="email" maxlength="254" autocomplete="email" required></label>
+            <label class="span-2"><span>主旨<span class="required-mark">*</span></span><input name="subject" type="text" maxlength="120" required></label>
+            <label class="span-2"><span>訊息內容<span class="required-mark">*</span></span><textarea name="message" minlength="10" maxlength="5000" rows="8" required></textarea><small><span data-message-count>0</span> / 5000</small></label>
+          </div>
+          <div class="contact-honeypot" aria-hidden="true"><label>網站<input name="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+          <label class="check-row"><input name="agreed_privacy" type="checkbox" required><span>我已閱讀並同意<a href="/terms" target="_blank" rel="noopener">隱私權政策</a>，並同意為處理本次聯絡而蒐集上述資料。</span></label>
+          <p class="field-message" data-contact-error role="alert"></p>
+          <div class="contact-form__actions"><button class="button" type="submit">送出訊息 <i data-lucide="send"></i></button></div>
+        </form>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="container site-footer__bottom"><p>© 2026 新竹縣第四屆兒童及少年諮詢代表</p><p><a href="/">返回首頁</a> · <a href="/surveys">議題調查</a> · <a href="/terms">隱私權政策</a></p></div></footer>
+</body>
+</html>

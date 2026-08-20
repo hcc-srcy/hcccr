@@ -137,6 +137,68 @@ test("conditional branching jumps, screens out, and submits the active path", as
   expect(errors).toEqual([]);
 });
 
+test("section branching skips a complete section and keeps question numbering", async ({ page }) => {
+  const errors = watchPageErrors(page);
+  await page.goto("/");
+  await page.evaluate(() => {
+    const forms = JSON.parse(JSON.stringify(window.HCCCR_SEED.forms));
+    forms[0].fields = [
+      { id: "handout-section", type: "section", label: "講義", description: "講義使用情形" },
+      { id: "has-handout", type: "radio", label: "有沒有講義？", required: true, options: ["有", "沒有"], branching: { "沒有": { action: "jump", target_field_id: "exam-section" } } },
+      { id: "handout-quality", type: "radio", label: "講義內容清楚嗎？", required: true, options: ["清楚", "不清楚"] },
+      { id: "exam-section", type: "section", label: "考試" },
+      { id: "has-exam", type: "radio", label: "有沒有考試？", required: true, options: ["有", "沒有"] },
+    ];
+    sessionStorage.setItem("hcccr_demo_forms", JSON.stringify(forms));
+  });
+
+  await page.goto("/surveys/normal-teaching-2026");
+  await page.locator("[data-consent-checkbox]").check();
+  await expect(page.locator('[data-survey-section="handout-section"]')).toBeVisible();
+  await expect(page.locator('[data-question="handout-quality"]')).toBeHidden();
+  await expect(page.locator('[data-survey-section="exam-section"]')).toBeHidden();
+  await page.locator('input[name="has-handout"][value="沒有"]').check();
+  await expect(page.locator('[data-question="handout-quality"]')).toBeHidden();
+  await expect(page.locator('[data-survey-section="exam-section"]')).toBeVisible();
+  await expect(page.locator('[data-question="has-exam"] legend')).toContainText("3. ");
+  await expectNoHorizontalOverflow(page);
+  expect(errors).toEqual([]);
+});
+
+test("contact inbox and editable site content work", async ({ page }) => {
+  const errors = watchPageErrors(page);
+  await page.goto("/contact");
+  await expect(page.getByRole("heading", { name: "聯絡我們", exact: true })).toBeVisible();
+  await expect(page.locator('.check-row input[name="agreed_privacy"]')).toHaveCSS("width", "18px");
+  await page.locator('input[name="sender_name"]').fill("測試填寫者");
+  await page.locator('input[name="sender_email"]').fill("student@example.org");
+  await page.locator('input[name="subject"]').fill("調查問題");
+  await page.locator('textarea[name="message"]').fill("想請問問卷的填答截止時間與資料處理方式。");
+  await page.locator('input[name="agreed_privacy"]').check();
+  await page.getByRole("button", { name: "送出訊息" }).click();
+  await expect(page.getByRole("heading", { name: "訊息已送出" })).toBeVisible();
+
+  await page.goto("/admin/");
+  await page.locator("#admin-email").fill("preview@example.org");
+  await page.getByRole("button", { name: "寄送登入連結" }).click();
+  await page.goto("/admin/inbox.html");
+  await expect(page.locator("[data-message-list]")).toContainText("調查問題");
+  await page.locator("[data-open-message]").click();
+  await expect(page.locator("[data-message-detail]")).toContainText("想請問問卷的填答截止時間");
+  await page.locator("[data-message-status]").selectOption("replied");
+  await expect(page.locator("[data-message-list]")).toContainText("已回覆");
+
+  await page.goto("/admin/content.html");
+  await expect(page.locator('[name="home.announcement"]')).toBeVisible();
+  await page.locator('[name="home.announcement"]').fill("測試公告已更新");
+  await page.locator("[data-save-content]").click();
+  await expect(page.locator(".toast")).toContainText("網站內容已儲存");
+  await page.goto("/");
+  await expect(page.locator('[data-content-key="home.announcement"]')).toHaveText("測試公告已更新");
+  await expectNoHorizontalOverflow(page);
+  expect(errors).toEqual([]);
+});
+
 test("admin demo login, dashboard, builder and analytics work", async ({ page }) => {
   const errors = watchPageErrors(page);
   await page.context().addInitScript(() => {
@@ -158,8 +220,11 @@ test("admin demo login, dashboard, builder and analytics work", async ({ page })
   await expect(firstBranchingEditor.locator("[data-branch-target]").first()).toBeVisible();
   await expect(firstBranchingEditor.locator("[data-branch-target]").first()).toHaveValue("area");
   const before = await page.locator("[data-field-index]").count();
+  await page.locator("[data-new-field-type]").selectOption("section");
   await page.locator("[data-add-field]").click();
   await expect(page.locator("[data-field-index]")).toHaveCount(before + 1);
+  await expect(page.locator("[data-field-index]").last()).toHaveClass(/field-editor--section/);
+  await expect(page.locator("[data-field-count]")).toContainText("1 區段");
   await expectNoHorizontalOverflow(page);
   await expect(page.locator("[data-print-form]")).toBeEnabled();
   const [printPage] = await Promise.all([

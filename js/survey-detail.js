@@ -23,21 +23,32 @@
     return field.type === "radio" && Object.keys(field.branching || {}).length > 0;
   }
 
+  function isSection(field) {
+    return field.type === "section";
+  }
+
   function fieldMarkup(field, index) {
+    const nodeId = window.HCCCR.escapeHtml(field.id);
+    if (isSection(field)) {
+      const sectionNumber = form.fields.slice(0, index + 1).filter(isSection).length;
+      const description = field.description ? `<p>${window.HCCCR.escapeHtml(field.description)}</p>` : "";
+      return `<section class="survey-section-heading" data-form-node="${nodeId}" data-survey-section="${nodeId}"><span>第 ${sectionNumber} 區</span><h2>${window.HCCCR.escapeHtml(field.label)}</h2>${description}</section>`;
+    }
+    const questionNumber = form.fields.slice(0, index + 1).filter((candidate) => !isSection(candidate)).length;
     const label = `${window.HCCCR.escapeHtml(field.label)}${field.required ? '<span class="required-mark" aria-label="必填">*</span>' : ""}`;
     const description = field.description ? `<p class="question-description">${window.HCCCR.escapeHtml(field.description)}</p>` : "";
     const error = `<p class="field-message" id="error-${field.id}" data-field-error></p>`;
     const common = `name="${window.HCCCR.escapeHtml(field.id)}" data-field-id="${window.HCCCR.escapeHtml(field.id)}"`;
 
     if (field.type === "radio" || field.type === "checkbox") {
-      return `<fieldset class="question-card" data-question="${field.id}"><legend>${index + 1}. ${label}</legend>${description}<div class="options-list">${(field.options || []).map((option) => `<label class="option-row"><input type="${field.type}" ${common} value="${window.HCCCR.escapeHtml(option)}"><span>${window.HCCCR.escapeHtml(option)}</span></label>`).join("")}</div>${error}</fieldset>`;
+      return `<fieldset class="question-card" data-form-node="${nodeId}" data-question="${nodeId}"><legend>${questionNumber}. ${label}</legend>${description}<div class="options-list">${(field.options || []).map((option) => `<label class="option-row"><input type="${field.type}" ${common} value="${window.HCCCR.escapeHtml(option)}"><span>${window.HCCCR.escapeHtml(option)}</span></label>`).join("")}</div>${error}</fieldset>`;
     }
 
     const inputType = field.type === "date" ? "date" : "text";
     const control = field.type === "textarea"
       ? `<textarea id="field-${field.id}" class="textarea-input" ${common} placeholder="${window.HCCCR.escapeHtml(field.placeholder || "")}" aria-describedby="error-${field.id}"></textarea>`
       : `<input id="field-${field.id}" class="${field.type === "date" ? "date-input" : "text-input"}" type="${inputType}" ${common} placeholder="${window.HCCCR.escapeHtml(field.placeholder || "")}" aria-describedby="error-${field.id}">`;
-    return `<div class="question-card" data-question="${field.id}"><label class="question-label" for="field-${field.id}">${index + 1}. ${label}</label>${description}${control}${error}</div>`;
+    return `<div class="question-card" data-form-node="${nodeId}" data-question="${nodeId}"><label class="question-label" for="field-${field.id}">${questionNumber}. ${label}</label>${description}${control}${error}</div>`;
   }
 
   function render() {
@@ -182,11 +193,11 @@
     const flow = calculateFlow();
     const visible = new Set(flow.visibleIds);
     form.fields.forEach((field) => {
-      const question = root.querySelector(`[data-question="${CSS.escape(field.id)}"]`);
-      if (!question) return;
+      const node = root.querySelector(`[data-form-node="${CSS.escape(field.id)}"]`);
+      if (!node) return;
       const shouldShow = visible.has(field.id);
-      if (!shouldShow && !question.hidden) clearQuestion(question);
-      question.hidden = !shouldShow;
+      if (!shouldShow && !node.hidden && !isSection(field)) clearQuestion(node);
+      node.hidden = !shouldShow;
     });
     renderTerminal(flow.terminal);
     const submit = root.querySelector("[data-submit]");
@@ -201,7 +212,7 @@
     const sourceIndex = flow.visibleIds.indexOf(scrollFrom);
     const target = flow.terminal
       ? root.querySelector("[data-branch-terminal]")
-      : root.querySelector(`[data-question="${CSS.escape(flow.visibleIds[sourceIndex + 1] || "")}"]`);
+      : root.querySelector(`[data-form-node="${CSS.escape(flow.visibleIds[sourceIndex + 1] || "")}"]`);
     if (target) window.setTimeout(() => target.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" }), 100);
   }
 
@@ -229,7 +240,7 @@
   }
 
   function updateProgress() {
-    const visibleFields = form.fields.filter((field) => !root.querySelector(`[data-question="${CSS.escape(field.id)}"]`)?.hidden);
+    const visibleFields = form.fields.filter((field) => !isSection(field) && !root.querySelector(`[data-question="${CSS.escape(field.id)}"]`)?.hidden);
     const completed = visibleFields.filter((field) => {
       const answer = getAnswer(field);
       return Array.isArray(answer) ? answer.length > 0 : Boolean(answer);

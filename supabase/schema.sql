@@ -7,6 +7,12 @@ exception
   when duplicate_object then null;
 end $$;
 
+do $$ begin
+  create type public.contact_status_enum as enum ('unread', 'read', 'replied', 'archived');
+exception
+  when duplicate_object then null;
+end $$;
+
 create table if not exists public.admin_users (
   id uuid primary key default gen_random_uuid(),
   email text unique not null check (email = lower(email)),
@@ -48,12 +54,35 @@ create table if not exists public.form_submissions (
   check (submitted_at >= started_at)
 );
 
+create table if not exists public.site_content (
+  content_key text primary key check (content_key ~ '^[a-z0-9._-]+$'),
+  content_value text not null default '' check (char_length(content_value) <= 12000),
+  updated_by uuid references auth.users(id),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.contact_messages (
+  id uuid primary key default gen_random_uuid(),
+  sender_name text not null check (char_length(sender_name) between 1 and 80),
+  sender_email text not null check (char_length(sender_email) between 3 and 254 and position('@' in sender_email) > 1),
+  subject text not null check (char_length(subject) between 1 and 120),
+  message text not null check (char_length(message) between 10 and 5000),
+  agreed_privacy boolean not null check (agreed_privacy),
+  status public.contact_status_enum not null default 'unread',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create index if not exists form_submissions_form_id_idx on public.form_submissions(form_id);
 create index if not exists form_submissions_submitted_at_idx on public.form_submissions(submitted_at desc);
+create index if not exists contact_messages_status_created_at_idx on public.contact_messages(status, created_at desc);
+create index if not exists contact_messages_sender_email_created_at_idx on public.contact_messages(lower(sender_email), created_at desc);
 
 alter table public.admin_users enable row level security;
 alter table public.forms enable row level security;
 alter table public.form_submissions enable row level security;
+alter table public.site_content enable row level security;
+alter table public.contact_messages enable row level security;
 
 create or replace function public.is_admin()
 returns boolean
@@ -82,6 +111,43 @@ create policy "Admins manage forms" on public.forms
 drop policy if exists "Admins manage submissions" on public.form_submissions;
 create policy "Admins manage submissions" on public.form_submissions
   for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+drop policy if exists "Public can read site content" on public.site_content;
+create policy "Public can read site content" on public.site_content
+  for select to anon, authenticated using (true);
+
+drop policy if exists "Admins manage site content" on public.site_content;
+create policy "Admins manage site content" on public.site_content
+  for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+drop policy if exists "Admins manage contact messages" on public.contact_messages;
+create policy "Admins manage contact messages" on public.contact_messages
+  for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+create or replace function public.set_admin_managed_updated_at()
+returns trigger
+language plpgsql
+security invoker
+set search_path = public
+as $$
+begin
+  new.updated_at := now();
+  if tg_table_name = 'site_content' then
+    new.updated_by := auth.uid();
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists site_content_set_updated_at on public.site_content;
+create trigger site_content_set_updated_at
+before insert or update on public.site_content
+for each row execute function public.set_admin_managed_updated_at();
+
+drop trigger if exists contact_messages_set_updated_at on public.contact_messages;
+create trigger contact_messages_set_updated_at
+before update on public.contact_messages
+for each row execute function public.set_admin_managed_updated_at();
 
 create or replace function public.form_public_json(target public.forms, include_fields boolean, password_valid boolean default true)
 returns jsonb
@@ -249,6 +315,52 @@ begin
 end;
 $$;
 
+create or replace function public.submit_contact_message(
+  p_sender_name text,
+  p_sender_email text,
+  p_subject text,
+  p_message text,
+  p_agreed_privacy boolean,
+  p_website text default ''
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  saved_id uuid;
+  normalized_email text := lower(trim(coalesce(p_sender_email, '')));
+begin
+  if trim(coalesce(p_website, '')) <> '' then
+    raise exception 'Message rejected';
+  end if;
+  if not coalesce(p_agreed_privacy, false) then
+    raise exception 'Privacy consent is required';
+  end if;
+  if char_length(trim(coalesce(p_sender_name, ''))) not between 1 and 80
+    or char_length(normalized_email) not between 3 and 254
+    or position('@' in normalized_email) <= 1
+    or char_length(trim(coalesce(p_subject, ''))) not between 1 and 120
+    or char_length(trim(coalesce(p_message, ''))) not between 10 and 5000 then
+    raise exception 'Invalid contact message';
+  end if;
+  if (
+    select count(*) from public.contact_messages
+    where lower(sender_email) = normalized_email
+      and created_at > now() - interval '10 minutes'
+  ) >= 3 then
+    raise exception 'Too many messages';
+  end if;
+
+  insert into public.contact_messages(sender_name, sender_email, subject, message, agreed_privacy)
+  values (
+    trim(p_sender_name), normalized_email, trim(p_subject), trim(p_message), true
+  ) returning id into saved_id;
+  return saved_id;
+end;
+$$;
+
 create or replace function public.admin_save_form(p_payload jsonb, p_access_password text default null)
 returns jsonb
 language plpgsql
@@ -316,7 +428,13 @@ revoke all on function public.list_public_forms() from public;
 revoke all on function public.get_public_form(text, text) from public;
 revoke all on function public.submit_form(uuid, jsonb, timestamptz, boolean, text) from public;
 revoke all on function public.admin_save_form(jsonb, text) from public;
+revoke all on function public.submit_contact_message(text, text, text, text, boolean, text) from public;
 grant execute on function public.list_public_forms() to anon, authenticated;
 grant execute on function public.get_public_form(text, text) to anon, authenticated;
 grant execute on function public.submit_form(uuid, jsonb, timestamptz, boolean, text) to anon, authenticated;
 grant execute on function public.admin_save_form(jsonb, text) to authenticated;
+grant execute on function public.submit_contact_message(text, text, text, text, boolean, text) to anon, authenticated;
+
+grant select on table public.site_content to anon, authenticated;
+grant insert, update, delete on table public.site_content to authenticated;
+grant select, update, delete on table public.contact_messages to authenticated;

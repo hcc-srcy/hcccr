@@ -22,6 +22,7 @@
   - `/`：首頁（靜態門戶，包含導向 `/surveys` 之醒目按鈕）。
   - `/surveys`：議題調查總覽頁。
   - `/surveys/{uuid}`：動態調查作答頁。Cloudflare 由 `_redirects` 重寫；GitHub Pages 的 200 回應連結使用 `/hcccr/survey-detail.html?id={uuid}`，並以部署成品的 `404.html` 相容既有漂亮網址。
+  - `/contact`：公開聯絡表單，訊息僅可由白名單管理員於收件匣讀取。
   - `/terms`：個人資料保護與隱私權政策條款全文。
 - **樣式規範**：Vanilla CSS，定義 CSS 變數（主題色、圓角、陰影），必須提供專屬 `@media print` 列印樣式。
 
@@ -31,8 +32,10 @@
 - **後台認證**：**Supabase Auth (Magic Link 免密碼信箱登入)**，嚴格配合 `admin_users` 表格白名單與 RLS 驗證。
 - **資料表規範**：
   - `admin_users`: 授權管理員信箱。
-  - `forms`: 表單定義，欄位 `fields` 採用 **JSONB 彈性結構**。
+  - `forms`: 表單定義，欄位 `fields` 採用 **JSONB 彈性結構**；區段以 `type: "section"` 內容節點與題目共用排序。
   - `form_submissions`: 作答紀錄，包含 `started_at`、`submitted_at` 與 `duration_seconds`（自動計算）。
+  - `site_content`: 首頁、聯絡頁與隱私權條款的公開純文字內容。
+  - `contact_messages`: 公開聯絡表單訊息，支援 `unread`、`read`、`replied`、`archived` 狀態。
 - **公開資料邊界**：匿名前台不得直接 `SELECT forms` 或讀取密碼欄位，必須透過 `list_public_forms`、`get_public_form` 與 `submit_form` RPC；活動密碼僅以 `pgcrypto` 雜湊保存。
 - **開發示範模式**：未配置 Supabase 時可使用 `sessionStorage` 示範資料，但 UI 必須清楚標示，且不得將示範資料誤認為正式提交。
 
@@ -50,23 +53,29 @@
 - `public_password`：顯示於 `/surveys`，需輸入 `access_password` 驗證後方可解鎖作答。
 - `unlisted`：隱藏於 `/surveys`，僅可透過 `/surveys/{uuid}` 直連。
 
-### 🔀 3. 條件式跳題與終止動作
-- 單選題的 `field.branching` 可依選項設定 `jump`、`screenout`、`submit`；未設定的選項預設前往下一題。
-- `jump` 只能指向後續題目，前台需維持單頁填答並以平滑捲動前往目標，不得改成每題都要按「下一步」的一題一頁流程。
-- 被跳過的題目必須隱藏、清除既有答案且不參與必填驗證；`screenout` 不得寫入提交資料，`submit` 需經使用者確認後送出目前有效路徑。
+### 🔀 3. 區段與條件式跳轉
+- 問卷可使用類似 Google 表單的區段組織題目；單選題的 `field.branching` 可依選項設定 `jump`、`screenout`、`submit`，未設定的選項預設繼續填寫本區段。
+- 新問卷的 `jump` 目標應指向後續 `section` 節點；舊問卷的後續題目目標仍須相容。前台維持單頁填答並以平滑捲動前往目標，不得改成每題都要按「下一步」的一題一頁流程。
+- 被跳過的區段與題目必須隱藏，並清除該段既有答案且不參與必填驗證；`screenout` 不得寫入提交資料，`submit` 需經使用者確認後送出目前有效路徑。
 - `submit_form` RPC 必須在資料庫端重算有效路徑、拒絕偽造的 `screenout` 提交，並只保存可到達題目的答案。
 
-### ✏️ 4. 表單二次編輯與「已編輯」狀態
+### 📬 4. 收件匣與網站內容
+- 匿名使用者只能透過 `submit_contact_message` RPC 寫入聯絡訊息，不得直接讀取 `contact_messages`；查看、狀態更新與刪除必須同時通過 Auth 與 `admin_users` 白名單。
+- 公開表單必須要求隱私同意，提供字數限制、蜜罐欄位與基本頻率限制，且不得在前台回傳其他訊息。
+- `site_content` 只得儲存公開網站文字，前台以 `textContent` 或同等純文字方式輸出，不得提供未過濾 HTML/JavaScript 編輯與渲染。
+- 靜態 HTML 必須保留預設文字，資料庫無法載入時仍可正常閱讀首頁與隱私條款。
+
+### ✏️ 5. 表單二次編輯與「已編輯」狀態
 - 後台可隨時編輯既有表單，更新時設定 `is_edited = true` 與 `updated_at`。
 - 前後台需呈現「已編輯 (Edited)」標籤與修訂時間。
 
-### 📊 5. 回應分析與動態交叉條件篩選
+### 📊 6. 回應分析與動態交叉條件篩選
 - 提供「摘要圖表」、「個別回應」、「明細表格」三種模式。
 - 後台計算並呈現 **「全體平均作答時間」**。
 - 圖表採用 **Chart.js** 或 **Recharts**，篩選器選擇（如：就讀階段=國中）時全頁其餘圖表必須**動態連動重繪**。
 - 支援將目前問卷與篩選條件下的完整回應匯出為 `.xlsx`；日期與秒數須保留可排序、可計算型別，並附題目設定。工作簿僅能在已授權後台的瀏覽器端產生，不得將原始回應傳送至第三方轉檔服務。
 
-### 🖨️ 6. 列印與單筆回應管理
+### 🖨️ 7. 列印與單筆回應管理
 - 空白表單列印入口僅能顯示於已登入的管理後台，前台問卷不得呈現列印按鈕；列印時隱藏所有 UI 操作按鈕。
 - 支援單筆回應獨立檢視、一鍵列印/PDF 與單獨刪除 (`DELETE FROM form_submissions WHERE id = :id`)。
 

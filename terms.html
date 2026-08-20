@@ -6,68 +6,69 @@
   <meta name="description" content="新竹縣第四屆兒少諮詢代表網站個人資料保護、隱私權政策及服務條款。">
   <title>隱私權與服務條款｜新竹縣第四屆兒少諮詢代表</title>
   <link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/print.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script><script defer src="/js/common.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script><script defer src="/js/env.js"></script><script defer src="/js/config.js"></script><script defer src="/js/data.js"></script><script defer src="/js/content-config.js"></script><script defer src="/js/data-service.js"></script><script defer src="/js/common.js"></script><script defer src="/js/content-runtime.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">跳至主要內容</a>
   <header class="site-header">
     <div class="container site-header__inner">
       <a class="brand" href="/"><span class="brand__mark" aria-hidden="true">少代</span><span class="brand__text"><strong>新竹縣第四屆兒少諮詢代表</strong><small>Children &amp; Youth Advisory Representatives</small></span></a>
-      <nav class="site-nav" aria-label="主要導覽"><a href="/">首頁</a><a href="/terms" aria-current="page">隱私與條款</a><a class="nav-cta" href="/surveys"><i data-lucide="clipboard-list"></i> 議題調查</a></nav>
+      <nav class="site-nav" aria-label="主要導覽"><a href="/">首頁</a><a href="/terms" aria-current="page">隱私與條款</a><a href="/contact">聯絡我們</a><a class="nav-cta" href="/surveys"><i data-lucide="clipboard-list"></i> 議題調查</a></nav>
       <button class="menu-toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu"><i data-lucide="menu"></i><span class="sr-only">開啟選單</span></button>
     </div>
-    <nav class="mobile-menu" id="mobile-menu" data-mobile-menu aria-label="行動版導覽" hidden><a href="/">首頁</a><a href="/terms">隱私與條款</a><a href="/surveys">議題調查</a></nav>
+    <nav class="mobile-menu" id="mobile-menu" data-mobile-menu aria-label="行動版導覽" hidden><a href="/">首頁</a><a href="/terms">隱私與條款</a><a href="/contact">聯絡我們</a><a href="/surveys">議題調查</a></nav>
   </header>
   <main id="main">
-    <header class="page-intro"><div class="container"><nav class="breadcrumbs" aria-label="麵包屑"><a href="/">首頁</a><span>/</span><span>隱私權與服務條款</span></nav><p class="eyebrow">公開透明的資料使用原則</p><h1>個人資料保護、隱私權政策暨服務條款</h1><p class="page-intro__lead">最新版本修訂日期：2026 年 8 月 20 日</p></div></header>
+    <header class="page-intro"><div class="container"><nav class="breadcrumbs" aria-label="麵包屑"><a href="/">首頁</a><span>/</span><span>隱私權與服務條款</span></nav><p class="eyebrow">公開透明的資料使用原則</p><h1>個人資料保護、隱私權政策暨服務條款</h1><p class="page-intro__lead" data-content-key="terms.revision">最新版本修訂日期：2026 年 8 月 20 日</p></div></header>
     <section class="section">
       <div class="container content-shell">
         <aside class="side-nav"><strong>本頁目錄</strong><a href="#scope">一、適用範圍</a><a href="#collection">二、蒐集與用途</a><a href="#guarantees">三、隱私承諾</a><a href="#storage">四、本機儲存</a><a href="#services">五、第三方服務</a><a href="#children">六、未成年人保護</a><a href="#retention">七、資料保留</a><a href="#rights">八、當事人權利</a><a href="#changes">九、條款修訂</a></aside>
         <article class="prose">
-          <div class="notice"><i data-lucide="shield-check"></i><p>我們採取資料最小化原則，不販售資料、不設置廣告追蹤器，公開成果僅呈現去識別化統計。</p></div>
-          <p>歡迎存取「新竹縣第四屆兒童及少年諮詢代表官方網站」（以下簡稱「本網站」）。本網站由新竹縣第四屆兒童及少年諮詢代表（以下簡稱「竹縣少代會」）負責維運管理，並受指導機關新竹縣政府社會處指導。</p>
-          <p>本網站主要用於辦理縣內不定期兒少權益專題調查。本政策說明我們如何蒐集、處理、利用與保護資料，以及您依法可行使的權利。</p>
+          <div class="notice"><i data-lucide="shield-check"></i><p data-content-key="terms.notice">我們採取資料最小化原則，不販售資料、不設置廣告追蹤器，公開成果僅呈現去識別化統計。</p></div>
+          <p data-content-key="terms.intro_1">歡迎存取「新竹縣第四屆兒童及少年諮詢代表官方網站」（以下簡稱「本網站」）。本網站由新竹縣第四屆兒童及少年諮詢代表負責維運管理，並受新竹縣政府社會處指導。</p>
+          <p data-content-key="terms.intro_2">本網站主要用於辦理縣內不定期兒少權益專題調查。本政策說明我們如何蒐集、處理、利用與保護資料，以及您依法可行使的權利。</p>
 
           <h2 id="scope">一、總則與政策適用範圍</h2>
-          <p>本政策適用於您在本網站首頁、議題調查總覽及個別調查問卷所進行的瀏覽與填答行為；實際網址可能依 GitHub Pages 路由格式呈現。</p>
+          <p data-content-key="terms.scope">本政策適用於您在本網站首頁、議題調查總覽、個別調查問卷及聯絡頁所進行的瀏覽、填答與訊息提交行為。</p>
 
           <h2 id="collection">二、個人資料蒐集類別與服務功能</h2>
           <table><thead><tr><th>服務功能</th><th>蒐集項目</th><th>主要用途</th></tr></thead><tbody>
-            <tr><td>兒少專題議題調查</td><td>題目回答內容；依問卷需要選填學校、年級或年齡區間</td><td>產出去識別化統計，作為提案與倡議依據</td></tr>
-            <tr><td>填答歷程統計</td><td>開始時間、送出時間、作答費時</td><td>評估題目設計與辨識異常提交</td></tr>
-            <tr><td>管理後台認證</td><td>授權管理員電子郵件</td><td>Magic Link 免密碼登入及白名單驗證</td></tr>
+            <tr><td>兒少專題議題調查</td><td data-content-key="terms.survey_collection">題目回答內容；依問卷需要選填學校、年級或年齡區間</td><td data-content-key="terms.survey_purpose">產出去識別化統計，作為提案與倡議依據</td></tr>
+            <tr><td>填答歷程統計</td><td data-content-key="terms.timing_collection">開始時間、送出時間、作答費時</td><td data-content-key="terms.timing_purpose">評估題目設計與辨識異常提交</td></tr>
+            <tr><td>網站聯絡表單</td><td data-content-key="terms.contact_collection">姓名、電子郵件、主旨與訊息內容</td><td data-content-key="terms.contact_purpose">處理詢問、資料權利申請並回覆提交者</td></tr>
+            <tr><td>管理後台認證</td><td data-content-key="terms.admin_collection">授權管理員電子郵件</td><td data-content-key="terms.admin_purpose">Magic Link 免密碼登入及白名單驗證</td></tr>
           </tbody></table>
-          <p>若問卷依條件式跳題設定判定為「結束且不納入統計」，該次尚未送出的回答不會寫入資料庫。若填答者確認「結束並送出」，系統只保存實際填寫路徑上的答案，被跳過題目的內容不會納入提交。</p>
+          <p data-content-key="terms.branching">若問卷依區段或條件式跳轉設定判定為「結束且不納入統計」，該次尚未送出的回答不會寫入資料庫。若填答者確認「結束並送出」，系統只保存實際填寫路徑上的答案，被跳過區段與題目的內容不會納入提交。</p>
 
           <h2 id="guarantees">三、我們的隱私承諾</h2>
-          <ol><li><strong>不販售或出租資料：</strong>不將個人資料販售、出租或交換予商業廣告機構。</li><li><strong>不設置廣告追蹤器：</strong>不安裝 Meta Pixel、Google Analytics 等跨站行為追蹤工具。</li><li><strong>不公開原始個資：</strong>調查成果一律以去識別化圖表或統計公開。</li></ol>
+          <ol><li data-content-key="terms.guarantee_1">不販售或出租資料：不將個人資料販售、出租或交換予商業廣告機構。</li><li data-content-key="terms.guarantee_2">不設置廣告追蹤器：不安裝 Meta Pixel、Google Analytics 等跨站行為追蹤工具。</li><li data-content-key="terms.guarantee_3">不公開原始個資：調查成果一律以去識別化圖表或統計公開。</li></ol>
 
           <h2 id="storage">四、Cookie 與本機儲存規範</h2>
-          <p>一般訪客瀏覽與填答時不寫入任何行銷、追蹤或廣告用途 Cookie。僅於管理員登入時，使用瀏覽器儲存空間暫存必要的授權狀態。開發示範模式產生的測試資料僅暫存於目前分頁的工作階段，關閉分頁後即失效。</p>
+          <p data-content-key="terms.storage">一般訪客瀏覽、填答或提交聯絡表單時，不寫入任何行銷、追蹤或廣告用途 Cookie。僅於管理員登入時，使用瀏覽器儲存空間暫存必要的授權狀態。開發示範模式產生的測試資料僅暫存於目前分頁的工作階段，關閉分頁後即失效。</p>
 
           <h2 id="services">五、雲端基礎設施與第三方服務</h2>
-          <h3>GitHub Pages</h3><p>提供 HTML、CSS、JavaScript 與公開圖片的靜態網站託管，並可能透過自訂網域 hcccr.bond 對外提供服務；GitHub Pages 不作為調查回答資料庫。GitHub 可能依其基礎設施政策處理必要的連線記錄。</p>
-          <h3>Supabase</h3><p>提供 PostgreSQL 資料庫、驗證與檔案儲存，並透過 Row Level Security 控管權限。</p>
-          <h3>Resend</h3><p>僅用於管理員 Magic Link、系統通知及經主動同意的調查通知。</p>
-          <h3>QR Code 產生服務</h3><p>僅於管理員主動產生調查固定網址 QR Code 時傳送該公開網址；不會傳送填答內容。</p>
-          <h3>jsDelivr</h3><p>用於載入 Supabase 官方瀏覽器套件、圖示、後台統計圖表與 Excel 工作簿產生程式。Excel 檔案僅在已授權管理員的瀏覽器中產生，不會將原始回應傳送至 jsDelivr；本網站亦不透過該服務進行廣告或跨站追蹤。</p>
+          <h3>GitHub Pages</h3><p data-content-key="terms.service_github">提供 HTML、CSS、JavaScript 與公開圖片的靜態網站託管，並可透過自訂網域 hcccr.bond 對外提供服務；GitHub Pages 不作為調查回答或聯絡訊息資料庫。</p>
+          <h3>Supabase</h3><p data-content-key="terms.service_supabase">提供 PostgreSQL 資料庫、驗證與檔案儲存，並透過 Row Level Security 控管問卷回應、聯絡訊息與後台內容的存取權限。</p>
+          <h3>Resend</h3><p data-content-key="terms.service_resend">僅用於管理員 Magic Link、系統通知及經主動同意的調查通知。</p>
+          <h3>QR Code 產生服務</h3><p data-content-key="terms.service_qr">僅於管理員主動產生調查固定網址 QR Code 時傳送該公開網址；不會傳送填答或聯絡內容。</p>
+          <h3>jsDelivr</h3><p data-content-key="terms.service_jsdelivr">用於載入 Supabase 官方瀏覽器套件、圖示、後台統計圖表與 Excel 工作簿產生程式。Excel 檔案僅在已授權管理員的瀏覽器中產生，不會將原始回應傳送至 jsDelivr。</p>
 
           <h2 id="children">六、未成年人及兒童特別保護</h2>
-          <p>多數調查提供匿名填寫，且不強制要求超出研究目的所需的資料。學校、年級等欄位將明確標示是否選填及統計用途。填答者應避免在自由文字欄位提供姓名、班級、電話等可直接識別個人的資訊。</p>
+          <p data-content-key="terms.children">多數調查提供匿名填寫，且不強制要求超出研究目的所需的資料。學校、年級等欄位將明確標示是否選填及統計用途。填答者應避免在自由文字欄位提供姓名、班級、電話等可直接識別個人的資訊。</p>
 
           <h2 id="retention">七、資料保留期限與刪除</h2>
-          <p>調查資料於本屆少代會任期及議題倡議必要期間內保存。管理團隊可刪除無效、測試或異常回應；授權管理員得因統計、倡議與內部稽核需要匯出 Excel，下載檔案須妥善保管，不得公開散布可識別個人或含原始自由填答內容的版本。您也可依法提出查詢、更正、停止利用或刪除要求。</p>
+          <p data-content-key="terms.retention">調查資料於本屆少代會任期及議題倡議必要期間內保存。聯絡訊息保留至本次事項處理完畢及必要稽核期間，後續由管理團隊刪除。授權管理員得因統計、倡議與內部稽核需要匯出 Excel，並應妥善保管。</p>
 
           <h2 id="rights">八、個資當事人權利</h2>
-          <p>依《個人資料保護法》第 3 條，您得請求查詢、閱覽、複製、更正、停止蒐集處理利用或刪除資料。如需行使權利，請透過網站公開聯繫管道提出申請，我們會在確認身分與回應識別資訊後辦理。</p>
+          <p data-content-key="terms.rights">依《個人資料保護法》第 3 條，您得請求查詢、閱覽、複製、更正、停止蒐集處理利用或刪除資料。如需行使權利，請透過網站聯絡表單提出申請，我們會在確認身分與回應識別資訊後辦理。</p>
 
           <h2 id="changes">九、條款修訂與公告</h2>
-          <p>本政策得因法令、少代會運作或技術變更修訂。修訂後版本將發布於本頁，重大異動另於首頁公告。</p>
-          <p><strong>發布單位：</strong>新竹縣第四屆兒童及少年諮詢代表</p>
+          <p data-content-key="terms.changes">本政策得因法令、少代會運作或技術變更修訂。修訂後版本將發布於本頁，重大異動另於首頁公告。</p>
+          <p><strong>發布單位：</strong><span data-content-key="terms.publisher">新竹縣第四屆兒童及少年諮詢代表</span></p>
         </article>
       </div>
     </section>
   </main>
-  <footer class="site-footer"><div class="container site-footer__bottom"><p>© 2026 新竹縣第四屆兒童及少年諮詢代表</p><p><a href="/">返回首頁</a> · <a href="/surveys">議題調查</a></p></div></footer>
+  <footer class="site-footer"><div class="container site-footer__bottom"><p>© 2026 新竹縣第四屆兒童及少年諮詢代表</p><p><a href="/">返回首頁</a> · <a href="/contact">聯絡我們</a> · <a href="/surveys">議題調查</a></p></div></footer>
 </body>
 </html>

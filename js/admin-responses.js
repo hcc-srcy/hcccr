@@ -64,18 +64,19 @@
   }
 
   function setWorkbookStyles(workbook, data) {
+    const questionFields = form.fields.filter((field) => field.type !== "section");
     const answerSheet = workbook.addWorksheet("回應明細", {
       views: [{ state: "frozen", ySplit: 6 }],
       pageSetup: { orientation: "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0 },
     });
-    const headers = ["回應識別碼", "送出時間", "開始時間", "作答時間（秒）", "同意條款", ...form.fields.map((field, index) => `Q${index + 1}｜${field.label}`)];
+    const headers = ["回應識別碼", "送出時間", "開始時間", "作答時間（秒）", "同意條款", ...questionFields.map((field, index) => `Q${index + 1}｜${field.label}`)];
     const rows = data.map((submission) => [
       String(submission.id || ""),
       excelDateTime(submission.submitted_at),
       excelDateTime(submission.started_at),
       Number(submission.duration_seconds || 0),
       submission.agreed_terms ? "是" : "否",
-      ...form.fields.map((field) => excelAnswer(field, submission.answers?.[field.id])),
+      ...questionFields.map((field) => excelAnswer(field, submission.answers?.[field.id])),
     ]);
     const lastColumn = answerSheet.getColumn(headers.length).letter;
 
@@ -122,7 +123,7 @@
     answerSheet.getColumn(2).numFmt = "yyyy-mm-dd hh:mm:ss";
     answerSheet.getColumn(3).numFmt = "yyyy-mm-dd hh:mm:ss";
     answerSheet.getColumn(4).numFmt = "#,##0";
-    form.fields.forEach((field, index) => {
+    questionFields.forEach((field, index) => {
       const column = answerSheet.getColumn(index + 6);
       column.width = Math.min(42, Math.max(18, String(field.label || "").length + 6));
       column.alignment = { vertical: "top", wrapText: true };
@@ -130,7 +131,7 @@
     });
 
     const questionSheet = workbook.addWorksheet("題目設定", { views: [{ state: "frozen", ySplit: 1 }] });
-    const typeLabels = { radio: "單選題", checkbox: "複選題", text: "簡答題", textarea: "長答題", date: "日期" };
+    const typeLabels = { radio: "單選題", checkbox: "複選題", text: "簡答題", textarea: "長答題", date: "日期", section: "區段" };
     questionSheet.addTable({
       name: "SurveyQuestions",
       ref: "A1",
@@ -198,7 +199,7 @@
       <div class="kpi"><span class="kpi__label"><i data-lucide="messages-square"></i> 篩選後回應</span><strong class="kpi__value">${data.length}</strong></div>
       <div class="kpi"><span class="kpi__label"><i data-lucide="timer"></i> 平均作答時間</span><strong class="kpi__value">${window.HCCCR.formatDuration(avg)}</strong></div>
       <div class="kpi"><span class="kpi__label"><i data-lucide="calendar-check"></i> 今日新增</span><strong class="kpi__value">${todayCount}</strong></div>
-      <div class="kpi"><span class="kpi__label"><i data-lucide="list-checks"></i> 問卷題數</span><strong class="kpi__value">${form.fields.length}</strong></div>`;
+      <div class="kpi"><span class="kpi__label"><i data-lucide="list-checks"></i> 問卷題數</span><strong class="kpi__value">${form.fields.filter((field) => field.type !== "section").length}</strong></div>`;
     document.querySelector("[data-filter-result]").textContent = `顯示 ${data.length} / ${submissions.length} 份回應`;
     exportButton.disabled = data.length === 0;
   }
@@ -249,7 +250,7 @@
   }
 
   function renderTable(data) {
-    const columns = form.fields.slice(0, 4);
+    const columns = form.fields.filter((field) => field.type !== "section").slice(0, 4);
     responseTable.innerHTML = `<thead><tr><th scope="col">送出時間</th>${columns.map((field) => `<th scope="col">${window.HCCCR.escapeHtml(field.label)}</th>`).join("")}<th scope="col">作答時間</th><th scope="col"><span class="sr-only">操作</span></th></tr></thead><tbody>${data.map((submission) => `<tr><td>${window.HCCCR.formatDate(submission.submitted_at, true)}</td>${columns.map((field) => { const answer = submission.answers[field.id]; return `<td>${window.HCCCR.escapeHtml(Array.isArray(answer) ? answer.join("、") : answer || "-")}</td>`; }).join("")}<td>${window.HCCCR.formatDuration(submission.duration_seconds)}</td><td><div class="table-actions"><a class="icon-button" href="${window.HCCCR.appUrl("/admin/response-detail.html")}?form=${encodeURIComponent(form.id)}&id=${encodeURIComponent(submission.id)}" title="查看"><i data-lucide="eye"></i><span class="sr-only">查看回應</span></a><button class="icon-button" type="button" data-delete-response="${window.HCCCR.escapeHtml(submission.id)}" title="刪除"><i data-lucide="trash-2"></i><span class="sr-only">刪除回應</span></button></div></td></tr>`).join("")}</tbody>`;
   }
 

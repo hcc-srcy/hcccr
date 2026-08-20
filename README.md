@@ -3,7 +3,7 @@
 [![Hosting: GitHub Pages](https://img.shields.io/badge/Hosting-GitHub%20Pages-222222)](https://hcccr.bond/)
 [![Database: Supabase](https://img.shields.io/badge/Database-Supabase-3fcf8e)](https://supabase.com/)
 
-本專案是新竹縣第四屆兒童及少年諮詢代表（竹縣少代）的官方門戶與不定期兒少議題調查系統。前台提供固定網址問卷、隱私同意門檻及響應式填答介面；後台提供表單建構、QR Code、動態統計、單筆回應列印與刪除。
+本專案是新竹縣第四屆兒童及少年諮詢代表（竹縣少代）的官方門戶與不定期兒少議題調查系統。前台提供固定網址問卷、隱私同意門檻、響應式填答介面與聯絡表單；後台提供問卷管理、收件匣、網站內容編輯、動態統計及 Excel 匯出。
 
 ## 目前狀態
 
@@ -13,8 +13,10 @@
 - `public`、`public_password`、`unlisted` 三種存取模式。
 - 同意條款後才解除題目鎖定，並記錄 `started_at`、`submitted_at` 與作答費時。
 - 單選、複選、簡答、長答及日期題型，含必填驗證；空白問卷列印入口僅顯示於管理後台。
-- 單選題支援條件式流程：下一題、向後跳到指定題、結束不計入及確認後直接送出；前台維持單頁平滑捲動。
+- 支援類似 Google 表單的區段；單選題可依選項繼續本區段、前往指定區段、結束不計入或確認後送出，前台維持單頁平滑捲動。
 - Magic Link 後台入口、調查儀表板、拖曳式題目排序及固定網址 QR Code。
+- 公開聯絡表單與後台收件匣，支援未讀、已讀、已回覆、已封存與單筆刪除。
+- 後台可編輯首頁、聯絡頁與隱私權條款文字；前台以純文字輸出，不接受自訂 HTML。
 - 摘要圖表、就讀階段交叉篩選、個別回應、明細表格、篩選後 Excel 匯出、單筆列印及刪除。
 - 未設定 Supabase 時自動進入示範模式，測試資料只存在目前分頁的 `sessionStorage`。
 
@@ -35,6 +37,7 @@ npx wrangler pages dev .
 | `/` | 官方首頁 |
 | `/surveys` | 公開調查總覽 |
 | `/surveys/{uuid-or-slug}` | 固定網址作答頁 |
+| `/contact` | 公開聯絡表單 |
 | `/terms` | 隱私權與服務條款 |
 | `/admin/` | Magic Link 管理員登入 |
 
@@ -69,7 +72,7 @@ Publishable/Anon Key 本來就會出現在瀏覽器端，安全性由 RLS 與資
 
 ### 初始化資料庫
 
-1. 在 Supabase **SQL Editor → New query** 貼上並執行完整的 [`supabase/schema.sql`](supabase/schema.sql)。這會建立 `admin_users`、`forms`、`form_submissions`、RLS Policies、`pgcrypto` 與前台/後台 RPC。
+1. 在 Supabase **SQL Editor → New query** 貼上並執行完整的 [`supabase/schema.sql`](supabase/schema.sql)。這會建立 `admin_users`、`forms`、`form_submissions`、`site_content`、`contact_messages`、RLS Policies、`pgcrypto` 與前台/後台 RPC。
 2. 將管理員信箱以小寫加入白名單：
 
 ```sql
@@ -87,6 +90,10 @@ values ('admin@example.org');
 若建立密碼型問卷時出現 `function gen_salt(unknown) does not exist`，代表舊版 RPC 沒有指向 Supabase 的 `extensions` schema。重新執行最新版 [`supabase/schema.sql`](supabase/schema.sql) 即可更新函式，不會刪除既有問卷或回應。
 
 升級條件式跳題功能時也必須重新執行最新版 `schema.sql`。更新後 `submit_form` 會在資料庫端重算有效路徑，只驗證並保存實際經過的題目；執行 schema 不會刪除既有資料。
+
+區段以 `type: "section"` 內容節點保存在現有 `forms.fields` JSONB，不需新增資料表欄位或搬移舊回應。尚未更新過條件式跳題 RPC 的專案，仍須依上述步驟執行完整 `schema.sql`。
+
+新增收件匣與網站內容管理後，已建立過資料庫的專案也必須再執行一次最新 `schema.sql`。SQL 為可重複執行設計，不會刪除既有問卷與回應。
 
 ### Resend SMTP
 
@@ -106,6 +113,8 @@ Resend API Key 只填在 Supabase SMTP 後台，不可寫入 GitHub 儲存庫。
 - 公開清單、單份問卷讀取及提交分別經由 `list_public_forms`、`get_public_form`、`submit_form` RPC。
 - 密碼型問卷只保存 `pgcrypto` 雜湊；公開回應不會取得密碼欄位或雜湊。
 - 後台資料表操作同時要求 Supabase Auth 身分及 `admin_users` 白名單。
+- 匿名使用者只能透過 `submit_contact_message` RPC 新增聯絡訊息，無法 `SELECT` `contact_messages`；只有白名單管理員能閱讀、更新與刪除。
+- `site_content` 只保存本來就要公開的網站文字；任何人可讀取，僅白名單管理員可修改。
 - `form_submissions.duration_seconds` 由資料庫依起訖時間產生。
 
 ## 部署到 GitHub Pages
@@ -142,7 +151,10 @@ Resend API Key 只填在 Supabase SMTP 後台，不可寫入 GitHub 儲存庫。
 │   ├── dashboard.html
 │   ├── builder.html
 │   ├── responses.html
+│   ├── inbox.html
+│   ├── content.html
 │   └── response-detail.html
+├── contact.html
 ├── assets/
 ├── css/
 │   ├── main.css

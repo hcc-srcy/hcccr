@@ -2,6 +2,8 @@
   const clone = (value) => JSON.parse(JSON.stringify(value));
   const FORM_KEY = "hcccr_demo_forms";
   const SUBMISSION_KEY = "hcccr_demo_submissions";
+  const CONTENT_KEY = "hcccr_demo_site_content";
+  const CONTACT_KEY = "hcccr_demo_contact_messages";
 
   function readSession(key, fallback) {
     try {
@@ -69,6 +71,43 @@
       async deleteSubmission(id) {
         const data = readSession(SUBMISSION_KEY, window.HCCCR_SEED.submissions);
         writeSession(SUBMISSION_KEY, data.filter((item) => item.id !== id));
+      },
+      async getSiteContent() {
+        return readSession(CONTENT_KEY, window.HCCCR_CONTENT_DEFAULTS || {});
+      },
+      async saveSiteContent(content) {
+        writeSession(CONTENT_KEY, content);
+        return clone(content);
+      },
+      async sendContactMessage(message) {
+        const data = readSession(CONTACT_KEY, []);
+        const now = new Date().toISOString();
+        const saved = {
+          ...message,
+          id: crypto.randomUUID ? crypto.randomUUID() : `contact-${Date.now()}`,
+          status: "unread",
+          created_at: now,
+          updated_at: now,
+        };
+        delete saved.website;
+        data.unshift(saved);
+        writeSession(CONTACT_KEY, data);
+        return saved.id;
+      },
+      async getContactMessages() {
+        return readSession(CONTACT_KEY, []);
+      },
+      async updateContactMessage(id, updates) {
+        const data = readSession(CONTACT_KEY, []);
+        const message = data.find((item) => item.id === id);
+        if (!message) throw new Error("CONTACT_NOT_FOUND");
+        Object.assign(message, updates, { updated_at: new Date().toISOString() });
+        writeSession(CONTACT_KEY, data);
+        return clone(message);
+      },
+      async deleteContactMessage(id) {
+        const data = readSession(CONTACT_KEY, []);
+        writeSession(CONTACT_KEY, data.filter((item) => item.id !== id));
       },
       async signInWithMagicLink(email) {
         window.sessionStorage.setItem("hcccr_demo_admin", email);
@@ -161,6 +200,43 @@
         const { error } = await client.from("form_submissions").delete().eq("id", id);
         if (error) throw error;
       },
+      async getSiteContent() {
+        const { data, error } = await client.from("site_content").select("content_key,content_value");
+        if (error) throw error;
+        return Object.fromEntries(data.map((item) => [item.content_key, item.content_value]));
+      },
+      async saveSiteContent(content) {
+        const rows = Object.entries(content).map(([content_key, content_value]) => ({ content_key, content_value }));
+        const { error } = await client.from("site_content").upsert(rows, { onConflict: "content_key" });
+        if (error) throw error;
+        return content;
+      },
+      async sendContactMessage(message) {
+        const { data, error } = await client.rpc("submit_contact_message", {
+          p_sender_name: message.sender_name,
+          p_sender_email: message.sender_email,
+          p_subject: message.subject,
+          p_message: message.message,
+          p_agreed_privacy: message.agreed_privacy,
+          p_website: message.website || "",
+        });
+        if (error) throw error;
+        return data;
+      },
+      async getContactMessages() {
+        const { data, error } = await client.from("contact_messages").select("*").order("created_at", { ascending: false });
+        if (error) throw error;
+        return data;
+      },
+      async updateContactMessage(id, updates) {
+        const { data, error } = await client.from("contact_messages").update(updates).eq("id", id).select().single();
+        if (error) throw error;
+        return data;
+      },
+      async deleteContactMessage(id) {
+        const { error } = await client.from("contact_messages").delete().eq("id", id);
+        if (error) throw error;
+      },
       async signInWithMagicLink(email) {
         const { data, error } = await client.auth.signInWithOtp({
           email,
@@ -195,6 +271,12 @@
       getSubmissions: unavailable,
       saveSubmission: unavailable,
       deleteSubmission: unavailable,
+      getSiteContent: unavailable,
+      saveSiteContent: unavailable,
+      sendContactMessage: unavailable,
+      getContactMessages: unavailable,
+      updateContactMessage: unavailable,
+      deleteContactMessage: unavailable,
       signInWithMagicLink: unavailable,
       getAdminSession: unavailable,
       signOut: unavailable,
