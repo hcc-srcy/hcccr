@@ -54,8 +54,13 @@
   function updateFixedUrl() {
     const slug = builder.elements.slug.value.trim() || form?.id || "new-survey";
     const url = new URL(window.HCCCR.getSurveyHref({ slug }), `${window.location.origin}/`).href;
+    const printUrl = new URL(url);
+    printUrl.searchParams.set("adminPrint", "1");
+    const printButton = document.querySelector("[data-print-form]");
     document.querySelector("[data-fixed-url]").value = url;
     document.querySelector("[data-preview-link]").href = url;
+    printButton.dataset.printUrl = printUrl.href;
+    printButton.disabled = !form?.id;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=12&data=${encodeURIComponent(url)}`;
     document.querySelector("[data-qr-image]").src = qrUrl;
     document.querySelector("[data-download-qr]").href = qrUrl;
@@ -163,6 +168,11 @@
   document.querySelector("[data-copy-url]").addEventListener("click", async () => {
     await navigator.clipboard.writeText(document.querySelector("[data-fixed-url]").value);
     window.HCCCR.showToast("固定網址已複製。")
+  });
+  document.querySelector("[data-print-form]").addEventListener("click", (event) => {
+    if (!event.currentTarget.dataset.printUrl || event.currentTarget.disabled) return;
+    const printWindow = window.open(event.currentTarget.dataset.printUrl, "_blank");
+    if (printWindow) printWindow.opener = null;
   });
 
   async function save() {

@@ -42,6 +42,7 @@ test("homepage and survey directory render", async ({ page }, testInfo) => {
 test("public survey requires consent and submits", async ({ page }) => {
   const errors = watchPageErrors(page);
   await page.goto("/surveys/normal-teaching-2026");
+  await expect(page.locator("[data-print-survey]")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "校園教學正常化實況調查" })).toBeVisible();
   await expect(page.locator("[data-questions-shell]")).toHaveClass(/is-locked/);
   await expect(page.locator("[data-submit]")).toBeDisabled();
@@ -95,6 +96,9 @@ test("password survey rejects and accepts access password", async ({ page }) => 
 
 test("admin demo login, dashboard, builder and analytics work", async ({ page }) => {
   const errors = watchPageErrors(page);
+  await page.context().addInitScript(() => {
+    window.print = () => { document.documentElement.dataset.printInvoked = "true"; };
+  });
   await page.goto("/admin/");
   await page.locator("#admin-email").fill("preview@example.org");
   await page.getByRole("button", { name: "寄送登入連結" }).click();
@@ -108,6 +112,17 @@ test("admin demo login, dashboard, builder and analytics work", async ({ page })
   const before = await page.locator("[data-field-index]").count();
   await page.locator("[data-add-field]").click();
   await expect(page.locator("[data-field-index]")).toHaveCount(before + 1);
+  await expectNoHorizontalOverflow(page);
+  await expect(page.locator("[data-print-form]")).toBeEnabled();
+  const [printPage] = await Promise.all([
+    page.waitForEvent("popup"),
+    page.locator("[data-print-form]").click(),
+  ]);
+  await expect(printPage).toHaveURL(/adminPrint=1/);
+  await expect(printPage.locator("[data-admin-print-preview]")).toBeVisible();
+  await expect(printPage.locator("[data-password-gate], [data-consent-card], [data-submit]")).toHaveCount(0);
+  await expect(printPage.locator("html")).toHaveAttribute("data-print-invoked", "true");
+  await printPage.close();
 
   await page.goto("/admin/responses.html?form=f8a7b8c9-d0e1-4f2a-9b3c-4d5e6f708192");
   await expect(page.locator("[data-chart-grid] canvas").first()).toBeVisible();
