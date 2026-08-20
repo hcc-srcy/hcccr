@@ -1,4 +1,5 @@
 const { test, expect } = require("@playwright/test");
+const fs = require("node:fs");
 
 function watchPageErrors(page) {
   const errors = [];
@@ -112,6 +113,15 @@ test("admin demo login, dashboard, builder and analytics work", async ({ page })
   await expect(page.locator("[data-chart-grid] canvas").first()).toBeVisible();
   await page.locator("[data-stage-filter]").selectOption({ label: "國中" });
   await expect(page.locator("[data-filter-result]")).toContainText("4 / 8");
+  const [download] = await Promise.all([
+    page.waitForEvent("download"),
+    page.getByRole("button", { name: "匯出 Excel" }).click(),
+  ]);
+  expect(download.suggestedFilename()).toMatch(/^normal-teaching-2026-responses-\d{4}-\d{2}-\d{2}\.xlsx$/);
+  const workbookBytes = fs.readFileSync(await download.path());
+  expect([...workbookBytes.subarray(0, 4)]).toEqual([0x50, 0x4b, 0x03, 0x04]);
+  expect(workbookBytes.length).toBeGreaterThan(5000);
+  await expect(page.locator(".toast")).toContainText("已匯出 4 份回應");
   await expectNoHorizontalOverflow(page);
   expect(errors).toEqual([]);
 });

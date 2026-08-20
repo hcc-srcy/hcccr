@@ -6,10 +6,22 @@
   const chartGrid = document.querySelector("[data-chart-grid]");
   const responseList = document.querySelector("[data-response-list]");
   const responseTable = document.querySelector("[data-response-table]");
+  const exportButton = document.querySelector("[data-export-excel]");
   const charts = [];
   let forms = [];
   let form = null;
   let submissions = [];
+
+  const taipeiDateTime = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Taipei",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  });
 
   function filteredSubmissions() {
     const stage = stageFilter.value;
@@ -26,6 +38,158 @@
     return counts;
   }
 
+  function excelDateTime(value) {
+    const source = new Date(value);
+    if (Number.isNaN(source.getTime())) return null;
+    const parts = Object.fromEntries(taipeiDateTime.formatToParts(source).map((part) => [part.type, part.value]));
+    return new Date(Date.UTC(
+      Number(parts.year),
+      Number(parts.month) - 1,
+      Number(parts.day),
+      Number(parts.hour),
+      Number(parts.minute),
+      Number(parts.second),
+    ));
+  }
+
+  function excelAnswer(field, value) {
+    if (value === null || value === undefined) return "";
+    if (field.type === "date" && /^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+      const [year, month, day] = String(value).split("-").map(Number);
+      return new Date(Date.UTC(year, month - 1, day));
+    }
+    if (Array.isArray(value)) return value.join("、").slice(0, 32767);
+    if (typeof value === "object") return JSON.stringify(value).slice(0, 32767);
+    return typeof value === "string" ? value.slice(0, 32767) : value;
+  }
+
+  function setWorkbookStyles(workbook, data) {
+    const answerSheet = workbook.addWorksheet("回應明細", {
+      views: [{ state: "frozen", ySplit: 6 }],
+      pageSetup: { orientation: "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0 },
+    });
+    const headers = ["回應識別碼", "送出時間", "開始時間", "作答時間（秒）", "同意條款", ...form.fields.map((field, index) => `Q${index + 1}｜${field.label}`)];
+    const rows = data.map((submission) => [
+      String(submission.id || ""),
+      excelDateTime(submission.submitted_at),
+      excelDateTime(submission.started_at),
+      Number(submission.duration_seconds || 0),
+      submission.agreed_terms ? "是" : "否",
+      ...form.fields.map((field) => excelAnswer(field, submission.answers?.[field.id])),
+    ]);
+    const lastColumn = answerSheet.getColumn(headers.length).letter;
+
+    answerSheet.mergeCells(`A1:${lastColumn}1`);
+    answerSheet.getCell("A1").value = form.title;
+    answerSheet.getCell("A1").font = { name: "Arial", size: 18, bold: true, color: { argb: "FFFFFFFF" } };
+    answerSheet.getCell("A1").fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF153934" } };
+    answerSheet.getCell("A1").alignment = { vertical: "middle", horizontal: "left" };
+    answerSheet.getRow(1).height = 34;
+
+    const exportedAt = excelDateTime(new Date());
+    answerSheet.getCell("A2").value = "匯出時間";
+    answerSheet.getCell("B2").value = exportedAt;
+    answerSheet.getCell("B2").numFmt = "yyyy-mm-dd hh:mm:ss";
+    answerSheet.getCell("C2").value = "篩選條件";
+    answerSheet.getCell("D2").value = stageFilter.value ? `就讀階段：${stageFilter.value}` : "全部回應";
+    answerSheet.getCell("A3").value = "回應數";
+    answerSheet.getCell("B3").value = data.length;
+    answerSheet.getCell("B3").numFmt = "#,##0";
+    answerSheet.getCell("C3").value = "問卷 ID";
+    answerSheet.getCell("D3").value = String(form.id || "");
+    ["A2", "C2", "A3", "C3"].forEach((address) => {
+      const cell = answerSheet.getCell(address);
+      cell.font = { bold: true, color: { argb: "FF34423E" } };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFE8F2EF" } };
+      cell.alignment = { vertical: "middle" };
+    });
+
+    answerSheet.addTable({
+      name: "SurveyResponses",
+      ref: "A6",
+      headerRow: true,
+      totalsRow: false,
+      style: { theme: "TableStyleMedium2", showRowStripes: true },
+      columns: headers.map((name) => ({ name, filterButton: true })),
+      rows,
+    });
+    answerSheet.getRow(6).height = 30;
+    answerSheet.getColumn(1).width = 20;
+    answerSheet.getColumn(2).width = 21;
+    answerSheet.getColumn(3).width = 21;
+    answerSheet.getColumn(4).width = 16;
+    answerSheet.getColumn(5).width = 12;
+    answerSheet.getColumn(2).numFmt = "yyyy-mm-dd hh:mm:ss";
+    answerSheet.getColumn(3).numFmt = "yyyy-mm-dd hh:mm:ss";
+    answerSheet.getColumn(4).numFmt = "#,##0";
+    form.fields.forEach((field, index) => {
+      const column = answerSheet.getColumn(index + 6);
+      column.width = Math.min(42, Math.max(18, String(field.label || "").length + 6));
+      column.alignment = { vertical: "top", wrapText: true };
+      if (field.type === "date") column.numFmt = "yyyy-mm-dd";
+    });
+
+    const questionSheet = workbook.addWorksheet("題目設定", { views: [{ state: "frozen", ySplit: 1 }] });
+    const typeLabels = { radio: "單選題", checkbox: "複選題", text: "簡答題", textarea: "長答題", date: "日期" };
+    questionSheet.addTable({
+      name: "SurveyQuestions",
+      ref: "A1",
+      headerRow: true,
+      totalsRow: false,
+      style: { theme: "TableStyleMedium2", showRowStripes: true },
+      columns: ["順序", "題目 ID", "題型", "題目", "必填", "選項"].map((name) => ({ name, filterButton: true })),
+      rows: form.fields.map((field, index) => [
+        index + 1,
+        String(field.id || ""),
+        typeLabels[field.type] || field.type,
+        String(field.label || ""),
+        field.required ? "是" : "否",
+        (field.options || []).join("、"),
+      ]),
+    });
+    [8, 20, 14, 42, 10, 42].forEach((width, index) => { questionSheet.getColumn(index + 1).width = width; });
+    questionSheet.getColumn(4).alignment = { vertical: "top", wrapText: true };
+    questionSheet.getColumn(6).alignment = { vertical: "top", wrapText: true };
+    questionSheet.pageSetup = { orientation: "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0 };
+  }
+
+  async function exportExcel() {
+    const data = filteredSubmissions();
+    if (!form || !data.length) return;
+    if (!window.ExcelJS) {
+      window.HCCCR.showToast("Excel 元件載入失敗，請重新整理後再試。", "error");
+      return;
+    }
+
+    exportButton.disabled = true;
+    exportButton.setAttribute("aria-busy", "true");
+    try {
+      const workbook = new window.ExcelJS.Workbook();
+      workbook.creator = "竹縣少代調查系統";
+      workbook.company = "新竹縣第四屆兒童及少年諮詢代表";
+      workbook.created = new Date();
+      workbook.modified = new Date();
+      setWorkbookStyles(workbook, data);
+      const bytes = await workbook.xlsx.writeBuffer();
+      const blobUrl = URL.createObjectURL(new Blob([bytes], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+      const link = document.createElement("a");
+      const date = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Taipei" });
+      link.href = blobUrl;
+      link.download = `${form.slug || "survey"}-responses-${date}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(blobUrl), 30000);
+      window.HCCCR.showToast(`已匯出 ${data.length} 份回應。`);
+    } catch (error) {
+      console.error(error);
+      window.HCCCR.showToast("Excel 匯出失敗，請稍後再試。", "error");
+    } finally {
+      exportButton.removeAttribute("aria-busy");
+      exportButton.disabled = filteredSubmissions().length === 0;
+    }
+  }
+
   function updateKpis(data) {
     const avg = data.length ? Math.round(data.reduce((sum, item) => sum + Number(item.duration_seconds || 0), 0) / data.length) : 0;
     const today = new Date().toDateString();
@@ -36,6 +200,7 @@
       <div class="kpi"><span class="kpi__label"><i data-lucide="calendar-check"></i> 今日新增</span><strong class="kpi__value">${todayCount}</strong></div>
       <div class="kpi"><span class="kpi__label"><i data-lucide="list-checks"></i> 問卷題數</span><strong class="kpi__value">${form.fields.length}</strong></div>`;
     document.querySelector("[data-filter-result]").textContent = `顯示 ${data.length} / ${submissions.length} 份回應`;
+    exportButton.disabled = data.length === 0;
   }
 
   function renderCharts(data) {
@@ -116,6 +281,7 @@
   });
   stageFilter.addEventListener("change", renderAll);
   select.addEventListener("change", () => loadForm(select.value));
+  exportButton.addEventListener("click", exportExcel);
   responseTable.addEventListener("click", async (event) => {
     const button = event.target.closest("[data-delete-response]");
     if (!button || !window.confirm("確定要永久刪除這筆回應嗎？此操作無法復原。")) return;

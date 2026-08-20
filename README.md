@@ -1,6 +1,6 @@
 # 新竹縣第四屆兒童及少年諮詢代表官方網站
 
-[![Hosting: GitHub Pages](https://img.shields.io/badge/Hosting-GitHub%20Pages-222222)](https://hcc-srcy.github.io/hcccr/)
+[![Hosting: GitHub Pages](https://img.shields.io/badge/Hosting-GitHub%20Pages-222222)](https://hcccr.bond/)
 [![Database: Supabase](https://img.shields.io/badge/Database-Supabase-3fcf8e)](https://supabase.com/)
 
 本專案是新竹縣第四屆兒童及少年諮詢代表（竹縣少代）的官方門戶與不定期兒少議題調查系統。前台提供固定網址問卷、隱私同意門檻及響應式填答介面；後台提供表單建構、QR Code、動態統計、單筆回應列印與刪除。
@@ -14,7 +14,7 @@
 - 同意條款後才解除題目鎖定，並記錄 `started_at`、`submitted_at` 與作答費時。
 - 單選、複選、簡答、長答及日期題型，含必填驗證與空白問卷列印。
 - Magic Link 後台入口、調查儀表板、拖曳式題目排序及固定網址 QR Code。
-- 摘要圖表、就讀階段交叉篩選、個別回應、明細表格、單筆列印及刪除。
+- 摘要圖表、就讀階段交叉篩選、個別回應、明細表格、篩選後 Excel 匯出、單筆列印及刪除。
 - 未設定 Supabase 時自動進入示範模式，測試資料只存在目前分頁的 `sessionStorage`。
 
 示範模式用於介面開發及驗收，不是正式資料儲存。正式發布前必須完成 Supabase 與管理員白名單設定。
@@ -78,8 +78,8 @@ values ('admin@example.org');
 
 3. 到 **Authentication → Users → Add user** 建立相同信箱的 Auth 使用者。網站設定 `shouldCreateUser: false`，未預先建立的信箱不會透過登入頁自行註冊。
 4. 到 **Authentication → URL Configuration** 設定：
-   - Site URL：`https://hcc-srcy.github.io/hcccr`
-   - Redirect URL：`https://hcc-srcy.github.io/hcccr/admin/dashboard.html`
+   - Site URL：`https://hcccr.bond`
+   - Redirect URL：`https://hcccr.bond/admin/dashboard.html`
    - 本機開發 Redirect URL：`http://localhost:8788/admin/dashboard.html`
 5. 確認 **Authentication → Providers → Email** 已啟用 Email OTP / Magic Link。
 
@@ -107,15 +107,15 @@ Resend API Key 只填在 Supabase SMTP 後台，不可寫入 GitHub 儲存庫。
 
 ## 部署到 GitHub Pages
 
-正式網址：<https://hcc-srcy.github.io/hcccr/>
+正式網址：<https://hcccr.bond/>
 
-[`pages.yml`](.github/workflows/pages.yml) 會在 `main` 每次推送後執行 `npm run build:pages`，建立含 `/hcccr` 子路徑與 `404.html` 相容層的靜態成品，再自動部署至 GitHub Pages。GitHub Pages 不支援 Cloudflare `_redirects`，因此其問卷連結使用 `survey-detail.html?id={slug}`；既有 `/surveys/{slug}` 分享網址則由 `404.html` 相容處理。
+[`pages.yml`](.github/workflows/pages.yml) 會在 `main` 每次推送後執行 `npm run build:pages`，依 Actions Variables 建立自訂網域根路徑與 `404.html` 相容層的靜態成品，再自動部署至 GitHub Pages。GitHub Pages 不支援 Cloudflare `_redirects`，因此其問卷連結使用 `survey-detail.html?id={slug}`；既有 `/surveys/{slug}` 分享網址則由 `404.html` 相容處理。
 
 若 `js/env.js` 尚未填入 Supabase URL 與 Publishable/Anon Key，線上網站會清楚標示為示範模式，填答不會進入正式資料庫。
 
 ### 自訂網域
 
-目前規劃的自訂網域為 `hcccr.bond`。Cloudflare DNS 應新增根網域 CNAME：名稱 `@`、目標 `hcc-srcy.github.io`，並先設為 **DNS only**。DNS 生效後，在 GitHub Pages 設定 Custom domain，再將 Actions Variables 設為 `PAGES_BASE_PATH=/` 與 `PAGES_CUSTOM_DOMAIN=hcccr.bond`；部署腳本會自動建立 `CNAME` 成品並將所有資源切換至網域根路徑。
+目前正式自訂網域為 `hcccr.bond`。Cloudflare DNS 的根網域 CNAME 名稱為 `@`、目標為 `hcc-srcy.github.io`，並維持 **DNS only**。GitHub Pages Custom domain 與 Actions Variables 使用 `PAGES_BASE_PATH=/`、`PAGES_CUSTOM_DOMAIN=hcccr.bond`；部署腳本會自動建立 `CNAME` 成品並將所有資源切換至網域根路徑。
 
 ## 部署到 Cloudflare Pages（選用）
 

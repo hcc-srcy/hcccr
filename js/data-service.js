@@ -129,11 +129,21 @@
         return data;
       },
       async getSubmissions(formId) {
-        let query = client.from("form_submissions").select("*").order("submitted_at", { ascending: false });
-        if (formId) query = query.eq("form_id", formId);
-        const { data, error } = await query;
-        if (error) throw error;
-        return data;
+        const pageSize = 1000;
+        const submissions = [];
+        for (let from = 0; ; from += pageSize) {
+          let query = client
+            .from("form_submissions")
+            .select("*")
+            .order("submitted_at", { ascending: false })
+            .order("id", { ascending: false })
+            .range(from, from + pageSize - 1);
+          if (formId) query = query.eq("form_id", formId);
+          const { data, error } = await query;
+          if (error) throw error;
+          submissions.push(...data);
+          if (data.length < pageSize) return submissions;
+        }
       },
       async saveSubmission(submission) {
         const { access_password: accessPassword, ...payload } = submission;
