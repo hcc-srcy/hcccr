@@ -1,5 +1,5 @@
 -- HCCCR survey schema. Run in the Supabase SQL editor on a new project.
-create extension if not exists pgcrypto;
+create extension if not exists pgcrypto with schema extensions;
 
 do $$ begin
   create type public.form_visibility_enum as enum ('public', 'public_password', 'unlisted');
@@ -141,7 +141,7 @@ begin
 
   if target.id is null then return null; end if;
   password_ok := target.visibility <> 'public_password'
-    or (p_password is not null and crypt(p_password, target.access_password_hash) = target.access_password_hash);
+    or (p_password is not null and extensions.crypt(p_password, target.access_password_hash) = target.access_password_hash);
   return public.form_public_json(target, password_ok, password_ok);
 end;
 $$;
@@ -171,7 +171,7 @@ begin
     raise exception 'Terms consent is required';
   end if;
   if target.visibility = 'public_password'
-    and (p_access_password is null or crypt(p_access_password, target.access_password_hash) <> target.access_password_hash) then
+    and (p_access_password is null or extensions.crypt(p_access_password, target.access_password_hash) <> target.access_password_hash) then
     raise exception 'Invalid access password';
   end if;
   if p_started_at > now() or p_started_at < now() - interval '24 hours' then
@@ -222,7 +222,9 @@ begin
     ) values (
       target_id, p_payload ->> 'title', coalesce(p_payload ->> 'description', ''),
       coalesce(p_payload ->> 'category', '兒少議題'), p_payload ->> 'slug', target_visibility,
-      case when target_visibility = 'public_password' then crypt(p_access_password, gen_salt('bf')) end,
+      case when target_visibility = 'public_password' then
+        extensions.crypt(p_access_password, extensions.gen_salt('bf'))
+      end,
       coalesce((p_payload ->> 'require_terms_consent')::boolean, true),
       coalesce((p_payload ->> 'is_open')::boolean, true),
       coalesce((p_payload ->> 'estimated_minutes')::integer, 3),
@@ -239,7 +241,8 @@ begin
       visibility = target_visibility,
       access_password_hash = case
         when target_visibility <> 'public_password' then null
-        when coalesce(p_access_password, '') <> '' then crypt(p_access_password, gen_salt('bf'))
+        when coalesce(p_access_password, '') <> '' then
+          extensions.crypt(p_access_password, extensions.gen_salt('bf'))
         else access_password_hash
       end,
       require_terms_consent = coalesce((p_payload ->> 'require_terms_consent')::boolean, true),

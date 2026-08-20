@@ -83,9 +83,11 @@ values ('admin@example.org');
    - 本機開發 Redirect URL：`http://localhost:8788/admin/dashboard.html`
 5. 確認 **Authentication → Providers → Email** 已啟用 Email OTP / Magic Link。
 
+若建立密碼型問卷時出現 `function gen_salt(unknown) does not exist`，代表舊版 RPC 沒有指向 Supabase 的 `extensions` schema。重新執行最新版 [`supabase/schema.sql`](supabase/schema.sql) 即可更新函式，不會刪除既有問卷或回應。
+
 ### Resend SMTP
 
-正式寄送 Magic Link 時，先在 Resend 驗證寄件網域並建立 API Key，再到 Supabase **Project Settings → Authentication → SMTP Settings** 啟用自訂 SMTP：
+正式寄送 Magic Link 時，先在 Resend 驗證寄件網域並建立 API Key，再到 Supabase 左側主選單的 **Authentication → Email / SMTP Settings** 啟用自訂 SMTP（不在 Project Settings 內）：
 
 - Host：`smtp.resend.com`
 - Port：`465`（TLS）或 `587`（STARTTLS）
