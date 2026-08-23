@@ -20,6 +20,7 @@ const entries = [
   "contact.html",
   "index.html",
   "LICENSE",
+  "message-thread.html",
   "survey-detail.html",
   "surveys.html",
   "terms.html",

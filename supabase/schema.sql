@@ -438,3 +438,203 @@ grant execute on function public.submit_contact_message(text, text, text, text, 
 grant select on table public.site_content to anon, authenticated;
 grant insert, update, delete on table public.site_content to authenticated;
 grant select, update, delete on table public.contact_messages to authenticated;
+
+-- ============================================================================
+-- 收件匣雙向訊息（2026-08）：後台可回覆並主動發起訊息，寄件人可透過專屬連結追蹤對話。
+-- 本區塊可安全重複執行，不會刪除既有問卷、回應或聯絡訊息。
+-- ============================================================================
+
+do $$ begin
+  create type public.message_sender_enum as enum ('admin', 'sender');
+exception
+  when duplicate_object then null;
+end $$;
+
+alter table public.contact_messages
+  add column if not exists access_token uuid not null default gen_random_uuid(),
+  add column if not exists origin text not null default 'contact_form' check (origin in ('contact_form', 'admin_initiated')),
+  add column if not exists last_activity_at timestamptz not null default now(),
+  add column if not exists sender_unread boolean not null default false;
+
+create unique index if not exists contact_messages_access_token_key on public.contact_messages(access_token);
+create index if not exists contact_messages_last_activity_at_idx on public.contact_messages(last_activity_at desc);
+
+create table if not exists public.message_replies (
+  id uuid primary key default gen_random_uuid(),
+  message_id uuid not null references public.contact_messages(id) on delete cascade,
+  sender_type public.message_sender_enum not null,
+  body text not null check (char_length(body) between 1 and 5000),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists message_replies_message_id_created_at_idx on public.message_replies(message_id, created_at);
+
+alter table public.message_replies enable row level security;
+
+drop policy if exists "Admins manage message replies" on public.message_replies;
+create policy "Admins manage message replies" on public.message_replies
+  for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- 後台送出回覆／寄件人在自己的對話串回覆時，同步更新母訊息的狀態與最後互動時間。
+create or replace function public.touch_contact_message_on_reply()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.sender_type = 'admin' then
+    update public.contact_messages
+      set status = 'replied', last_activity_at = now(), sender_unread = true, updated_at = now()
+      where id = new.message_id;
+  else
+    update public.contact_messages
+      set status = 'unread', last_activity_at = now(), updated_at = now()
+      where id = new.message_id;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists message_replies_touch_parent on public.message_replies;
+create trigger message_replies_touch_parent
+after insert on public.message_replies
+for each row execute function public.touch_contact_message_on_reply();
+
+-- 舊版 submit_contact_message 只回傳 id；改為回傳 id 及 access_token，讓前台能顯示追蹤連結。
+drop function if exists public.submit_contact_message(text, text, text, text, boolean, text);
+
+create or replace function public.submit_contact_message(
+  p_sender_name text,
+  p_sender_email text,
+  p_subject text,
+  p_message text,
+  p_agreed_privacy boolean,
+  p_website text default ''
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  saved_id uuid;
+  saved_token uuid;
+  normalized_email text := lower(trim(coalesce(p_sender_email, '')));
+begin
+  if trim(coalesce(p_website, '')) <> '' then
+    raise exception 'Message rejected';
+  end if;
+  if not coalesce(p_agreed_privacy, false) then
+    raise exception 'Privacy consent is required';
+  end if;
+  if char_length(trim(coalesce(p_sender_name, ''))) not between 1 and 80
+    or char_length(normalized_email) not between 3 and 254
+    or position('@' in normalized_email) <= 1
+    or char_length(trim(coalesce(p_subject, ''))) not between 1 and 120
+    or char_length(trim(coalesce(p_message, ''))) not between 10 and 5000 then
+    raise exception 'Invalid contact message';
+  end if;
+  if (
+    select count(*) from public.contact_messages
+    where lower(sender_email) = normalized_email
+      and created_at > now() - interval '10 minutes'
+  ) >= 3 then
+    raise exception 'Too many messages';
+  end if;
+
+  insert into public.contact_messages(sender_name, sender_email, subject, message, agreed_privacy, origin)
+  values (
+    trim(p_sender_name), normalized_email, trim(p_subject), trim(p_message), true, 'contact_form'
+  ) returning id, access_token into saved_id, saved_token;
+  return jsonb_build_object('id', saved_id, 'access_token', saved_token);
+end;
+$$;
+
+-- 寄件人憑專屬連結（id + access_token）查看自己的對話串，不需登入。
+create or replace function public.get_message_thread(p_message_id uuid, p_token uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  target public.contact_messages;
+  replies jsonb;
+begin
+  select * into target from public.contact_messages
+  where id = p_message_id and access_token = p_token;
+  if target.id is null then
+    raise exception 'Message not found';
+  end if;
+
+  if target.sender_unread then
+    update public.contact_messages set sender_unread = false where id = p_message_id;
+  end if;
+
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'id', r.id, 'sender_type', r.sender_type, 'body', r.body, 'created_at', r.created_at
+  ) order by r.created_at), '[]'::jsonb)
+  into replies
+  from public.message_replies r
+  where r.message_id = p_message_id;
+
+  return jsonb_build_object(
+    'id', target.id,
+    'subject', target.subject,
+    'sender_name', target.sender_name,
+    'message', target.message,
+    'status', target.status,
+    'origin', target.origin,
+    'created_at', target.created_at,
+    'replies', replies
+  );
+end;
+$$;
+
+-- 寄件人在自己的對話串中新增一則回覆訊息（速率限制避免濫用）。
+create or replace function public.reply_to_message_thread(p_message_id uuid, p_token uuid, p_body text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  target public.contact_messages;
+begin
+  select * into target from public.contact_messages
+  where id = p_message_id and access_token = p_token;
+  if target.id is null then
+    raise exception 'Message not found';
+  end if;
+  if target.status = 'archived' then
+    raise exception 'This conversation is closed';
+  end if;
+  if char_length(trim(coalesce(p_body, ''))) not between 1 and 5000 then
+    raise exception 'Invalid reply';
+  end if;
+  if (
+    select count(*) from public.message_replies
+    where message_id = p_message_id and sender_type = 'sender'
+      and created_at > now() - interval '10 minutes'
+  ) >= 5 then
+    raise exception 'Too many replies, please wait a moment';
+  end if;
+
+  insert into public.message_replies(message_id, sender_type, body)
+  values (p_message_id, 'sender', trim(p_body));
+
+  return public.get_message_thread(p_message_id, p_token);
+end;
+$$;
+
+revoke all on function public.submit_contact_message(text, text, text, text, boolean, text) from public;
+revoke all on function public.get_message_thread(uuid, uuid) from public;
+revoke all on function public.reply_to_message_thread(uuid, uuid, text) from public;
+grant execute on function public.submit_contact_message(text, text, text, text, boolean, text) to anon, authenticated;
+grant execute on function public.get_message_thread(uuid, uuid) to anon, authenticated;
+grant execute on function public.reply_to_message_thread(uuid, uuid, text) to anon, authenticated;
+
+grant select, insert on table public.message_replies to authenticated;
+grant select, update on table public.contact_messages to authenticated;
+grant insert on table public.contact_messages to authenticated;

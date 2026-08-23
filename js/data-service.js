@@ -4,6 +4,8 @@
   const SUBMISSION_KEY = "hcccr_demo_submissions";
   const CONTENT_KEY = "hcccr_demo_site_content";
   const CONTACT_KEY = "hcccr_demo_contact_messages";
+  const REPLY_KEY = "hcccr_demo_message_replies";
+  const uid = () => (crypto.randomUUID ? crypto.randomUUID() : `demo-${Date.now()}-${Math.random().toString(16).slice(2)}`);
 
   function readSession(key, fallback) {
     try {
@@ -84,15 +86,19 @@
         const now = new Date().toISOString();
         const saved = {
           ...message,
-          id: crypto.randomUUID ? crypto.randomUUID() : `contact-${Date.now()}`,
+          id: uid(),
+          access_token: uid(),
+          origin: "contact_form",
           status: "unread",
+          last_activity_at: now,
+          sender_unread: false,
           created_at: now,
           updated_at: now,
         };
         delete saved.website;
         data.unshift(saved);
         writeSession(CONTACT_KEY, data);
-        return saved.id;
+        return { id: saved.id, access_token: saved.access_token };
       },
       async getContactMessages() {
         return readSession(CONTACT_KEY, []);
@@ -108,6 +114,69 @@
       async deleteContactMessage(id) {
         const data = readSession(CONTACT_KEY, []);
         writeSession(CONTACT_KEY, data.filter((item) => item.id !== id));
+        const replies = readSession(REPLY_KEY, []);
+        writeSession(REPLY_KEY, replies.filter((item) => item.message_id !== id));
+      },
+      async createAdminMessage(message) {
+        const data = readSession(CONTACT_KEY, []);
+        const now = new Date().toISOString();
+        const saved = {
+          id: uid(),
+          access_token: uid(),
+          origin: "admin_initiated",
+          status: "replied",
+          sender_name: message.sender_name,
+          sender_email: message.sender_email,
+          subject: message.subject,
+          message: message.message,
+          agreed_privacy: true,
+          last_activity_at: now,
+          sender_unread: true,
+          created_at: now,
+          updated_at: now,
+        };
+        data.unshift(saved);
+        writeSession(CONTACT_KEY, data);
+        return clone(saved);
+      },
+      async getMessageReplies(messageId) {
+        const data = readSession(REPLY_KEY, []);
+        return data.filter((item) => item.message_id === messageId).sort((a, b) => a.created_at.localeCompare(b.created_at));
+      },
+      async sendAdminReply(messageId, body) {
+        const replies = readSession(REPLY_KEY, []);
+        const now = new Date().toISOString();
+        const reply = { id: uid(), message_id: messageId, sender_type: "admin", body, created_at: now };
+        replies.push(reply);
+        writeSession(REPLY_KEY, replies);
+        await this.updateContactMessage(messageId, { status: "replied", last_activity_at: now, sender_unread: true });
+        return reply;
+      },
+      async getPublicMessageThread(messageId, token) {
+        const data = readSession(CONTACT_KEY, []);
+        const message = data.find((item) => item.id === messageId && item.access_token === token);
+        if (!message) throw new Error("MESSAGE_NOT_FOUND");
+        if (message.sender_unread) {
+          message.sender_unread = false;
+          writeSession(CONTACT_KEY, data);
+        }
+        const replies = await this.getMessageReplies(messageId);
+        return { ...clone(message), replies };
+      },
+      async replyToPublicThread(messageId, token, body) {
+        const data = readSession(CONTACT_KEY, []);
+        const message = data.find((item) => item.id === messageId && item.access_token === token);
+        if (!message) throw new Error("MESSAGE_NOT_FOUND");
+        if (message.status === "archived") throw new Error("THREAD_CLOSED");
+        const replies = readSession(REPLY_KEY, []);
+        const now = new Date().toISOString();
+        replies.push({ id: uid(), message_id: messageId, sender_type: "sender", body, created_at: now });
+        writeSession(REPLY_KEY, replies);
+        message.status = "unread";
+        message.last_activity_at = now;
+        message.updated_at = now;
+        writeSession(CONTACT_KEY, data);
+        return this.getPublicMessageThread(messageId, token);
       },
       async signInWithMagicLink(email) {
         window.sessionStorage.setItem("hcccr_demo_admin", email);
@@ -237,6 +306,44 @@
         const { error } = await client.from("contact_messages").delete().eq("id", id);
         if (error) throw error;
       },
+      async createAdminMessage(message) {
+        const { data, error } = await client.from("contact_messages").insert({
+          sender_name: message.sender_name,
+          sender_email: message.sender_email,
+          subject: message.subject,
+          message: message.message,
+          agreed_privacy: true,
+          origin: "admin_initiated",
+          status: "replied",
+          sender_unread: true,
+        }).select().single();
+        if (error) throw error;
+        return data;
+      },
+      async getMessageReplies(messageId) {
+        const { data, error } = await client.from("message_replies").select("*").eq("message_id", messageId).order("created_at", { ascending: true });
+        if (error) throw error;
+        return data;
+      },
+      async sendAdminReply(messageId, body) {
+        const { data, error } = await client.from("message_replies").insert({
+          message_id: messageId,
+          sender_type: "admin",
+          body,
+        }).select().single();
+        if (error) throw error;
+        return data;
+      },
+      async getPublicMessageThread(messageId, token) {
+        const { data, error } = await client.rpc("get_message_thread", { p_message_id: messageId, p_token: token });
+        if (error) throw error;
+        return data;
+      },
+      async replyToPublicThread(messageId, token, body) {
+        const { data, error } = await client.rpc("reply_to_message_thread", { p_message_id: messageId, p_token: token, p_body: body });
+        if (error) throw error;
+        return data;
+      },
       async signInWithMagicLink(email) {
         const { data, error } = await client.auth.signInWithOtp({
           email,
@@ -277,6 +384,11 @@
       getContactMessages: unavailable,
       updateContactMessage: unavailable,
       deleteContactMessage: unavailable,
+      createAdminMessage: unavailable,
+      getMessageReplies: unavailable,
+      sendAdminReply: unavailable,
+      getPublicMessageThread: unavailable,
+      replyToPublicThread: unavailable,
       signInWithMagicLink: unavailable,
       getAdminSession: unavailable,
       signOut: unavailable,

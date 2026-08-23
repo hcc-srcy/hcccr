@@ -583,6 +583,12 @@ a {
   background: #fff1bd;
 }
 
+.tag--ghost {
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+}
+
 .survey-card h3 {
   margin: 18px 0 0;
   font-size: 1.35rem;
@@ -939,6 +945,133 @@ a {
 .contact-success p {
   max-width: 480px;
   color: var(--muted);
+}
+
+.contact-tracking {
+  width: min(480px, 100%);
+  margin-top: 8px;
+  padding: 14px 16px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.contact-tracking p {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.thread-link-box {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) 40px;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.thread-link-box svg {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+
+.thread-link-box input {
+  min-height: 34px;
+  padding-block: 5px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  background: transparent;
+  border: 0;
+}
+
+.thread-scroll {
+  max-height: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  padding-block: 4px;
+}
+
+.thread-bubble {
+  max-width: 88%;
+  padding: 10px 13px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: white;
+}
+
+.thread-bubble--admin {
+  align-self: flex-start;
+  background: var(--surface);
+}
+
+.thread-bubble--sender {
+  align-self: flex-end;
+  color: var(--primary-dark);
+  background: var(--primary-soft);
+  border-color: transparent;
+}
+
+.thread-bubble__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  opacity: 0.72;
+}
+
+.thread-bubble__body {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+.thread-reply {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.thread-reply textarea {
+  min-height: 100px;
+}
+
+.thread-reply .button {
+  justify-self: end;
+}
+
+.thread-page {
+  width: min(720px, 100%);
+  margin-inline: auto;
+}
+
+.thread-page__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 10px 0 20px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.thread-page__panel {
+  padding: 22px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.thread-page__panel + .thread-page__panel {
+  margin-top: 16px;
 }
 
 .site-footer {

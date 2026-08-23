@@ -18,7 +18,7 @@
   if (adminNav && !adminNav.querySelector('[href*="/admin/inbox"]')) {
     const websiteLabel = [...adminNav.querySelectorAll(".admin-nav__label")].find((node) => node.textContent.trim() === "網站");
     const websiteLinks = `
-      <a href="${window.HCCCR.appUrl("/admin/inbox.html")}"><i data-lucide="inbox"></i> 收件匣</a>
+      <a href="${window.HCCCR.appUrl("/admin/inbox.html")}"><i data-lucide="inbox"></i> 收件匣<span class="nav-badge" data-inbox-nav-badge hidden>0</span></a>
       <a href="${window.HCCCR.appUrl("/admin/content.html")}"><i data-lucide="file-pen-line"></i> 網站內容</a>`;
     if (websiteLabel) {
       websiteLabel.insertAdjacentHTML("afterend", websiteLinks);
@@ -36,6 +36,20 @@
     });
     window.lucide?.createIcons();
   }
+
+  // 側欄「收件匣」未讀徽章：待處理（unread）或對方已回覆但尚未讀取的訊息數。
+  (async function updateInboxBadge() {
+    const badge = document.querySelector("[data-inbox-nav-badge]");
+    if (!badge) return;
+    try {
+      const messages = await window.HCCCR_DATA.getContactMessages();
+      const pending = messages.filter((message) => message.status === "unread").length;
+      badge.textContent = pending > 99 ? "99+" : String(pending);
+      badge.hidden = pending === 0;
+    } catch (error) {
+      console.warn("Unable to load inbox badge count", error);
+    }
+  })();
 
   document.querySelectorAll("[data-sign-out]").forEach((button) => button.addEventListener("click", async () => {
     await window.HCCCR_DATA.signOut();

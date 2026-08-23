@@ -201,6 +201,25 @@ textarea.form-control {
   height: 18px;
 }
 
+.admin-nav a {
+  position: relative;
+}
+
+.nav-badge {
+  min-width: 20px;
+  height: 20px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: auto;
+  padding: 0 6px;
+  color: white;
+  background: #d94f3d;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
 .admin-sidebar__footer {
   margin-top: auto;
   padding-top: 16px;
@@ -833,6 +852,17 @@ textarea.form-control {
   font-weight: 700;
 }
 
+.inbox-table tbody tr.is-selected td {
+  background: var(--primary-soft);
+}
+
+.inbox-origin-tag {
+  min-height: 22px;
+  margin-right: 8px;
+  padding: 2px 8px;
+  font-size: 0.68rem;
+}
+
 .inbox-table td:first-child strong,
 .inbox-table td:first-child small {
   display: block;
@@ -901,6 +931,65 @@ textarea.form-control {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.dialog-scrim {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(10, 25, 22, 0.5);
+}
+
+.dialog-scrim[hidden] {
+  display: none;
+}
+
+.dialog {
+  width: min(520px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: 0 20px 60px rgba(10, 25, 22, 0.32);
+}
+
+.dialog__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.dialog__header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.dialog__body {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+.dialog__hint {
+  margin: 0;
+  padding: 10px 12px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+}
+
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
 }
 
 .content-tabs {
@@ -1151,6 +1240,14 @@ textarea.form-control {
   .inbox-subject {
     min-width: 120px;
     max-width: 160px;
+  }
+
+  .thread-bubble {
+    max-width: 100%;
+  }
+
+  .dialog__body {
+    padding: 16px;
   }
 }
 
