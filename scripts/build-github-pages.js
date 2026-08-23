@@ -23,6 +23,7 @@ const entries = [
   "message-thread.html",
   "survey-detail.html",
   "surveys.html",
+  "team.html",
   "terms.html",
 ];
 

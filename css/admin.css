@@ -295,6 +295,73 @@ textarea.form-control {
   margin-bottom: 26px;
 }
 
+.admin-page-heading--secondary {
+  margin-top: 44px;
+}
+
+.team-editor__list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.team-editor__row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.team-editor__avatar {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--muted);
+  background: var(--surface);
+  border-radius: 50%;
+}
+
+.team-editor__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.team-editor__info {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.team-editor__info strong {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.team-editor__info small {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.team-editor__actions {
+  display: flex;
+  gap: 4px;
+}
+
+.team-editor__save {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
 .admin-page-heading h2 {
   margin: 0;
   font-size: 1.65rem;

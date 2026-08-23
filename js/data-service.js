@@ -78,8 +78,10 @@
         return readSession(CONTENT_KEY, window.HCCCR_CONTENT_DEFAULTS || {});
       },
       async saveSiteContent(content) {
-        writeSession(CONTENT_KEY, content);
-        return clone(content);
+        const existing = readSession(CONTENT_KEY, {});
+        const merged = { ...existing, ...content };
+        writeSession(CONTENT_KEY, merged);
+        return clone(merged);
       },
       async sendContactMessage(message) {
         const data = readSession(CONTACT_KEY, []);

@@ -54,6 +54,28 @@
     { group: "隱私與條款", key: "terms.rights", label: "八、當事人權利", defaultValue: "依《個人資料保護法》第 3 條，您得請求查詢、閱覽、複製、更正、停止蒐集處理利用或刪除資料。如需行使權利，請透過網站聯絡表單提出申請，我們會在確認身分與回應識別資訊後辦理。", rows: 4 },
     { group: "隱私與條款", key: "terms.changes", label: "九、條款修訂", defaultValue: "本政策得因法令、少代會運作或技術變更修訂。修訂後版本將發布於本頁，重大異動另於首頁公告。" },
     { group: "隱私與條款", key: "terms.publisher", label: "發布單位", defaultValue: "新竹縣第四屆兒童及少年諮詢代表" },
+
+    { group: "認識我們頁", key: "team.hero_eyebrow", label: "主視覺短標", defaultValue: "認識我們" },
+    { group: "認識我們頁", key: "team.hero_title", label: "主標題", defaultValue: "新竹縣第四屆\n兒少諮詢代表", multiline: true },
+    { group: "認識我們頁", key: "team.hero_lead", label: "主視覺說明", defaultValue: "我們是一群由新竹縣兒童與少年組成的諮詢代表，透過調查、討論與提案，把生活中的真實經驗帶進縣府的決策現場。", rows: 3 },
+    { group: "認識我們頁", key: "team.rights_eyebrow", label: "兒權區短標", defaultValue: "認識兒童權利公約" },
+    { group: "認識我們頁", key: "team.rights_title", label: "兒權區標題", defaultValue: "兒童權利公約（CRC）是什麼？" },
+    { group: "認識我們頁", key: "team.rights_intro", label: "兒權區說明", defaultValue: "《兒童權利公約》是聯合國於 1989 年通過的國際人權公約，台灣已於 2014 年制定施行法，將公約內容國內法化。公約以「兒童」泛指未滿十八歲之人，並確立四項一般性原則，做為理解與落實所有兒童權利的基礎。", rows: 4 },
+    { group: "認識我們頁", key: "team.rights_principle_1_title", label: "原則一標題", defaultValue: "禁止歧視原則" },
+    { group: "認識我們頁", key: "team.rights_principle_1_body", label: "原則一說明", defaultValue: "每個兒童都應享有公約保障的權利，不因種族、性別、身心狀況、家庭背景或其他身分而受到差別對待。", rows: 3 },
+    { group: "認識我們頁", key: "team.rights_principle_2_title", label: "原則二標題", defaultValue: "兒童最佳利益原則" },
+    { group: "認識我們頁", key: "team.rights_principle_2_body", label: "原則二說明", defaultValue: "所有與兒童有關的行動，無論由公部門、法院或立法機關作成，都應以兒童的最佳利益為優先考量。", rows: 3 },
+    { group: "認識我們頁", key: "team.rights_principle_3_title", label: "原則三標題", defaultValue: "生存與發展權" },
+    { group: "認識我們頁", key: "team.rights_principle_3_body", label: "原則三說明", defaultValue: "兒童享有與生俱來的生存權，國家應盡最大可能確保兒童的存活與健全發展，包含身心、社會與教育各層面。", rows: 3 },
+    { group: "認識我們頁", key: "team.rights_principle_4_title", label: "原則四標題", defaultValue: "尊重兒童意見" },
+    { group: "認識我們頁", key: "team.rights_principle_4_body", label: "原則四說明", defaultValue: "凡是能夠形成自己意見的兒童，應有權就攸關自身的事務自由表達意見，且該意見應依其年齡與成熟度受到應有的重視。", rows: 3 },
+    { group: "認識我們頁", key: "team.rights_footnote", label: "兒權區補充說明", defaultValue: "以上為公約四項一般性原則的重點整理，並非公約全文。若想進一步了解公約完整條文，歡迎洽詢學校輔導室或衛生福利部相關單位。", rows: 3 },
+    { group: "認識我們頁", key: "team.team_eyebrow", label: "團隊區短標", defaultValue: "我們的團隊" },
+    { group: "認識我們頁", key: "team.team_title", label: "團隊區標題", defaultValue: "第四屆兒少諮詢代表" },
+    { group: "認識我們頁", key: "team.team_lead", label: "團隊區說明", defaultValue: "代表們來自新竹縣不同地區、學校與年齡層，各自關注不同的兒少議題。名單與簡介會隨屆期更新。", rows: 3 },
+    { group: "認識我們頁", key: "team.cta_eyebrow", label: "底部號召短標", defaultValue: "你的意見很重要" },
+    { group: "認識我們頁", key: "team.cta_title", label: "底部號召標題", defaultValue: "有想讓我們知道的事嗎？" },
+    { group: "認識我們頁", key: "team.cta_body", label: "底部號召說明", defaultValue: "不管是想反映的問題、想提出的建議，或只是想打聲招呼，都歡迎透過意見箱或聯絡表單與我們分享。", rows: 3 },
   ];
 
   window.HCCCR_CONTENT_FIELDS = fields;
