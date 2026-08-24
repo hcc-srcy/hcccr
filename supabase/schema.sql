@@ -638,3 +638,23 @@ grant execute on function public.reply_to_message_thread(uuid, uuid, text) to an
 grant select, insert on table public.message_replies to authenticated;
 grant select, update on table public.contact_messages to authenticated;
 grant insert on table public.contact_messages to authenticated;
+
+-- ============================================================================
+-- 首頁即時成果統計（2026-08）：僅回傳去識別化的聚合數字，不外洩任何個別回應或聯絡訊息內容。
+-- ============================================================================
+
+create or replace function public.get_public_impact_stats()
+returns jsonb
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select jsonb_build_object(
+    'open_surveys', (select count(*) from public.forms where visibility in ('public', 'public_password') and is_open),
+    'total_responses', (select count(*) from public.form_submissions)
+  );
+$$;
+
+revoke all on function public.get_public_impact_stats() from public;
+grant execute on function public.get_public_impact_stats() to anon, authenticated;

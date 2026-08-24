@@ -32,6 +32,14 @@
         const data = readSession(FORM_KEY, window.HCCCR_SEED.forms);
         return data.filter((form) => includeUnlisted || form.visibility !== "unlisted");
       },
+      async getPublicImpactStats() {
+        const forms = await this.getForms();
+        const submissions = readSession(SUBMISSION_KEY, window.HCCCR_SEED.submissions);
+        return {
+          open_surveys: forms.filter((form) => form.is_open).length,
+          total_responses: submissions.length,
+        };
+      },
       async getForm(identifier) {
         const data = await this.getForms({ includeUnlisted: true });
         return data.find((form) => form.id === identifier || form.slug === identifier) || null;
@@ -214,6 +222,11 @@
         if (error) throw error;
         return data;
       },
+      async getPublicImpactStats() {
+        const { data, error } = await client.rpc("get_public_impact_stats");
+        if (error) throw error;
+        return data;
+      },
       async getForm(identifier) {
         const { data: sessionData } = await client.auth.getSession();
         const isUuid = /^[0-9a-f-]{36}$/i.test(identifier);
@@ -374,6 +387,7 @@
     return {
       mode: "unavailable",
       getForms: unavailable,
+      getPublicImpactStats: unavailable,
       getForm: unavailable,
       unlockForm: unavailable,
       saveForm: unavailable,

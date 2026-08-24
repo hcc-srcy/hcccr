@@ -61,9 +61,18 @@
           </div>
         </div>
       </div>
+      <a class="hero__scroll-cue" href="#about" aria-label="向下捲動了解更多"><i data-lucide="chevron-down"></i></a>
     </section>
 
-    <section class="section" id="about">
+    <div class="stats-band" data-reveal role="group" aria-label="即時成果統計">
+      <div class="container stats-band__grid" data-stats-grid>
+        <div class="stat"><strong class="stat__value" data-stat="open_surveys" data-count-to="0">0</strong><span class="stat__label" data-content-key="home.stats_open_label">開放中的調查</span></div>
+        <div class="stat"><strong class="stat__value" data-stat="total_responses" data-count-to="0">0</strong><span class="stat__label" data-content-key="home.stats_responses_label">累積回應人次</span></div>
+        <div class="stat"><strong class="stat__value" data-content-key="home.stats_terms_value">4</strong><span class="stat__label" data-content-key="home.stats_terms_label">屆兒少諮詢代表</span></div>
+      </div>
+    </div>
+
+    <section class="section" id="about" data-reveal>
       <div class="container mission-grid">
         <div class="mission-copy">
           <p class="eyebrow" data-content-key="home.about_eyebrow">兒少參與，不只是被傾聽</p>
@@ -72,30 +81,60 @@
           <a class="text-link" href="/terms">了解資料如何被保護 <i data-lucide="arrow-right"></i></a>
         </div>
         <ul class="principles">
-          <li class="principle"><span class="principle__number">01</span><div><h3 data-content-key="home.principle_1_title">真實蒐集</h3><p data-content-key="home.principle_1_body">從兒少的日常經驗出發，不替填答者預設答案。</p></div></li>
-          <li class="principle"><span class="principle__number">02</span><div><h3 data-content-key="home.principle_2_title">安全保護</h3><p data-content-key="home.principle_2_body">遵守資料最小化原則，公開成果只呈現去識別化統計。</p></div></li>
-          <li class="principle"><span class="principle__number">03</span><div><h3 data-content-key="home.principle_3_title">持續倡議</h3><p data-content-key="home.principle_3_body">把調查結果轉化為提案、對話與可以追蹤的改善行動。</p></div></li>
+          <li class="principle"><span class="principle__icon"><i data-lucide="ear"></i></span><div><h3 data-content-key="home.principle_1_title">真實蒐集</h3><p data-content-key="home.principle_1_body">從兒少的日常經驗出發，不替填答者預設答案。</p></div></li>
+          <li class="principle"><span class="principle__icon"><i data-lucide="shield-check"></i></span><div><h3 data-content-key="home.principle_2_title">安全保護</h3><p data-content-key="home.principle_2_body">遵守資料最小化原則，公開成果只呈現去識別化統計。</p></div></li>
+          <li class="principle"><span class="principle__icon"><i data-lucide="megaphone"></i></span><div><h3 data-content-key="home.principle_3_title">持續倡議</h3><p data-content-key="home.principle_3_body">把調查結果轉化為提案、對話與可以追蹤的改善行動。</p></div></li>
         </ul>
       </div>
     </section>
 
-    <section class="section section--soft" aria-labelledby="active-surveys-title">
+    <section class="section section--soft" aria-labelledby="active-surveys-title" data-reveal>
       <div class="container">
         <div class="section-heading section-heading--row">
           <div><p class="eyebrow" data-content-key="home.surveys_eyebrow">現在就能參與</p><h2 id="active-surveys-title" data-content-key="home.surveys_title">進行中的議題調查</h2><p data-content-key="home.surveys_lead">每一份匿名回應，都會讓我們更靠近真實的校園與生活現場。</p></div>
           <a class="text-link" href="/surveys">查看全部調查 <i data-lucide="arrow-right"></i></a>
         </div>
-        <div class="survey-grid" data-home-surveys><p class="empty-state">正在載入調查…</p></div>
+        <div class="survey-grid" data-home-surveys>
+          <div class="survey-card survey-card--skeleton" aria-hidden="true"></div>
+          <div class="survey-card survey-card--skeleton" aria-hidden="true"></div>
+        </div>
       </div>
     </section>
 
-    <section class="section section--dark">
+    <section class="section" aria-labelledby="team-preview-title" data-reveal data-team-preview hidden>
+      <div class="container">
+        <div class="section-heading section-heading--row">
+          <div><p class="eyebrow" data-content-key="home.team_eyebrow">認識我們</p><h2 id="team-preview-title" data-content-key="home.team_title">由兒少組成，為兒少發聲</h2><p data-content-key="home.team_lead">來自新竹縣不同地區、學校與年齡層的代表，各自關注不同的兒少議題。</p></div>
+          <a class="text-link" href="/team.html">查看完整名單 <i data-lucide="arrow-right"></i></a>
+        </div>
+        <div class="team-grid" data-team-preview-grid></div>
+      </div>
+    </section>
+
+    <section class="section section--soft" aria-labelledby="faq-title" data-reveal>
+      <div class="container">
+        <div class="section-heading">
+          <p class="eyebrow" data-content-key="home.faq_eyebrow">填答前想先了解</p>
+          <h2 id="faq-title" data-content-key="home.faq_title">常見問題</h2>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item"><summary><span data-content-key="home.faq_q1">我填的答案會被看到我是誰嗎？</span><i data-lucide="chevron-down"></i></summary><p data-content-key="home.faq_a1">大部分調查都是匿名填答，除非題目特別註明需要留下聯絡方式。公開的統計結果只會呈現去識別化的整體數據，不會揭露個別填答者身分。</p></details>
+          <details class="faq-item"><summary><span data-content-key="home.faq_q2">填一份調查大概要花多久時間？</span><i data-lucide="chevron-down"></i></summary><p data-content-key="home.faq_a2">每份調查頁面上都會標示預估作答時間，通常在 5 到 10 分鐘之間。你也可以隨時暫停，之後再重新打開連結繼續填寫。</p></details>
+          <details class="faq-item"><summary><span data-content-key="home.faq_q3">可以中途離開或不填某些題目嗎？</span><i data-lucide="chevron-down"></i></summary><p data-content-key="home.faq_a3">可以。標示「選填」的題目可以直接跳過，你也可以隨時關閉頁面，尚未送出的內容不會被保存或計入統計。</p></details>
+          <details class="faq-item"><summary><span data-content-key="home.faq_q4">調查結果之後會用來做什麼？</span><i data-lucide="chevron-down"></i></summary><p data-content-key="home.faq_a4">我們會將統計結果整理成報告，做為向縣府提案與倡議的依據，也會在委員會議中提出討論。</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--dark" data-reveal>
       <div class="container voice-band">
         <div><p class="eyebrow" data-content-key="home.cta_eyebrow">你的經驗很重要</p><h2 data-content-key="home.cta_title">從一份問卷，開始讓改變發生。</h2><p data-content-key="home.cta_body">填答前會先說明資料蒐集方式與用途。你可以依自己的經驗回答，也可以略過標示為選填的問題。</p></div>
         <a class="button button--accent" href="/surveys"><i data-lucide="move-right"></i> 前往調查中心</a>
       </div>
     </section>
   </main>
+
+  <button class="back-to-top" type="button" data-back-to-top hidden aria-label="回到頂端"><i data-lucide="arrow-up"></i></button>
 
   <footer class="site-footer">
     <div class="container site-footer__main">
