@@ -61,6 +61,10 @@
     try {
       const values = new FormData(form);
       const content = Object.fromEntries(fields.map((field) => [field.key, String(values.get(field.key) ?? "")]));
+      if (content["proposals.items_json"]) {
+        const proposals = JSON.parse(content["proposals.items_json"]);
+        if (!Array.isArray(proposals)) throw new Error("提案資料必須是 JSON 陣列");
+      }
       await window.HCCCR_DATA.saveSiteContent(content);
       dirty = false;
       window.HCCCR.showToast("網站內容已儲存。");

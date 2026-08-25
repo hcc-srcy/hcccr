@@ -24,6 +24,9 @@ const entries = [
   "survey-detail.html",
   "surveys.html",
   "team.html",
+  "team-member.html",
+  "rights.html",
+  "proposals.html",
   "terms.html",
 ];
 

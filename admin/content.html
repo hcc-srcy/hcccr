@@ -23,9 +23,9 @@
       <label class="form-label">姓名或稱呼<input class="form-control" name="name" type="text" maxlength="60" required></label>
       <label class="form-label">屆別／職稱<input class="form-control" name="role" type="text" maxlength="60" placeholder="例：第四屆兒少諮詢代表"></label>
       <label class="form-label">關注議題<input class="form-control" name="focus" type="text" maxlength="80" placeholder="例：校園霸凌、交通安全"></label>
-      <label class="form-label">簡介<textarea class="form-control" name="bio" rows="4" maxlength="1000"></textarea></label>
-      <label class="form-label">照片網址（選填）<input class="form-control" name="photo_url" type="url" maxlength="500" placeholder="https://..."></label>
-      <p class="dialog__hint">建議使用正方形照片，若不填則顯示預設頭像圖示。</p>
+      <label class="form-label">完整介紹<textarea class="form-control" name="bio" rows="6" maxlength="2000" placeholder="可寫下代表的關注、經驗與想對大家說的話。"></textarea></label>
+      <label class="form-label">代表照片（選填）<input class="form-control" name="photo" type="file" accept="image/jpeg,image/png,image/webp"></label>
+      <p class="dialog__hint">直接選擇照片上傳（JPG、PNG、WebP，5MB 以下）。照片會安全儲存在網站專用的 Supabase Storage。</p>
       <div class="dialog__actions"><button class="button button--secondary button--small" type="button" data-close-member>取消</button><button class="button button--small" type="submit"><i data-lucide="check"></i> 儲存代表</button></div>
     </form>
   </div>

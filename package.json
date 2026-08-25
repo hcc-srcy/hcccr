@@ -7,7 +7,7 @@
     "build:pages": "node scripts/build-github-pages.js",
     "dev": "wrangler pages dev . --port 8788",
     "test": "playwright test",
-    "validate:html": "html-validate index.html surveys.html survey-detail.html contact.html terms.html admin/*.html"
+    "validate:html": "html-validate index.html surveys.html survey-detail.html contact.html terms.html team.html team-member.html rights.html proposals.html admin/*.html"
   },
   "devDependencies": {
     "@playwright/test": "1.62.1",

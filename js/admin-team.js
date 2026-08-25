@@ -55,7 +55,6 @@
       form.elements.role.value = member.role || "";
       form.elements.focus.value = member.focus || "";
       form.elements.bio.value = member.bio || "";
-      form.elements.photo_url.value = member.photo_url || "";
     }
     dialog.hidden = false;
     form.elements.name.focus();
@@ -113,7 +112,7 @@
   document.querySelectorAll("[data-close-member]").forEach((button) => button.addEventListener("click", closeDialog));
   dialog.addEventListener("click", (event) => { if (event.target === dialog) closeDialog(); });
 
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const values = new FormData(form);
     const payload = {
@@ -121,16 +120,28 @@
       role: String(values.get("role") || "").trim(),
       focus: String(values.get("focus") || "").trim(),
       bio: String(values.get("bio") || "").trim(),
-      photo_url: String(values.get("photo_url") || "").trim(),
+      photo_url: editingId ? (members.find((member) => member.id === editingId)?.photo_url || "") : "",
     };
     if (!payload.name) return;
-    if (editingId) {
-      members = members.map((member) => (member.id === editingId ? { ...member, ...payload } : member));
-    } else {
-      members = [...members, { id: uid(), ...payload }];
+    const photo = form.elements.photo.files?.[0];
+    const submit = form.querySelector('[type="submit"]');
+    submit.disabled = true;
+    try {
+      const memberId = editingId || uid();
+      if (photo) payload.photo_url = await window.HCCCR_DATA.uploadTeamPhoto(photo, memberId);
+      if (editingId) {
+        members = members.map((member) => (member.id === editingId ? { ...member, ...payload } : member));
+      } else {
+        members = [...members, { id: memberId, ...payload }];
+      }
+      closeDialog();
+      render();
+    } catch (error) {
+      console.error(error);
+      window.HCCCR.showToast(error.message || "照片上傳失敗，請確認 Storage 設定。", "error");
+    } finally {
+      submit.disabled = false;
     }
-    closeDialog();
-    render();
   });
 
   (async function load() {

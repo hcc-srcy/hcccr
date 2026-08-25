@@ -91,6 +91,17 @@
         writeSession(CONTENT_KEY, merged);
         return clone(merged);
       },
+      async uploadTeamPhoto(file) {
+        if (!(file instanceof File)) throw new Error("請選擇照片檔案");
+        if (!/^image\/(jpeg|png|webp)$/.test(file.type)) throw new Error("照片限 JPG、PNG 或 WebP 格式");
+        if (file.size > 5 * 1024 * 1024) throw new Error("照片大小不可超過 5MB");
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(new Error("無法讀取照片"));
+          reader.readAsDataURL(file);
+        });
+      },
       async sendContactMessage(message) {
         const data = readSession(CONTACT_KEY, []);
         const now = new Date().toISOString();
@@ -295,6 +306,23 @@
         if (error) throw error;
         return content;
       },
+      async uploadTeamPhoto(file, memberId) {
+        if (!(file instanceof File)) throw new Error("請選擇照片檔案");
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+        if (!allowedTypes.includes(file.type)) throw new Error("照片限 JPG、PNG 或 WebP 格式");
+        if (file.size > 5 * 1024 * 1024) throw new Error("照片大小不可超過 5MB");
+        const extension = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+        const safeId = String(memberId || uid()).replace(/[^a-zA-Z0-9_-]/g, "");
+        const path = `${safeId}/${Date.now()}.${extension}`;
+        const { error } = await client.storage.from("team-photos").upload(path, file, {
+          cacheControl: "31536000",
+          contentType: file.type,
+          upsert: false,
+        });
+        if (error) throw error;
+        const { data } = client.storage.from("team-photos").getPublicUrl(path);
+        return data.publicUrl;
+      },
       async sendContactMessage(message) {
         const { data, error } = await client.rpc("submit_contact_message", {
           p_sender_name: message.sender_name,
@@ -396,6 +424,7 @@
       deleteSubmission: unavailable,
       getSiteContent: unavailable,
       saveSiteContent: unavailable,
+      uploadTeamPhoto: unavailable,
       sendContactMessage: unavailable,
       getContactMessages: unavailable,
       updateContactMessage: unavailable,

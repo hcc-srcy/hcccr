@@ -62,7 +62,7 @@
     { group: "隱私與條款", key: "terms.guarantee_3", label: "隱私承諾 3", defaultValue: "不公開原始個資：調查成果一律以去識別化圖表或統計公開。" },
     { group: "隱私與條款", key: "terms.storage", label: "四、Cookie 與本機儲存", defaultValue: "一般訪客瀏覽、填答或提交聯絡表單時，不寫入任何行銷、追蹤或廣告用途 Cookie。僅於管理員登入時，使用瀏覽器儲存空間暫存必要的授權狀態。開發示範模式產生的測試資料僅暫存於目前分頁的工作階段，關閉分頁後即失效。", rows: 4 },
     { group: "隱私與條款", key: "terms.service_github", label: "GitHub Pages 說明", defaultValue: "提供 HTML、CSS、JavaScript 與公開圖片的靜態網站託管，並可透過自訂網域 hcccr.bond 對外提供服務；GitHub Pages 不作為調查回答或聯絡訊息資料庫。" },
-    { group: "隱私與條款", key: "terms.service_supabase", label: "Supabase 說明", defaultValue: "提供 PostgreSQL 資料庫、驗證與檔案儲存，並透過 Row Level Security 控管問卷回應、聯絡訊息與後台內容的存取權限。" },
+    { group: "隱私與條款", key: "terms.service_supabase", label: "Supabase 說明", defaultValue: "提供 PostgreSQL 資料庫、驗證與檔案儲存，並透過 Row Level Security 控管問卷回應、聯絡訊息與後台內容的存取權限。經代表同意公開的介紹照片，會存放於公開讀取但僅限管理員上傳的專用空間。" },
     { group: "隱私與條款", key: "terms.service_resend", label: "Resend 說明", defaultValue: "僅用於管理員 Magic Link、系統通知及經主動同意的調查通知。" },
     { group: "隱私與條款", key: "terms.service_qr", label: "QR Code 服務說明", defaultValue: "僅於管理員主動產生調查固定網址 QR Code 時傳送該公開網址；不會傳送填答或聯絡內容。" },
     { group: "隱私與條款", key: "terms.service_jsdelivr", label: "jsDelivr 說明", defaultValue: "用於載入 Supabase 官方瀏覽器套件、圖示、後台統計圖表與 Excel 工作簿產生程式。Excel 檔案僅在已授權管理員的瀏覽器中產生，不會將原始回應傳送至 jsDelivr。", rows: 3 },
@@ -93,6 +93,8 @@
     { group: "認識我們頁", key: "team.cta_eyebrow", label: "底部號召短標", defaultValue: "你的意見很重要" },
     { group: "認識我們頁", key: "team.cta_title", label: "底部號召標題", defaultValue: "有想讓我們知道的事嗎？" },
     { group: "認識我們頁", key: "team.cta_body", label: "底部號召說明", defaultValue: "不管是想反映的問題、想提出的建議，或只是想打聲招呼，都歡迎透過意見箱或聯絡表單與我們分享。", rows: 3 },
+
+    { group: "提案進度", key: "proposals.items_json", label: "提案資料（JSON）", defaultValue: '[{"title":"懲處規定三原則","category":"校園權益","summary":"整理兒少對校園懲處規定的期待，提出明確、比例與申訴三項原則。","status":"委員會討論","updated_at":"2026 年 8 月 25 日","timeline":[{"step":"已提出","date":"2026 年 6 月","note":"蒐集代表與學生意見後提出。"},{"step":"委員會討論","date":"2026 年 8 月","note":"已排入委員會議程討論。"}]},{"title":"教學正常化","category":"教育品質","summary":"針對課程安排與學習節奏蒐集學生經驗，提出改善建議。","status":"縣府回應","updated_at":"2026 年 8 月 25 日","timeline":[{"step":"已提出","date":"2026 年 5 月","note":"完成問卷與訪談整理。"},{"step":"委員會討論","date":"2026 年 6 月","note":"委員會完成初步討論。"},{"step":"縣府回應","date":"2026 年 8 月","note":"已收到承辦單位回應，持續追蹤。"}]}]', multiline: true, rows: 16 },
   ];
 
   window.HCCCR_CONTENT_FIELDS = fields;

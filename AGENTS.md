@@ -34,8 +34,9 @@
   - `admin_users`: 授權管理員信箱。
   - `forms`: 表單定義，欄位 `fields` 採用 **JSONB 彈性結構**；區段以 `type: "section"` 內容節點與題目共用排序。
   - `form_submissions`: 作答紀錄，包含 `started_at`、`submitted_at` 與 `duration_seconds`（自動計算）。
-  - `site_content`: 首頁、聯絡頁與隱私權條款的公開純文字內容。
-  - `contact_messages`: 公開聯絡表單訊息，支援 `unread`、`read`、`replied`、`archived` 狀態。
+- `site_content`: 首頁、聯絡頁、隱私權條款、代表名單與公開提案時間軸內容；前台一律安全輸出，不接受任意 HTML。
+- `contact_messages`: 公開聯絡表單訊息，支援 `unread`、`read`、`replied`、`archived` 狀態。
+- Storage `team-photos`: 代表公開照片；僅 `admin_users` 白名單管理員可上傳或刪除。
 - **公開資料邊界**：匿名前台不得直接 `SELECT forms` 或讀取密碼欄位，必須透過 `list_public_forms`、`get_public_form` 與 `submit_form` RPC；活動密碼僅以 `pgcrypto` 雜湊保存。
 - **開發示範模式**：未配置 Supabase 時可使用 `sessionStorage` 示範資料，但 UI 必須清楚標示，且不得將示範資料誤認為正式提交。
 

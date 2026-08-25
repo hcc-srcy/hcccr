@@ -70,6 +70,12 @@ window.HCCCR_ENV = {
 
 Publishable/Anon Key 本來就會出現在瀏覽器端，安全性由 RLS 與資料庫函式控制。**請勿**填入 `service_role`、`sb_secret_...`、資料庫密碼或 Resend API Key。
 
+### 代表照片與提案進度
+
+- 重新執行最新版 [`supabase/schema.sql`](supabase/schema.sql) 後，會建立公開讀取的 `team-photos` Storage bucket；僅 `admin_users` 白名單內、已登入的管理員可上傳 JPG、PNG 或 WebP（最多 5MB）。前台不需要、也不得使用 `service_role`。
+- 到「網站內容」的「認識我們頁」管理代表名單；選擇照片檔即可直接上傳。代表詳細頁採 `team-member.html?id=代表ID`，可直接分享。
+- 「提案進度」分頁提供公開時間軸。資料在後台「網站內容」的「提案進度」欄位管理；`status` 可填 `已提出`、`委員會討論`、`縣府回應` 或 `已採納/未採納`。
+
 ### 初始化資料庫
 
 1. 在 Supabase **SQL Editor → New query** 貼上並執行完整的 [`supabase/schema.sql`](supabase/schema.sql)。這會建立 `admin_users`、`forms`、`form_submissions`、`site_content`、`contact_messages`、RLS Policies、`pgcrypto` 與前台/後台 RPC。
@@ -145,6 +151,10 @@ Resend API Key 只填在 Supabase SMTP 後台，不可寫入 GitHub 儲存庫。
 ├── index.html
 ├── surveys.html
 ├── survey-detail.html
+├── team.html
+├── team-member.html
+├── rights.html
+├── proposals.html
 ├── terms.html
 ├── admin/
 │   ├── index.html
