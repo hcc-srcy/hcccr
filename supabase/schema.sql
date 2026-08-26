@@ -315,10 +315,6 @@ begin
 end;
 $$;
 
--- 舊專案可能已套用回傳 jsonb 的新版函式；PostgreSQL 無法以 CREATE OR REPLACE
--- 變更函式回傳型別，因此先移除同簽章版本，再由本 schema 在後段建立最終 jsonb 函式。
-drop function if exists public.submit_contact_message(text, text, text, text, boolean, text);
-
 create or replace function public.submit_contact_message(
   p_sender_name text,
   p_sender_email text,
@@ -663,14 +659,28 @@ $$;
 revoke all on function public.get_public_impact_stats() from public;
 grant execute on function public.get_public_impact_stats() to anon, authenticated;
 
--- 代表照片：公開讀取，僅白名單管理員可上傳；檔案類型與大小同步由 bucket 強制限制。
+-- ============================================================================
+-- 代表照片上傳（2026-08）：建立公開讀取、僅限管理員寫入的 Storage bucket。
+-- ============================================================================
+
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('team-photos', 'team-photos', true, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
-on conflict (id) do update set public = excluded.public, file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
 
+-- 若曾套用過另一版本的政策命名，先清除，避免留下重複或過時的規則。
 drop policy if exists "Admins upload team photos" on storage.objects;
-create policy "Admins upload team photos" on storage.objects for insert to authenticated
-  with check (bucket_id = 'team-photos' and public.is_admin());
 drop policy if exists "Admins delete team photos" on storage.objects;
-create policy "Admins delete team photos" on storage.objects for delete to authenticated
-  using (bucket_id = 'team-photos' and public.is_admin());
+
+drop policy if exists "Public can view team photos" on storage.objects;
+create policy "Public can view team photos" on storage.objects
+  for select to anon, authenticated
+  using (bucket_id = 'team-photos');
+
+drop policy if exists "Admins manage team photos" on storage.objects;
+create policy "Admins manage team photos" on storage.objects
+  for all to authenticated
+  using (bucket_id = 'team-photos' and public.is_admin())
+  with check (bucket_id = 'team-photos' and public.is_admin());

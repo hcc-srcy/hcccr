@@ -308,11 +308,10 @@
       },
       async uploadTeamPhoto(file, memberId) {
         if (!(file instanceof File)) throw new Error("請選擇照片檔案");
-        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-        if (!allowedTypes.includes(file.type)) throw new Error("照片限 JPG、PNG 或 WebP 格式");
+        if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) throw new Error("照片限 JPG、PNG 或 WebP 格式");
         if (file.size > 5 * 1024 * 1024) throw new Error("照片大小不可超過 5MB");
         const extension = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
-        const safeId = String(memberId || uid()).replace(/[^a-zA-Z0-9_-]/g, "");
+        const safeId = String(memberId || `member-${Date.now()}-${Math.random().toString(16).slice(2)}`).replace(/[^a-zA-Z0-9_-]/g, "");
         const path = `${safeId}/${Date.now()}.${extension}`;
         const { error } = await client.storage.from("team-photos").upload(path, file, {
           cacheControl: "31536000",

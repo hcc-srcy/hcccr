@@ -11,7 +11,7 @@
       <div class="segmented-control content-tabs" data-content-tabs role="tablist" aria-label="內容頁面"></div>
       <form id="content-form" data-content-form novalidate><div data-content-panels><section class="panel"><div class="panel__body">正在載入…</div></section></div></form>
 
-      <div class="admin-page-heading admin-page-heading--secondary"><div><h2>代表名單管理</h2><p>管理「認識我們」頁面顯示的代表卡片，新增、編輯或調整排序後記得儲存。</p></div><button class="button button--small" type="button" data-add-member><i data-lucide="user-plus"></i> 新增代表</button></div>
+      <div class="admin-page-heading admin-page-heading--secondary"><div><h2>代表名單管理</h2><p>管理「認識我們」頁面顯示的代表卡片與個人介紹頁，新增、編輯或調整排序後記得儲存。</p></div><button class="button button--small" type="button" data-add-member><i data-lucide="user-plus"></i> 新增代表</button></div>
       <div class="panel"><div class="panel__body"><div class="team-editor" data-team-editor><p class="empty-state">正在載入…</p></div></div></div>
     </div>
   </main>
@@ -22,10 +22,21 @@
     <form class="dialog__body" data-member-form>
       <label class="form-label">姓名或稱呼<input class="form-control" name="name" type="text" maxlength="60" required></label>
       <label class="form-label">屆別／職稱<input class="form-control" name="role" type="text" maxlength="60" placeholder="例：第四屆兒少諮詢代表"></label>
-      <label class="form-label">關注議題<input class="form-control" name="focus" type="text" maxlength="80" placeholder="例：校園霸凌、交通安全"></label>
-      <label class="form-label">完整介紹<textarea class="form-control" name="bio" rows="6" maxlength="2000" placeholder="可寫下代表的關注、經驗與想對大家說的話。"></textarea></label>
-      <label class="form-label">代表照片（選填）<input class="form-control" name="photo" type="file" accept="image/jpeg,image/png,image/webp"></label>
-      <p class="dialog__hint">直接選擇照片上傳（JPG、PNG、WebP，5MB 以下）。照片會安全儲存在網站專用的 Supabase Storage。</p>
+      <label class="form-label">關注議題<input class="form-control" name="focus" type="text" maxlength="80" placeholder="例：校園霸凌、交通安全（可用頓號分隔多個）"></label>
+      <label class="form-label">簡短介紹（顯示於卡片）<textarea class="form-control" name="bio" rows="3" maxlength="300"></textarea></label>
+      <label class="form-label">完整介紹（顯示於個人頁面，選填）<textarea class="form-control" name="detail" rows="7" maxlength="4000" placeholder="可以多寫一點：關注這個議題的原因、正在推動的提案、想對大家說的話…"></textarea></label>
+      <div class="form-label"><span>照片（選填）</span>
+        <div class="photo-uploader" data-photo-uploader>
+          <div class="photo-uploader__preview" data-photo-preview><i data-lucide="user-round"></i></div>
+          <div class="photo-uploader__controls">
+            <label class="button button--secondary button--small photo-uploader__button"><i data-lucide="upload"></i> <span data-photo-button-label>上傳照片</span><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-photo-input hidden></label>
+            <button class="button button--ghost button--small" type="button" data-photo-remove hidden><i data-lucide="x"></i> 移除照片</button>
+            <p class="field-message" data-photo-error role="alert"></p>
+          </div>
+        </div>
+        <input type="hidden" name="photo_url">
+      </div>
+      <p class="dialog__hint">建議使用正方形照片，檔案大小 5MB 以內；若不上傳則顯示預設頭像圖示。</p>
       <div class="dialog__actions"><button class="button button--secondary button--small" type="button" data-close-member>取消</button><button class="button button--small" type="submit"><i data-lucide="check"></i> 儲存代表</button></div>
     </form>
   </div>

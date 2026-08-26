@@ -9,14 +9,14 @@
   function cardMarkup(member) {
     const href = window.HCCCR.appUrl(`/team-member.html?id=${encodeURIComponent(member.id)}`);
     return `
-      <article class="team-card team-card--link">
+      <a class="team-card team-card--link" href="${href}">
         <div class="team-card__avatar">${member.photo_url ? `<img src="${escape(member.photo_url)}" alt="${escape(member.name)}">` : '<i data-lucide="user-round"></i>'}</div>
         <h3>${escape(member.name)}</h3>
         ${member.role ? `<p class="team-card__role">${escape(member.role)}</p>` : ""}
-        ${member.focus ? `<div class="team-card__focus"><span class="tag tag--accent">${escape(member.focus)}</span></div>` : ""}
+        ${member.focus ? `<div class="team-card__focus"><span class="tag tag--accent">${escape(member.focus.split(/[,，、]/)[0].trim())}</span></div>` : ""}
         ${member.bio ? `<p>${escape(member.bio)}</p>` : ""}
-        <a class="team-card__link" href="${href}">認識 ${escape(member.name)} <i data-lucide="arrow-up-right"></i></a>
-      </article>`;
+        <span class="team-card__more">查看完整介紹 <i data-lucide="arrow-right"></i></span>
+      </a>`;
   }
 
   (async function load() {

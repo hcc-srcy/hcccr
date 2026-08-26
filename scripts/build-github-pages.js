@@ -21,12 +21,12 @@ const entries = [
   "index.html",
   "LICENSE",
   "message-thread.html",
+  "proposals.html",
+  "rights.html",
   "survey-detail.html",
   "surveys.html",
   "team.html",
   "team-member.html",
-  "rights.html",
-  "proposals.html",
   "terms.html",
 ];
 

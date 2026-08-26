@@ -50,14 +50,26 @@
     editingId = member ? member.id : "";
     dialog.querySelector("#member-dialog-title").textContent = member ? "編輯代表" : "新增代表";
     form.reset();
+    dialog.querySelector("[data-photo-error]").textContent = "";
     if (member) {
       form.elements.name.value = member.name || "";
       form.elements.role.value = member.role || "";
       form.elements.focus.value = member.focus || "";
       form.elements.bio.value = member.bio || "";
+      form.elements.detail.value = member.detail || "";
+      form.elements.photo_url.value = member.photo_url || "";
     }
+    updatePhotoPreview(form.elements.photo_url.value);
     dialog.hidden = false;
     form.elements.name.focus();
+  }
+
+  function updatePhotoPreview(url) {
+    const preview = dialog.querySelector("[data-photo-preview]");
+    const removeButton = dialog.querySelector("[data-photo-remove]");
+    preview.innerHTML = url ? `<img src="${escape(url)}" alt="">` : '<i data-lucide="user-round"></i>';
+    removeButton.hidden = !url;
+    window.lucide?.createIcons();
   }
 
   function closeDialog() {
@@ -112,7 +124,38 @@
   document.querySelectorAll("[data-close-member]").forEach((button) => button.addEventListener("click", closeDialog));
   dialog.addEventListener("click", (event) => { if (event.target === dialog) closeDialog(); });
 
-  form.addEventListener("submit", async (event) => {
+  const photoInput = dialog.querySelector("[data-photo-input]");
+  const photoError = dialog.querySelector("[data-photo-error]");
+  const photoUploadButton = dialog.querySelector(".photo-uploader__button");
+
+  photoInput.addEventListener("change", async () => {
+    const file = photoInput.files?.[0];
+    if (!file) return;
+    photoError.textContent = "";
+    const labelText = photoUploadButton.querySelector("[data-photo-button-label]");
+    const originalText = labelText.textContent;
+    photoUploadButton.classList.add("is-loading");
+    labelText.textContent = "上傳中…";
+    try {
+      const url = await window.HCCCR_DATA.uploadTeamPhoto(file, editingId);
+      form.elements.photo_url.value = url;
+      updatePhotoPreview(url);
+    } catch (error) {
+      console.error(error);
+      photoError.textContent = error?.message || "上傳失敗，請確認資料庫 schema 已更新，或稍後再試。";
+    } finally {
+      photoUploadButton.classList.remove("is-loading");
+      labelText.textContent = originalText;
+      photoInput.value = "";
+    }
+  });
+
+  dialog.querySelector("[data-photo-remove]").addEventListener("click", () => {
+    form.elements.photo_url.value = "";
+    updatePhotoPreview("");
+  });
+
+  form.addEventListener("submit", (event) => {
     event.preventDefault();
     const values = new FormData(form);
     const payload = {
@@ -120,28 +163,17 @@
       role: String(values.get("role") || "").trim(),
       focus: String(values.get("focus") || "").trim(),
       bio: String(values.get("bio") || "").trim(),
-      photo_url: editingId ? (members.find((member) => member.id === editingId)?.photo_url || "") : "",
+      detail: String(values.get("detail") || "").trim(),
+      photo_url: String(values.get("photo_url") || "").trim(),
     };
     if (!payload.name) return;
-    const photo = form.elements.photo.files?.[0];
-    const submit = form.querySelector('[type="submit"]');
-    submit.disabled = true;
-    try {
-      const memberId = editingId || uid();
-      if (photo) payload.photo_url = await window.HCCCR_DATA.uploadTeamPhoto(photo, memberId);
-      if (editingId) {
-        members = members.map((member) => (member.id === editingId ? { ...member, ...payload } : member));
-      } else {
-        members = [...members, { id: memberId, ...payload }];
-      }
-      closeDialog();
-      render();
-    } catch (error) {
-      console.error(error);
-      window.HCCCR.showToast(error.message || "照片上傳失敗，請確認 Storage 設定。", "error");
-    } finally {
-      submit.disabled = false;
+    if (editingId) {
+      members = members.map((member) => (member.id === editingId ? { ...member, ...payload } : member));
+    } else {
+      members = [...members, { id: uid(), ...payload }];
     }
+    closeDialog();
+    render();
   });
 
   (async function load() {

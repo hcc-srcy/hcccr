@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="認識新竹縣第四屆兒少諮詢代表。">
+  <meta name="description" content="認識新竹縣第四屆兒少諮詢代表，點選每一位看完整介紹。">
   <meta name="theme-color" content="#1d625b">
   <title>認識我們｜新竹縣第四屆兒少諮詢代表</title>
   <link rel="stylesheet" href="/css/main.css">
@@ -29,7 +29,9 @@
       </a>
       <nav class="site-nav" aria-label="主要導覽">
         <a href="/">首頁</a>
-        <a href="/team.html" aria-current="page">認識代表</a><a href="/rights.html">兒童權利</a><a href="/proposals.html">提案進度</a>
+        <a href="/team.html" aria-current="page">認識我們</a>
+        <a href="/rights.html">兒童權利公約</a>
+        <a href="/proposals.html">提案進度</a>
         <a href="/terms">隱私與條款</a>
         <a href="/contact">聯絡我們</a>
         <a class="nav-cta" href="/surveys"><i data-lucide="clipboard-list"></i> 議題調查</a>
@@ -39,28 +41,34 @@
       </button>
     </div>
     <nav class="mobile-menu" id="mobile-menu" data-mobile-menu aria-label="行動版導覽" hidden>
-      <a href="/">首頁</a><a href="/team.html">認識代表</a><a href="/rights.html">兒童權利</a><a href="/proposals.html">提案進度</a><a href="/terms">隱私與條款</a><a href="/contact">聯絡我們</a><a href="/surveys">議題調查</a>
+      <a href="/">首頁</a><a href="/team.html">認識我們</a><a href="/rights.html">兒童權利公約</a>
+        <a href="/proposals.html">提案進度</a><a href="/terms">隱私與條款</a><a href="/contact">聯絡我們</a><a href="/surveys">議題調查</a>
     </nav>
   </header>
 
   <main id="main">
-    <header class="page-intro">
-      <div class="container">
-        <nav class="breadcrumbs" aria-label="麵包屑"><a href="/">首頁</a><span>/</span><span>認識我們</span></nav>
-        <p class="eyebrow" data-content-key="team.hero_eyebrow">認識我們</p>
+    <header class="page-hero page-hero--team">
+      <div class="container page-hero__inner">
+        <nav class="breadcrumbs breadcrumbs--light" aria-label="麵包屑"><a href="/">首頁</a><span>/</span><span>認識我們</span></nav>
+        <p class="eyebrow eyebrow--light" data-content-key="team.hero_eyebrow">認識我們</p>
         <h1 data-content-key="team.hero_title">新竹縣第四屆<br>兒少諮詢代表</h1>
-        <p class="page-intro__lead" data-content-key="team.hero_lead">我們是一群由新竹縣兒童與少年組成的諮詢代表，透過調查、討論與提案，把生活中的真實經驗帶進縣府的決策現場。</p>
+        <p class="page-hero__lead" data-content-key="team.hero_lead">我們是一群由新竹縣兒童與少年組成的諮詢代表，透過調查、討論與提案，把生活中的真實經驗帶進縣府的決策現場。</p>
+        <a class="text-link text-link--light" href="/rights.html"><i data-lucide="scale"></i> 認識我們依循的兒童權利公約 <i data-lucide="arrow-right"></i></a>
       </div>
     </header>
 
-    <section class="section section--soft" id="team" aria-labelledby="team-title">
+    <section class="section" id="team" aria-labelledby="team-title">
       <div class="container">
         <div class="section-heading">
           <p class="eyebrow" data-content-key="team.team_eyebrow">我們的團隊</p>
           <h2 id="team-title" data-content-key="team.team_title">第四屆兒少諮詢代表</h2>
-          <p data-content-key="team.team_lead">代表們來自新竹縣不同地區、學校與年齡層，各自關注不同的兒少議題。名單與簡介會隨屆期更新。</p>
+          <p data-content-key="team.team_lead">代表們來自新竹縣不同地區、學校與年齡層，各自關注不同的兒少議題。點選卡片可以看每一位的完整介紹。</p>
         </div>
-        <div class="team-grid" data-team-grid><p class="empty-state">正在載入名單…</p></div>
+        <div class="team-grid team-grid--rich" data-team-grid>
+          <div class="team-card team-card--skeleton" aria-hidden="true"></div>
+          <div class="team-card team-card--skeleton" aria-hidden="true"></div>
+          <div class="team-card team-card--skeleton" aria-hidden="true"></div>
+        </div>
       </div>
     </section>
 
@@ -82,7 +90,8 @@
         <a class="brand" href="/"><span class="brand__mark" aria-hidden="true">少代</span><span class="brand__text"><strong>新竹縣第四屆兒少諮詢代表</strong><small>由兒少出發，為兒少發聲</small></span></a>
         <p data-content-key="home.footer_description">本網站由新竹縣第四屆兒童及少年諮詢代表維運，受新竹縣政府社會處指導。</p>
       </div>
-      <div class="footer-links"><strong>快速連結</strong><a href="/surveys">議題調查</a><a href="/team.html">認識我們</a><a href="/admin/">管理後台</a></div>
+      <div class="footer-links"><strong>快速連結</strong><a href="/surveys">議題調查</a><a href="/team.html">認識我們</a><a href="/rights.html">兒童權利公約</a>
+        <a href="/proposals.html">提案進度</a><a href="/admin/">管理後台</a></div>
       <div class="footer-links"><strong>網站資訊</strong><a href="/terms">隱私權政策</a><a href="/contact">聯絡我們</a><a href="https://github.com/hcc-srcy/hcccr">開放原始碼</a></div>
     </div>
     <div class="container site-footer__bottom"><p>© 2026 新竹縣第四屆兒童及少年諮詢代表</p><p><a href="/">返回首頁</a> · <a href="/surveys">議題調查</a> · <a href="/terms">隱私權政策</a></p></div>
