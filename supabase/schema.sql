@@ -315,52 +315,6 @@ begin
 end;
 $$;
 
-create or replace function public.submit_contact_message(
-  p_sender_name text,
-  p_sender_email text,
-  p_subject text,
-  p_message text,
-  p_agreed_privacy boolean,
-  p_website text default ''
-)
-returns uuid
-language plpgsql
-security definer
-set search_path = public
-as $$
-declare
-  saved_id uuid;
-  normalized_email text := lower(trim(coalesce(p_sender_email, '')));
-begin
-  if trim(coalesce(p_website, '')) <> '' then
-    raise exception 'Message rejected';
-  end if;
-  if not coalesce(p_agreed_privacy, false) then
-    raise exception 'Privacy consent is required';
-  end if;
-  if char_length(trim(coalesce(p_sender_name, ''))) not between 1 and 80
-    or char_length(normalized_email) not between 3 and 254
-    or position('@' in normalized_email) <= 1
-    or char_length(trim(coalesce(p_subject, ''))) not between 1 and 120
-    or char_length(trim(coalesce(p_message, ''))) not between 10 and 5000 then
-    raise exception 'Invalid contact message';
-  end if;
-  if (
-    select count(*) from public.contact_messages
-    where lower(sender_email) = normalized_email
-      and created_at > now() - interval '10 minutes'
-  ) >= 3 then
-    raise exception 'Too many messages';
-  end if;
-
-  insert into public.contact_messages(sender_name, sender_email, subject, message, agreed_privacy)
-  values (
-    trim(p_sender_name), normalized_email, trim(p_subject), trim(p_message), true
-  ) returning id into saved_id;
-  return saved_id;
-end;
-$$;
-
 create or replace function public.admin_save_form(p_payload jsonb, p_access_password text default null)
 returns jsonb
 language plpgsql
@@ -501,7 +455,8 @@ create trigger message_replies_touch_parent
 after insert on public.message_replies
 for each row execute function public.touch_contact_message_on_reply();
 
--- 舊版 submit_contact_message 只回傳 id；改為回傳 id 及 access_token，讓前台能顯示追蹤連結。
+-- submit_contact_message 回傳 id 及 access_token，讓前台能顯示追蹤連結。
+-- 為冪等考量統一在此處以 drop + create 定義，避免與舊版本重複定義造成回傳型別衝突。
 drop function if exists public.submit_contact_message(text, text, text, text, boolean, text);
 
 create or replace function public.submit_contact_message(
