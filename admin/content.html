@@ -2,7 +2,7 @@
 <html lang="zh-Hant-TW"><head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>網站內容｜竹縣少代後台</title>
   <link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/css/admin.css"><link rel="stylesheet" href="/css/print.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script><script defer src="/js/env.js"></script><script defer src="/js/config.js"></script><script defer src="/js/data.js"></script><script defer src="/js/content-config.js"></script><script defer src="/js/data-service.js"></script><script defer src="/js/common.js"></script><script defer src="/js/admin-common.js"></script><script defer src="/js/admin-content.js"></script><script defer src="/js/admin-team.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script defer src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script><script defer src="/js/env.js"></script><script defer src="/js/config.js"></script><script defer src="/js/data.js"></script><script defer src="/js/content-config.js"></script><script defer src="/js/data-service.js"></script><script defer src="/js/common.js"></script><script defer src="/js/admin-common.js"></script><script defer src="/js/admin-content.js"></script><script defer src="/js/admin-team.js"></script><script defer src="/js/admin-proposals.js"></script>
 </head><body class="admin-body"><div class="admin-app">
   <aside class="admin-sidebar" data-admin-sidebar aria-label="管理後台側欄"><a class="brand" href="/admin/dashboard.html"><span class="brand__mark">少代</span><span class="brand__text"><strong>網站管理後台</strong><small>HCCCR Admin</small></span></a><nav class="admin-nav" aria-label="後台主要導覽"><span class="admin-nav__label">工作區</span><a href="/admin/dashboard.html"><i data-lucide="layout-dashboard"></i> 調查總覽</a><a href="/admin/builder.html"><i data-lucide="list-plus"></i> 建立調查</a><span class="admin-nav__label">網站</span><a href="/surveys" target="_blank"><i data-lucide="external-link"></i> 開啟前台</a></nav><div class="admin-sidebar__footer admin-nav"><button type="button" data-sign-out><i data-lucide="log-out"></i> 登出</button></div></aside>
   <div class="admin-scrim" data-admin-scrim></div>
@@ -13,6 +13,9 @@
 
       <div class="admin-page-heading admin-page-heading--secondary"><div><h2>代表名單管理</h2><p>管理「認識我們」頁面顯示的代表卡片與個人介紹頁，新增、編輯或調整排序後記得儲存。</p></div><button class="button button--small" type="button" data-add-member><i data-lucide="user-plus"></i> 新增代表</button></div>
       <div class="panel"><div class="panel__body"><div class="team-editor" data-team-editor><p class="empty-state">正在載入…</p></div></div></div>
+
+      <div class="admin-page-heading admin-page-heading--secondary"><div><h2>提案進度管理</h2><p>管理「提案進度追蹤」頁面顯示的卡片，新增、編輯或調整排序後記得儲存。</p></div><button class="button button--small" type="button" data-add-proposal><i data-lucide="plus"></i> 新增提案</button></div>
+      <div class="panel"><div class="panel__body"><div class="team-editor" data-proposal-editor><p class="empty-state">正在載入…</p></div></div></div>
     </div>
   </main>
 </div>
@@ -38,6 +41,46 @@
       </div>
       <p class="dialog__hint">建議使用正方形照片，檔案大小 5MB 以內；若不上傳則顯示預設頭像圖示。</p>
       <div class="dialog__actions"><button class="button button--secondary button--small" type="button" data-close-member>取消</button><button class="button button--small" type="submit"><i data-lucide="check"></i> 儲存代表</button></div>
+    </form>
+  </div>
+</div>
+<div class="dialog-scrim" data-proposal-dialog hidden>
+  <div class="dialog dialog--wide" role="dialog" aria-modal="true" aria-labelledby="proposal-dialog-title">
+    <div class="dialog__header"><h2 id="proposal-dialog-title">編輯提案</h2><button class="icon-button" type="button" data-close-proposal><i data-lucide="x"></i><span class="sr-only">關閉</span></button></div>
+    <form class="dialog__body" data-proposal-form>
+      <label class="form-label">提案標題<input class="form-control" name="title" type="text" maxlength="80" required></label>
+      <label class="form-label">分類標籤<input class="form-control" name="category" type="text" maxlength="40" placeholder="例：校園權益"></label>
+      <label class="form-label">摘要說明<textarea class="form-control" name="summary" rows="3" maxlength="400"></textarea></label>
+      <label class="form-label">目前進度
+        <select class="form-control" name="status">
+          <option value="已提出">已提出</option>
+          <option value="委員會討論">委員會討論</option>
+          <option value="縣府回應">縣府回應</option>
+          <option value="已採納/未採納">已採納／未採納</option>
+        </select>
+      </label>
+      <label class="form-label">最後更新日期<input class="form-control" name="updated_at" type="text" maxlength="40" placeholder="例：2026 年 8 月 25 日"></label>
+      <p class="dialog__hint">下面四個階段對應時間軸上的四個節點。已經走到的階段可以填日期與備註，還沒走到的留空即可。</p>
+      <div class="proposal-timeline-fields">
+        <fieldset><legend>已提出</legend>
+          <label class="form-label">日期<input class="form-control" name="step1_date" type="text" maxlength="30" placeholder="例：2026 年 6 月"></label>
+          <label class="form-label">備註<input class="form-control" name="step1_note" type="text" maxlength="120"></label>
+        </fieldset>
+        <fieldset><legend>委員會討論</legend>
+          <label class="form-label">日期<input class="form-control" name="step2_date" type="text" maxlength="30"></label>
+          <label class="form-label">備註<input class="form-control" name="step2_note" type="text" maxlength="120"></label>
+        </fieldset>
+        <fieldset><legend>縣府回應</legend>
+          <label class="form-label">日期<input class="form-control" name="step3_date" type="text" maxlength="30"></label>
+          <label class="form-label">備註<input class="form-control" name="step3_note" type="text" maxlength="120"></label>
+        </fieldset>
+        <fieldset><legend>已採納／未採納</legend>
+          <label class="form-label">日期<input class="form-control" name="step4_date" type="text" maxlength="30"></label>
+          <label class="form-label">備註<input class="form-control" name="step4_note" type="text" maxlength="120"></label>
+        </fieldset>
+      </div>
+      <p class="field-message" data-proposal-error role="alert"></p>
+      <div class="dialog__actions"><button class="button button--secondary button--small" type="button" data-close-proposal>取消</button><button class="button button--small" type="submit"><i data-lucide="check"></i> 儲存提案</button></div>
     </form>
   </div>
 </div>

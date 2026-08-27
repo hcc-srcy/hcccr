@@ -362,6 +362,32 @@ textarea.form-control {
   margin-top: 16px;
 }
 
+.proposal-timeline-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.proposal-timeline-fields fieldset {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.proposal-timeline-fields legend {
+  padding: 0 4px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--primary-dark);
+}
+
+.proposal-timeline-fields .form-label {
+  gap: 4px;
+  font-size: 0.8rem;
+}
+
 .photo-uploader {
   display: flex;
   gap: 16px;
@@ -1066,6 +1092,10 @@ textarea.form-control {
   box-shadow: 0 20px 60px rgba(10, 25, 22, 0.32);
 }
 
+.dialog--wide {
+  width: min(680px, 100%);
+}
+
 .dialog__header {
   display: flex;
   justify-content: space-between;
@@ -1246,6 +1276,10 @@ textarea.form-control {
 }
 
 @media (max-width: 600px) {
+  .proposal-timeline-fields {
+    grid-template-columns: 1fr;
+  }
+
   .admin-topbar {
     padding-inline: 14px;
   }

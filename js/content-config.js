@@ -97,8 +97,6 @@
     { group: "兒童權利公約頁", key: "team.rights_cta_eyebrow", label: "底部號召短標", defaultValue: "想認識推動這些權利的人嗎？" },
     { group: "兒童權利公約頁", key: "team.rights_cta_title", label: "底部號召標題", defaultValue: "認識新竹縣第四屆兒少諮詢代表" },
     { group: "兒童權利公約頁", key: "team.rights_cta_body", label: "底部號召說明", defaultValue: "看看我們如何把這些原則落實到日常提案裡，並隨時歡迎透過聯絡表單分享你的想法。", rows: 2 },
-
-    { group: "提案進度", key: "proposals.items_json", label: "提案資料（JSON）", defaultValue: '[{"title":"懲處規定三原則","category":"校園權益","summary":"整理兒少對校園懲處規定的期待，提出明確、比例與申訴三項原則。","status":"委員會討論","updated_at":"2026 年 8 月 25 日","timeline":[{"step":"已提出","date":"2026 年 6 月","note":"蒐集代表與學生意見後提出。"},{"step":"委員會討論","date":"2026 年 8 月","note":"已排入委員會議程討論。"}]},{"title":"教學正常化","category":"教育品質","summary":"針對課程安排與學習節奏蒐集學生經驗，提出改善建議。","status":"縣府回應","updated_at":"2026 年 8 月 25 日","timeline":[{"step":"已提出","date":"2026 年 5 月","note":"完成問卷與訪談整理。"},{"step":"委員會討論","date":"2026 年 6 月","note":"委員會完成初步討論。"},{"step":"縣府回應","date":"2026 年 8 月","note":"已收到承辦單位回應，持續追蹤。"}]}]', multiline: true, rows: 16 },
   ];
 
   window.HCCCR_CONTENT_FIELDS = fields;
