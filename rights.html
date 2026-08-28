@@ -16,6 +16,7 @@
   <script defer src="/js/content-config.js"></script>
   <script defer src="/js/data-service.js"></script>
   <script defer src="/js/common.js"></script>
+  <script defer src="/js/rights.js"></script>
   <script defer src="/js/content-runtime.js"></script>
 </head>
 <body>
@@ -51,7 +52,12 @@
         <nav class="breadcrumbs breadcrumbs--light" aria-label="麵包屑"><a href="/">首頁</a><span>/</span><span>兒童權利公約</span></nav>
         <p class="eyebrow eyebrow--light" data-content-key="team.rights_eyebrow">認識兒童權利公約</p>
         <h1 data-content-key="team.rights_title">兒童權利公約<br>（CRC）是什麼？</h1>
-        <p class="page-hero__lead" data-content-key="team.rights_intro">《兒童權利公約》是聯合國於 1989 年通過的國際人權公約，台灣已於 2014 年制定施行法，將公約內容國內法化。公約以「兒童」泛指未滿十八歲之人，並確立四項一般性原則，做為理解與落實所有兒童權利的基礎。</p>
+        <p class="page-hero__lead" data-mode="adult" data-content-key="team.rights_intro">《兒童權利公約》是聯合國於 1989 年通過的國際人權公約，台灣已於 2014 年制定施行法，將公約內容國內法化。公約以「兒童」泛指未滿十八歲之人，並確立四項一般性原則，做為理解與落實所有兒童權利的基礎。</p>
+        <p class="page-hero__lead" data-mode="kid" data-content-key="team.rights_intro_kid">《兒童權利公約》是全世界國家說好要一起保護所有小朋友的約定。台灣也答應要遵守，所以只要是跟你有關的事，像是上學、看病、放學後要做什麼，政府和大人都要把你的想法放在心上。</p>
+        <div class="version-toggle" role="group" aria-label="切換閱讀版本" data-version-toggle>
+          <button type="button" class="version-toggle__btn is-active" data-version-btn="adult" aria-pressed="true"><i data-lucide="book-open"></i> 一般版</button>
+          <button type="button" class="version-toggle__btn" data-version-btn="kid" aria-pressed="false"><i data-lucide="smile"></i> 兒童版</button>
+        </div>
       </div>
     </header>
 
@@ -65,26 +71,34 @@
           <article class="rights-card">
             <span class="rights-card__number">01</span>
             <span class="rights-card__icon"><i data-lucide="scale"></i></span>
-            <h3 data-content-key="team.rights_principle_1_title">禁止歧視原則</h3>
-            <p data-content-key="team.rights_principle_1_body">每個兒童都應享有公約保障的權利，不因種族、性別、身心狀況、家庭背景或其他身分而受到差別對待。</p>
+            <h3 data-mode="adult" data-content-key="team.rights_principle_1_title">禁止歧視原則</h3>
+            <h3 data-mode="kid" data-content-key="team.rights_principle_1_title_kid">每個人都一樣重要</h3>
+            <p data-mode="adult" data-content-key="team.rights_principle_1_body">每個兒童都應享有公約保障的權利，不因種族、性別、身心狀況、家庭背景或其他身分而受到差別對待。</p>
+            <p data-mode="kid" data-content-key="team.rights_principle_1_body_kid">不管你是男生還是女生、皮膚是什麼顏色、家裡有沒有錢、身體有沒有不方便，你都應該被公平對待，沒有人可以因為這樣就欺負你或看不起你。</p>
           </article>
           <article class="rights-card">
             <span class="rights-card__number">02</span>
             <span class="rights-card__icon"><i data-lucide="heart-handshake"></i></span>
-            <h3 data-content-key="team.rights_principle_2_title">兒童最佳利益原則</h3>
-            <p data-content-key="team.rights_principle_2_body">所有與兒童有關的行動，無論由公部門、法院或立法機關作成，都應以兒童的最佳利益為優先考量。</p>
+            <h3 data-mode="adult" data-content-key="team.rights_principle_2_title">兒童最佳利益原則</h3>
+            <h3 data-mode="kid" data-content-key="team.rights_principle_2_title_kid">大人做決定要先想到你</h3>
+            <p data-mode="adult" data-content-key="team.rights_principle_2_body">所有與兒童有關的行動，無論由公部門、法院或立法機關作成，都應以兒童的最佳利益為優先考量。</p>
+            <p data-mode="kid" data-content-key="team.rights_principle_2_body_kid">不管是學校、法院還是政府，只要是在做跟你有關的決定，都要先想「這樣做對小朋友好不好」，而不是只想大人方不方便。</p>
           </article>
           <article class="rights-card">
             <span class="rights-card__number">03</span>
             <span class="rights-card__icon"><i data-lucide="sprout"></i></span>
-            <h3 data-content-key="team.rights_principle_3_title">生存與發展權</h3>
-            <p data-content-key="team.rights_principle_3_body">兒童享有與生俱來的生存權，國家應盡最大可能確保兒童的存活與健全發展，包含身心、社會與教育各層面。</p>
+            <h3 data-mode="adult" data-content-key="team.rights_principle_3_title">生存與發展權</h3>
+            <h3 data-mode="kid" data-content-key="team.rights_principle_3_title_kid">你有權利健康長大</h3>
+            <p data-mode="adult" data-content-key="team.rights_principle_3_body">兒童享有與生俱來的生存權，國家應盡最大可能確保兒童的存活與健全發展，包含身心、社會與教育各層面。</p>
+            <p data-mode="kid" data-content-key="team.rights_principle_3_body_kid">你有權利活著、吃飽、看醫生，也有權利上學、玩耍、學習新東西，讓自己身體和心理都可以好好長大。</p>
           </article>
           <article class="rights-card">
             <span class="rights-card__number">04</span>
             <span class="rights-card__icon"><i data-lucide="message-circle-heart"></i></span>
-            <h3 data-content-key="team.rights_principle_4_title">尊重兒童意見</h3>
-            <p data-content-key="team.rights_principle_4_body">凡是能夠形成自己意見的兒童，應有權就攸關自身的事務自由表達意見，且該意見應依其年齡與成熟度受到應有的重視。</p>
+            <h3 data-mode="adult" data-content-key="team.rights_principle_4_title">尊重兒童意見</h3>
+            <h3 data-mode="kid" data-content-key="team.rights_principle_4_title_kid">你的意見值得被聽見</h3>
+            <p data-mode="adult" data-content-key="team.rights_principle_4_body">凡是能夠形成自己意見的兒童，應有權就攸關自身的事務自由表達意見，且該意見應依其年齡與成熟度受到應有的重視。</p>
+            <p data-mode="kid" data-content-key="team.rights_principle_4_body_kid">只要是跟你有關的事，你都可以說出自己的想法，大人也應該認真聽，並且看你的年紀來決定要有多重視你說的話。</p>
           </article>
         </div>
         <p class="rights-footnote" data-content-key="team.rights_footnote">以上為公約四項一般性原則的重點整理，並非公約全文。若想進一步了解公約完整條文，歡迎洽詢學校輔導室或衛生福利部相關單位。</p>
@@ -100,23 +114,31 @@
         <div class="rights-grid rights-grid--categories">
           <article class="rights-card">
             <span class="rights-card__icon"><i data-lucide="heart-pulse"></i></span>
-            <h3 data-content-key="team.rights_category_1_title">生存權</h3>
-            <p data-content-key="team.rights_category_1_body">包含生命、醫療、營養與適當生活水準等基本需求，確保每個兒童都能健康地成長。</p>
+            <h3 data-mode="adult" data-content-key="team.rights_category_1_title">生存權</h3>
+            <h3 data-mode="kid" data-content-key="team.rights_category_1_title_kid">活下去、健康長大的權利</h3>
+            <p data-mode="adult" data-content-key="team.rights_category_1_body">包含生命、醫療、營養與適當生活水準等基本需求，確保每個兒童都能健康地成長。</p>
+            <p data-mode="kid" data-content-key="team.rights_category_1_body_kid">像是吃得飽、喝乾淨的水、生病可以看醫生，這些都是你本來就應該擁有的。</p>
           </article>
           <article class="rights-card">
             <span class="rights-card__icon"><i data-lucide="graduation-cap"></i></span>
-            <h3 data-content-key="team.rights_category_2_title">發展權</h3>
-            <p data-content-key="team.rights_category_2_body">包含受教育、休閒娛樂、參與文化生活與資訊近用，協助兒童發揮潛能。</p>
+            <h3 data-mode="adult" data-content-key="team.rights_category_2_title">發展權</h3>
+            <h3 data-mode="kid" data-content-key="team.rights_category_2_title_kid">學習與玩樂的權利</h3>
+            <p data-mode="adult" data-content-key="team.rights_category_2_body">包含受教育、休閒娛樂、參與文化生活與資訊近用，協助兒童發揮潛能。</p>
+            <p data-mode="kid" data-content-key="team.rights_category_2_body_kid">你有權利去上學、看書、玩遊戲、參加喜歡的活動，讓自己越來越厲害。</p>
           </article>
           <article class="rights-card">
             <span class="rights-card__icon"><i data-lucide="shield-check"></i></span>
-            <h3 data-content-key="team.rights_category_3_title">保護權</h3>
-            <p data-content-key="team.rights_category_3_body">免於受到暴力、虐待、剝削、歧視與不當對待，在家庭、學校與網路環境中都受到保障。</p>
+            <h3 data-mode="adult" data-content-key="team.rights_category_3_title">保護權</h3>
+            <h3 data-mode="kid" data-content-key="team.rights_category_3_title_kid">不被欺負、不受傷害的權利</h3>
+            <p data-mode="adult" data-content-key="team.rights_category_3_body">免於受到暴力、虐待、剝削、歧視與不當對待，在家庭、學校與網路環境中都受到保障。</p>
+            <p data-mode="kid" data-content-key="team.rights_category_3_body_kid">不管在家裡、學校還是網路上，都沒有人可以打你、罵你、傷害你，或是強迫你做不想做的事。</p>
           </article>
           <article class="rights-card">
             <span class="rights-card__icon"><i data-lucide="megaphone"></i></span>
-            <h3 data-content-key="team.rights_category_4_title">參與權</h3>
-            <p data-content-key="team.rights_category_4_body">有權表達意見、結社與獲取資訊，並讓攸關自身的意見在決策過程中受到重視。</p>
+            <h3 data-mode="adult" data-content-key="team.rights_category_4_title">參與權</h3>
+            <h3 data-mode="kid" data-content-key="team.rights_category_4_title_kid">說出想法的權利</h3>
+            <p data-mode="adult" data-content-key="team.rights_category_4_body">有權表達意見、結社與獲取資訊，並讓攸關自身的意見在決策過程中受到重視。</p>
+            <p data-mode="kid" data-content-key="team.rights_category_4_body_kid">你可以說出你的意見、加入喜歡的社團，也有權利知道跟你有關的事情，讓你的聲音被聽到。</p>
           </article>
         </div>
       </div>
