@@ -7,12 +7,31 @@
   const dialog = document.querySelector("[data-proposal-dialog]");
   const form = document.querySelector("[data-proposal-form]");
   const errorBox = document.querySelector("[data-proposal-error]");
+  const categoryList = document.querySelector("[data-proposal-category-list]");
 
   let proposals = [];
   let editingIndex = -1;
+  let isDirty = false;
 
   function escape(value) {
     return window.HCCCR.escapeHtml(String(value || ""));
+  }
+
+  function setDirty(value) {
+    isDirty = value;
+    document.querySelectorAll("[data-proposals-unsaved]").forEach((node) => { node.hidden = !isDirty; });
+  }
+
+  window.addEventListener("beforeunload", (event) => {
+    if (!isDirty) return;
+    event.preventDefault();
+    event.returnValue = "";
+  });
+
+  function updateCategoryList() {
+    if (!categoryList) return;
+    const categories = [...new Set(proposals.map((p) => p.category).filter(Boolean))];
+    categoryList.innerHTML = categories.map((category) => `<option value="${escape(category)}"></option>`).join("");
   }
 
   function parseProposals(raw) {
@@ -35,13 +54,15 @@
             <div class="team-editor__actions">
               <button class="icon-button" type="button" data-move-proposal="${index}" data-direction="up" ${index === 0 ? "disabled" : ""} title="上移"><i data-lucide="chevron-up"></i><span class="sr-only">上移</span></button>
               <button class="icon-button" type="button" data-move-proposal="${index}" data-direction="down" ${index === proposals.length - 1 ? "disabled" : ""} title="下移"><i data-lucide="chevron-down"></i><span class="sr-only">下移</span></button>
+              <button class="icon-button" type="button" data-duplicate-proposal="${index}" title="複製"><i data-lucide="copy"></i><span class="sr-only">複製</span></button>
               <button class="icon-button" type="button" data-edit-proposal="${index}" title="編輯"><i data-lucide="pencil"></i><span class="sr-only">編輯</span></button>
               <button class="icon-button" type="button" data-remove-proposal="${index}" title="刪除"><i data-lucide="trash-2"></i><span class="sr-only">刪除</span></button>
             </div>
           </li>`).join("")}</ul>
-        <div class="team-editor__save"><button class="button button--small" type="button" data-save-proposals><i data-lucide="save"></i> 儲存提案</button></div>`
+        <div class="team-editor__save"><span class="tag tag--warning" data-proposals-unsaved hidden><i data-lucide="alert-circle"></i> 尚未儲存</span><button class="button button--small" type="button" data-save-proposals><i data-lucide="save"></i> 儲存提案</button></div>`
       : `<p class="empty-state">目前沒有任何提案，點右上角「新增提案」開始建立。</p>`;
     window.lucide?.createIcons();
+    updateCategoryList();
   }
 
   function timelineLookup(proposal, step) {
@@ -87,12 +108,26 @@
       openDialog(Number(editButton.dataset.editProposal));
       return;
     }
+    const duplicateButton = event.target.closest("[data-duplicate-proposal]");
+    if (duplicateButton) {
+      const index = Number(duplicateButton.dataset.duplicateProposal);
+      const source = proposals[index];
+      if (source) {
+        const copy = JSON.parse(JSON.stringify(source));
+        copy.title = `${copy.title}（複製）`;
+        proposals = [...proposals.slice(0, index + 1), copy, ...proposals.slice(index + 1)];
+        setDirty(true);
+        render();
+      }
+      return;
+    }
     const removeButton = event.target.closest("[data-remove-proposal]");
     if (removeButton) {
       const index = Number(removeButton.dataset.removeProposal);
       const proposal = proposals[index];
       if (proposal && window.confirm(`確定要刪除「${proposal.title}」嗎？`)) {
         proposals = proposals.filter((_, i) => i !== index);
+        setDirty(true);
         render();
       }
       return;
@@ -103,6 +138,7 @@
       const swapWith = moveButton.dataset.direction === "up" ? index - 1 : index + 1;
       if (swapWith < 0 || swapWith >= proposals.length) return;
       [proposals[index], proposals[swapWith]] = [proposals[swapWith], proposals[index]];
+      setDirty(true);
       render();
       return;
     }
@@ -111,6 +147,7 @@
       button.disabled = true;
       try {
         await persist();
+        setDirty(false);
         window.HCCCR.showToast("提案進度已儲存。");
       } catch (error) {
         console.error(error);
@@ -130,6 +167,11 @@
     const values = new FormData(form);
     const title = String(values.get("title") || "").trim();
     if (!title) return;
+    const isDuplicate = proposals.some((item, index) => index !== editingIndex && String(item.title || "").trim().toLowerCase() === title.toLowerCase());
+    if (isDuplicate) {
+      errorBox.textContent = "已經有相同標題的提案了，請換一個標題或直接編輯原本的提案。";
+      return;
+    }
     const status = String(values.get("status") || "已提出");
     const timeline = STEPS.map((step, i) => {
       const date = String(values.get(`step${i + 1}_date`) || "").trim();
@@ -149,6 +191,7 @@
     } else {
       proposals = [...proposals, payload];
     }
+    setDirty(true);
     closeDialog();
     render();
   });

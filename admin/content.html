@@ -49,7 +49,7 @@
     <div class="dialog__header"><h2 id="proposal-dialog-title">編輯提案</h2><button class="icon-button" type="button" data-close-proposal><i data-lucide="x"></i><span class="sr-only">關閉</span></button></div>
     <form class="dialog__body" data-proposal-form>
       <label class="form-label">提案標題<input class="form-control" name="title" type="text" maxlength="80" required></label>
-      <label class="form-label">分類標籤<input class="form-control" name="category" type="text" maxlength="40" placeholder="例：校園權益"></label>
+      <label class="form-label">分類標籤<input class="form-control" name="category" type="text" maxlength="40" placeholder="例：校園權益" list="proposal-category-options"><datalist id="proposal-category-options" data-proposal-category-list></datalist></label>
       <label class="form-label">摘要說明<textarea class="form-control" name="summary" rows="3" maxlength="400"></textarea></label>
       <label class="form-label">目前進度
         <select class="form-control" name="status">
