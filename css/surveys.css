@@ -93,7 +93,7 @@
 .survey-layout {
   min-height: 100vh;
   padding: 48px 0 92px;
-  background: #f3f6f5;
+  background: var(--surface);
 }
 
 .survey-layout__inner {
@@ -199,13 +199,14 @@
   color: var(--ink);
   background: white;
   border-color: var(--line);
-  border-left: 6px solid var(--accent);
+  border-top: 3px solid var(--accent);
 }
 
 .survey-header-card h1 {
   margin: 16px 0 10px;
   font-size: clamp(1.9rem, 5vw, 2.65rem);
-  line-height: 1.25;
+  line-height: 1.22;
+  font-weight: 750;
   overflow-wrap: anywhere;
 }
 
@@ -242,8 +243,8 @@
 }
 
 .consent-card {
-  background: #fffaf0;
-  border-color: #ead899;
+  background: #fffdf7;
+  border-color: #e8dcae;
 }
 
 .gate-heading {
@@ -275,6 +276,7 @@
 
 .gate-heading h2 {
   font-size: 1.15rem;
+  font-weight: 750;
 }
 
 .gate-heading p {
@@ -291,7 +293,7 @@
   display: block;
   margin-bottom: 7px;
   font-size: 0.86rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .gate-body input[type="password"] {
@@ -343,7 +345,7 @@
   gap: 11px;
   align-items: start;
   margin-top: 18px;
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -432,7 +434,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .locked-overlay svg {
@@ -447,8 +449,8 @@
   max-width: 100%;
   margin: 0;
   scroll-margin-top: 18px;
-  border-color: transparent;
-  box-shadow: 0 1px 2px rgba(24, 35, 32, 0.04), 0 12px 28px rgba(24, 35, 32, 0.05);
+  border-color: var(--line);
+  box-shadow: 0 8px 24px rgba(17, 31, 27, 0.045);
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
@@ -465,7 +467,7 @@
   padding: 0;
   font-size: 1.04rem;
   line-height: 1.55;
-  font-weight: 800;
+  font-weight: 700;
   overflow-wrap: anywhere;
 }
 
@@ -503,25 +505,26 @@
   min-width: 0;
   align-items: start;
   padding: 11px 13px;
-  background: var(--surface);
-  border: 1px solid transparent;
+  background: #f8faf9;
+  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background 150ms ease, border-color 150ms ease;
 }
 
 .option-row:hover {
-  background: var(--primary-soft);
+  background: #eef5f3;
+  border-color: #b7d1ca;
 }
 
 .option-row:has(input:checked) {
-  color: white;
-  background: var(--primary);
+  color: var(--primary-dark);
+  background: var(--primary-soft);
   border-color: var(--primary);
 }
 
 .option-row:has(input:checked) input {
-  accent-color: var(--sun);
+  accent-color: var(--primary);
 }
 
 .option-row span {
@@ -591,7 +594,7 @@
   display: block;
   width: 0;
   height: 100%;
-  background: var(--primary);
+  background: var(--accent);
   border-radius: inherit;
   transition: width 200ms ease;
 }
@@ -748,7 +751,7 @@
   .survey-header-card {
     color: black;
     background: white;
-    border-left: 1px solid #bbb;
+    border-top: 1px solid #bbb;
   }
 
   .survey-header-card > p,
