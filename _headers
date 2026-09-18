@@ -10,3 +10,10 @@
 /admin/*
   Cache-Control: no-store
   X-Robots-Tag: noindex, nofollow
+
+/message-thread.html
+  Cache-Control: no-store
+  X-Robots-Tag: noindex, nofollow
+
+/team-member.html
+  X-Robots-Tag: noindex, follow

@@ -132,7 +132,7 @@ Resend API Key 只填在 Supabase SMTP 後台，不可寫入 GitHub 儲存庫。
 
 建置腳本會依自訂網域或 GitHub Pages 子路徑重寫 canonical、Open Graph、JSON-LD、`robots.txt` 與 `sitemap.xml`。若 Supabase 公開設定可用，sitemap 會透過 `list_public_forms` RPC 加入目前開放的 `public` 問卷；密碼保護、未列出、未開始、已截止與暫停問卷一律不加入。RPC 暫時無法連線時仍會產生靜態頁面 sitemap，不會中斷部署。
 
-管理後台本身含 `noindex,nofollow`，Cloudflare 選用部署亦由 `_headers` 回傳 `X-Robots-Tag`。動態問卷預設 `noindex`，只有載入後確認為目前開放的 `public` 問卷才切換為可索引；本專案未因 SEO 加入 Google Analytics 或其他追蹤器。
+管理後台、代表個人頁與含權杖的聯絡對話頁含 `noindex`，Cloudflare 選用部署亦由 `_headers` 回傳 `X-Robots-Tag`。動態問卷預設 `noindex`，只有載入後確認為目前開放的 `public` 問卷才切換為可索引；本專案未因 SEO 加入 Google Analytics 或其他追蹤器。
 
 若 `js/env.js` 尚未填入 Supabase URL 與 Publishable/Anon Key，線上網站會清楚標示為示範模式，填答不會進入正式資料庫。
 

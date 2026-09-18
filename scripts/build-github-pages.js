@@ -114,7 +114,15 @@ function xmlEscape(value) {
 }
 
 function createSitemap(forms) {
-  const staticUrls = ["/", "/surveys.html", "/contact.html", "/terms.html"].map((pathname) => ({
+  const staticUrls = [
+    "/",
+    "/surveys.html",
+    "/team.html",
+    "/rights.html",
+    "/proposals.html",
+    "/contact.html",
+    "/terms.html",
+  ].map((pathname) => ({
     loc: `${publicOrigin}${pathname}`,
   }));
   const surveyUrls = forms.map((form) => ({

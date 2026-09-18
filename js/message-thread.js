@@ -14,7 +14,7 @@
     const isAdmin = entry.__root ? entry.__rootIsAdmin : entry.sender_type === "admin";
     return `
       <div class="thread-bubble ${isAdmin ? "thread-bubble--admin" : "thread-bubble--sender"}">
-        <div class="thread-bubble__meta"><strong>${isAdmin ? "竹縣少代會" : "我"}</strong><span>${escape(window.HCCCR.formatDate(entry.created_at, true))}</span></div>
+        <div class="thread-bubble__meta"><strong>${isAdmin ? "竹縣兒少代表團" : "我"}</strong><span>${escape(window.HCCCR.formatDate(entry.created_at, true))}</span></div>
         <div class="thread-bubble__body">${escape(entry.body).replaceAll("\n", "<br>")}</div>
       </div>`;
   }

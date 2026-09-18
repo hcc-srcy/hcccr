@@ -50,6 +50,9 @@ test("static pages expose canonical, social, and structured SEO metadata", async
 
   for (const [pathname, canonical] of [
     ["/surveys", "https://hcccr.bond/surveys.html"],
+    ["/team.html", "https://hcccr.bond/team.html"],
+    ["/rights.html", "https://hcccr.bond/rights.html"],
+    ["/proposals.html", "https://hcccr.bond/proposals.html"],
     ["/contact", "https://hcccr.bond/contact.html"],
     ["/terms", "https://hcccr.bond/terms.html"],
   ]) {
@@ -83,6 +86,12 @@ test("survey and admin indexing follows the publication boundary", async ({ page
 
   await page.goto("/admin/");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
+
+  await page.goto("/message-thread.html");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
+
+  await page.goto("/team-member.html");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex");
 });
 
 test("public survey requires consent and submits", async ({ page }) => {
@@ -232,7 +241,7 @@ test("contact inbox and editable site content work", async ({ page }) => {
   await page.locator("[data-open-message]").click();
   await expect(page.locator("[data-message-detail]")).toContainText("想請問問卷的填答截止時間");
   await page.locator("[data-message-status]").selectOption("replied");
-  await expect(page.locator("[data-message-list]")).toContainText("已回覆");
+  await expect(page.locator("[data-message-list]")).toContainText("等待對方回覆");
 
   await page.goto("/admin/content.html");
   await expect(page.locator('[name="home.announcement"]')).toBeVisible();
