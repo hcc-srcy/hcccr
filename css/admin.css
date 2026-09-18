@@ -451,6 +451,46 @@ textarea.form-control {
   font-size: 0.9rem;
 }
 
+.dashboard-overview {
+  margin: -40px -32px 34px;
+  padding: 44px 32px 30px;
+  color: white;
+  background: #143f3a;
+  border-bottom: 6px solid var(--sun);
+}
+
+.dashboard-overview .admin-page-heading {
+  margin-bottom: 26px;
+}
+
+.dashboard-overview > .notice {
+  margin-bottom: 28px;
+}
+
+.dashboard-overview .admin-page-heading h2 {
+  font-size: clamp(2rem, 4vw, 3.25rem);
+}
+
+.dashboard-overview .admin-page-heading p {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.dashboard-overview__eyebrow {
+  margin: 0 0 8px !important;
+  color: var(--sun) !important;
+  font-size: 0.75rem !important;
+  font-weight: 900;
+}
+
+.dashboard-overview .kpi-strip {
+  margin-bottom: 0;
+}
+
+.dashboard-overview .kpi {
+  color: var(--ink);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
 .admin-mobile-toggle {
   display: none;
 }
@@ -1337,6 +1377,15 @@ textarea.form-control {
   .admin-content {
     width: min(calc(100% - 28px), 1320px);
     padding-top: 28px;
+  }
+
+  .dashboard-overview {
+    margin: -28px -14px 28px;
+    padding: 32px 14px 24px;
+  }
+
+  .dashboard-overview .admin-page-heading {
+    margin-bottom: 22px;
   }
 
   .admin-page-heading {

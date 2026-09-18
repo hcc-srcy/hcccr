@@ -29,10 +29,11 @@
       return;
     }
 
-    list.innerHTML = filtered.map((form) => {
+    list.innerHTML = filtered.map((form, index) => {
       const active = isActive(form);
       return `
         <article class="survey-card ${active ? "" : "survey-card--closed"}">
+          <span class="survey-card__index" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span>
           <div class="survey-card__meta">
             <span class="tag tag--accent">${window.HCCCR.escapeHtml(form.category)}</span>
             <span class="tag ${active ? "tag--success" : ""}">${active ? "進行中" : "尚未開放或已截止"}</span>

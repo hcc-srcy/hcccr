@@ -41,7 +41,7 @@
   <script defer src="/js/home.js"></script>
   <script defer src="/js/content-runtime.js"></script>
 </head>
-<body>
+<body class="home-page">
   <a class="skip-link" href="#main">跳至主要內容</a>
   <div class="announcement">
     <div class="container"><i data-lucide="megaphone"></i> <span data-content-key="home.announcement">第四屆兒少代表議題調查現正進行中</span></div>
@@ -96,7 +96,15 @@
       </div>
     </div>
 
-    <section class="section" id="about" data-reveal>
+    <nav class="pathways" aria-label="主要參與入口" data-reveal>
+      <div class="container pathways__grid">
+        <a href="/surveys"><span class="pathways__number">01</span><span><strong>參與議題調查</strong><small>用真實經驗參與公共討論</small></span><i data-lucide="arrow-up-right"></i></a>
+        <a href="/proposals.html"><span class="pathways__number">02</span><span><strong>追蹤提案進度</strong><small>看見意見如何進入政策現場</small></span><i data-lucide="arrow-up-right"></i></a>
+        <a href="/team.html"><span class="pathways__number">03</span><span><strong>認識兒少代表</strong><small>了解我們關注的議題與行動</small></span><i data-lucide="arrow-up-right"></i></a>
+      </div>
+    </nav>
+
+    <section class="section home-about" id="about" data-reveal>
       <div class="container mission-grid">
         <div class="mission-copy">
           <p class="eyebrow" data-content-key="home.about_eyebrow">兒少參與，不只是被傾聽</p>
@@ -112,7 +120,7 @@
       </div>
     </section>
 
-    <section class="section section--soft" aria-labelledby="active-surveys-title" data-reveal>
+    <section class="section home-surveys" aria-labelledby="active-surveys-title" data-reveal>
       <div class="container">
         <div class="section-heading section-heading--row">
           <div><p class="eyebrow" data-content-key="home.surveys_eyebrow">現在就能參與</p><h2 id="active-surveys-title" data-content-key="home.surveys_title">進行中的議題調查</h2><p data-content-key="home.surveys_lead">每一份匿名回應，都會讓我們更靠近真實的校園與生活現場。</p></div>
@@ -135,8 +143,8 @@
       </div>
     </section>
 
-    <section class="section section--soft" aria-labelledby="faq-title" data-reveal>
-      <div class="container">
+    <section class="section home-faq" aria-labelledby="faq-title" data-reveal>
+      <div class="container faq-layout">
         <div class="section-heading">
           <p class="eyebrow" data-content-key="home.faq_eyebrow">填答前想先了解</p>
           <h2 id="faq-title" data-content-key="home.faq_title">常見問題</h2>
@@ -150,7 +158,7 @@
       </div>
     </section>
 
-    <section class="section section--dark" data-reveal>
+    <section class="section section--signal" data-reveal>
       <div class="container voice-band">
         <div><p class="eyebrow" data-content-key="home.cta_eyebrow">你的經驗很重要</p><h2 data-content-key="home.cta_title">從一份問卷，開始讓改變發生。</h2><p data-content-key="home.cta_body">填答前會先說明資料蒐集方式與用途。你可以依自己的經驗回答，也可以略過標示為選填的問題。</p></div>
         <a class="button button--accent" href="/surveys"><i data-lucide="move-right"></i> 前往調查中心</a>

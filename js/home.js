@@ -15,8 +15,9 @@
         list.innerHTML = '<p class="empty-state">目前沒有開放中的議題調查。</p>';
         return;
       }
-      list.innerHTML = forms.map((form) => `
+      list.innerHTML = forms.map((form, index) => `
         <article class="survey-card">
+          <span class="survey-card__index" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span>
           <div class="survey-card__meta">
             <span class="tag tag--accent">${escape(form.category)}</span>
             ${form.visibility === "public_password" ? '<span class="tag"><i data-lucide="lock-keyhole"></i> 活動密碼</span>' : ""}

@@ -21,6 +21,8 @@ test("homepage and survey directory render", async ({ page }, testInfo) => {
   await expect(page.getByRole("heading", { level: 1 })).toContainText("新竹縣第四屆");
   await expect(page.locator(".hero__image")).toHaveJSProperty("complete", true);
   await expect(page.locator("[data-home-surveys] .survey-card")).toHaveCount(2);
+  await expect(page.locator(".pathways a")).toHaveCount(3);
+  await expect(page.locator(".pathways a").first()).toHaveAttribute("href", /surveys/);
   await expect(page.locator("[data-reveal]").first()).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
@@ -37,6 +39,7 @@ test("homepage and survey directory render", async ({ page }, testInfo) => {
   await expect(page.getByRole("heading", { name: "兒少議題調查中心" })).toBeVisible();
   await expect(page.locator(".site-nav .nav-cta")).toHaveCSS("color", "rgb(255, 255, 255)");
   await expect(page.locator("[data-survey-list] .survey-card")).toHaveCount(2);
+  await expect(page.locator("[data-survey-list] .survey-card__index")).toHaveCount(2);
   await expectNoHorizontalOverflow(page);
   expect(errors).toEqual([]);
 });
@@ -285,6 +288,7 @@ test("admin demo login, dashboard, builder and analytics work", async ({ page })
   await page.getByRole("button", { name: "寄送登入連結" }).click();
   await expect(page).toHaveURL(/admin\/dashboard(?:\.html)?/);
   await expect(page.getByRole("heading", { name: "所有調查" })).toBeVisible();
+  await expect(page.locator(".dashboard-overview")).toBeVisible();
   await expect(page.locator("[data-form-table] tr")).toHaveCount(3);
   await expectNoHorizontalOverflow(page);
 

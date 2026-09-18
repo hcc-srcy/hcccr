@@ -25,7 +25,7 @@
   - `/contact`：公開聯絡表單，訊息僅可由白名單管理員於收件匣讀取。
   - `/terms`：個人資料保護與隱私權政策條款全文。
 - **樣式規範**：Vanilla CSS，定義 CSS 變數（主題色、圓角、陰影），必須提供專屬 `@media print` 列印樣式。
-- **介面系統**：公開網站、問卷與管理後台共用 `main.css` 設計變數與元件語意；頁面內容在 JavaScript 或捲動觀察器未執行時仍必須可見，互動控制需有清楚的鍵盤焦點與行動版觸控區。
+- **介面系統**：公開網站、問卷與管理後台共用 `main.css` 設計變數與元件語意；首頁依「主視覺→成果統計→主要參與入口→使命→調查→常見問題」組織。頁面內容在 JavaScript 或捲動觀察器未執行時仍必須可見，互動控制需有清楚的鍵盤焦點與行動版觸控區。
 - **SEO 與索引邊界**：公開靜態頁必須維護 canonical、Open Graph、Twitter Card、JSON-LD 與 RSS 自動探索標記。動態問卷預設 `noindex`，只有目前開放的 `public` 問卷可切換為 `index` 並加入部署 sitemap 與 RSS；`public_password`、`unlisted`、未開放問卷、管理後台、回應、代表個人頁、含權杖的聯絡對話頁與列印頁不得被索引或加入訂閱。`scripts/build-github-pages.js` 必須依正式網域或 Pages 子路徑重寫 SEO URL，且資料庫暫時不可用時仍須產生有效 sitemap 與 RSS，不得使部署失敗。
 
 ### 2. 後端與資料庫 (Supabase & Resend)
