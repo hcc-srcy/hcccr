@@ -110,14 +110,6 @@
     revealNodes.forEach((node) => node.classList.add("is-revealed"));
   }
 
-  // ---- 頂端導覽列陰影感應 ----
-  const header = document.querySelector(".site-header");
-  if (header) {
-    const applyHeaderState = () => header.classList.toggle("is-scrolled", window.scrollY > 12);
-    applyHeaderState();
-    window.addEventListener("scroll", applyHeaderState, { passive: true });
-  }
-
   // ---- 回到頂端按鈕 ----
   const backToTop = document.querySelector("[data-back-to-top]");
   if (backToTop) {

@@ -8,14 +8,11 @@ function watchPageErrors(page) {
 }
 
 async function expectNoHorizontalOverflow(page) {
-  const horizontalScroll = await page.evaluate(() => {
-    const top = window.scrollY;
-    window.scrollTo(99999, top);
-    const moved = window.scrollX;
-    window.scrollTo(0, top);
-    return moved;
-  });
-  expect(horizontalScroll).toBe(0);
+  const dimensions = await page.evaluate(() => ({
+    viewportWidth: document.documentElement.clientWidth,
+    contentWidth: document.documentElement.scrollWidth,
+  }));
+  expect(dimensions.contentWidth).toBeLessThanOrEqual(dimensions.viewportWidth);
 }
 
 test("homepage and survey directory render", async ({ page }, testInfo) => {
@@ -24,11 +21,16 @@ test("homepage and survey directory render", async ({ page }, testInfo) => {
   await expect(page.getByRole("heading", { level: 1 })).toContainText("新竹縣第四屆");
   await expect(page.locator(".hero__image")).toHaveJSProperty("complete", true);
   await expect(page.locator("[data-home-surveys] .survey-card")).toHaveCount(2);
+  await expect(page.locator("[data-reveal]").first()).toBeVisible();
   await expectNoHorizontalOverflow(page);
 
   if (testInfo.project.name === "mobile") {
     await page.locator("[data-menu-toggle]").click();
     await expect(page.locator("[data-mobile-menu]")).toBeVisible();
+    await expect(page.locator("body")).toHaveClass(/menu-open/);
+    await page.keyboard.press("Escape");
+    await expect(page.locator("[data-mobile-menu]")).toBeHidden();
+    await expect(page.locator("body")).not.toHaveClass(/menu-open/);
   }
 
   await page.goto("/surveys");

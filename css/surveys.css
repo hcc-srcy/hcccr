@@ -3,11 +3,11 @@
   justify-content: space-between;
   align-items: center;
   gap: 18px;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .survey-toolbar--spaced {
-  margin-top: 26px;
+  margin-top: 30px;
 }
 
 .search-field {
@@ -28,23 +28,30 @@
 
 .search-field input {
   width: 100%;
-  min-height: 46px;
-  padding: 9px 14px 9px 44px;
+  min-height: 48px;
+  padding: 10px 14px 10px 44px;
   background: white;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.search-field input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(23, 104, 95, 0.12);
+  outline: 0;
 }
 
 .segmented-control {
   display: inline-flex;
-  padding: 3px;
+  padding: 4px;
   background: var(--surface-strong);
   border-radius: var(--radius-sm);
 }
 
 .segmented-control button {
-  min-height: 38px;
-  padding: 6px 13px;
+  min-height: 40px;
+  padding: 7px 14px;
   background: transparent;
   border: 0;
   border-radius: 3px;
@@ -85,23 +92,27 @@
 
 .survey-layout {
   min-height: 100vh;
-  padding: 42px 0 84px;
+  padding: 48px 0 92px;
   background: var(--surface);
 }
 
 .survey-layout__inner {
-  width: min(calc(100% - 32px), 820px);
+  width: min(calc(100% - 40px), 800px);
   margin-inline: auto;
 }
 
 .survey-topbar {
+  position: sticky;
+  z-index: 40;
+  top: 0;
   min-height: 60px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  padding: 0 20px;
-  background: white;
+  padding: 0 24px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px) saturate(150%);
   border-bottom: 1px solid var(--line);
 }
 
@@ -133,6 +144,7 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   cursor: pointer;
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
 }
 
 .icon-button:hover {
@@ -150,32 +162,22 @@
 .question-card,
 .password-card,
 .success-panel {
-  padding: 28px 30px;
+  padding: 30px 32px;
   background: white;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
 
 .survey-header-card {
   position: relative;
   overflow: hidden;
   margin-bottom: 18px;
-  border-top: 7px solid var(--primary);
-}
-
-.survey-header-card::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 86px;
-  height: 7px;
-  background: var(--sun);
+  border-top: 5px solid var(--primary);
 }
 
 .survey-header-card h1 {
-  margin: 15px 0 10px;
+  margin: 16px 0 10px;
   font-size: clamp(1.7rem, 5vw, 2.45rem);
   line-height: 1.25;
 }
@@ -209,7 +211,7 @@
 
 .password-card,
 .consent-card {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .gate-heading {
@@ -226,7 +228,7 @@
   place-items: center;
   color: var(--primary-dark);
   background: var(--primary-soft);
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
 }
 
 .gate-heading__icon svg {
@@ -262,8 +264,8 @@
 
 .gate-body input[type="password"] {
   width: 100%;
-  min-height: 46px;
-  padding: 10px 12px;
+  min-height: 48px;
+  padding: 10px 13px;
   border: 1px solid #aab7b2;
   border-radius: var(--radius-sm);
 }
@@ -286,7 +288,7 @@
 .consent-summary {
   max-height: 210px;
   overflow: auto;
-  padding: 16px;
+  padding: 18px;
   color: #3e4b47;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -328,15 +330,15 @@
 
 .questions-list {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   min-width: 0;
   max-width: 100%;
 }
 
 .survey-section-heading {
   min-width: 0;
-  padding: 24px 4px 8px;
-  border-top: 3px solid var(--primary);
+  padding: 30px 2px 10px;
+  border-top: 1px solid var(--line);
   scroll-margin-top: 18px;
 }
 
@@ -348,14 +350,14 @@
   display: block;
   margin-bottom: 5px;
   color: var(--primary);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 850;
 }
 
 .survey-section-heading h2 {
   margin: 0;
   color: var(--primary-dark);
-  font-size: 1.35rem;
+  font-size: 1.45rem;
   letter-spacing: 0;
   overflow-wrap: anywhere;
 }
@@ -413,6 +415,7 @@
   max-width: 100%;
   margin: 0;
   scroll-margin-top: 18px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .question-card.has-error {
@@ -426,7 +429,8 @@
   width: 100%;
   margin: 0;
   padding: 0;
-  font-size: 1rem;
+  font-size: 1.04rem;
+  line-height: 1.55;
   font-weight: 800;
   overflow-wrap: anywhere;
 }
@@ -453,7 +457,7 @@
 
 .options-list {
   display: grid;
-  gap: 11px;
+  gap: 9px;
   min-width: 0;
   margin-top: 18px;
 }
@@ -461,10 +465,24 @@
 .option-row {
   display: grid;
   grid-template-columns: 20px 1fr;
-  gap: 11px;
+  gap: 12px;
   min-width: 0;
   align-items: start;
+  padding: 11px 13px;
+  background: var(--surface);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.option-row:hover {
+  background: var(--primary-soft);
+}
+
+.option-row:has(input:checked) {
+  background: var(--primary-soft);
+  border-color: rgba(23, 104, 95, 0.32);
 }
 
 .option-row span {
@@ -484,12 +502,23 @@
 .date-input,
 .select-input {
   width: 100%;
-  min-height: 46px;
+  min-height: 48px;
   margin-top: 18px;
   padding: 10px 12px;
   background: white;
   border: 1px solid #9eaba7;
   border-radius: var(--radius-sm);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.text-input:focus,
+.textarea-input:focus,
+.date-input:focus,
+.select-input:focus,
+.gate-body input[type="password"]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(23, 104, 95, 0.12);
+  outline: 0;
 }
 
 .textarea-input {
@@ -512,11 +541,11 @@
 }
 
 .progress-line {
-  height: 4px;
-  margin: 22px 0 0;
+  height: 6px;
+  margin: 26px 0 0;
   overflow: hidden;
   background: var(--surface-strong);
-  border-radius: 2px;
+  border-radius: 999px;
 }
 
 .progress-line span {
@@ -524,6 +553,7 @@
   width: 0;
   height: 100%;
   background: var(--primary);
+  border-radius: inherit;
   transition: width 200ms ease;
 }
 
@@ -590,7 +620,11 @@
   }
 
   .survey-layout {
-    padding-top: 22px;
+    padding: 20px 0 64px;
+  }
+
+  .survey-layout__inner {
+    width: min(calc(100% - 24px), 800px);
   }
 
   .survey-topbar {
@@ -606,7 +640,16 @@
   .question-card,
   .password-card,
   .success-panel {
-    padding: 22px 19px;
+    padding: 22px 18px;
+  }
+
+  .survey-header-card h1 {
+    font-size: clamp(1.65rem, 9vw, 2.15rem);
+  }
+
+  .option-row {
+    min-height: 48px;
+    padding: 12px;
   }
 
   .form-footer {

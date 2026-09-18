@@ -63,13 +63,29 @@
   function initNavigation() {
     const toggle = document.querySelector("[data-menu-toggle]");
     const menu = document.querySelector("[data-mobile-menu]");
+    const header = document.querySelector(".site-header");
+    const applyHeaderState = () => header?.classList.toggle("is-scrolled", window.scrollY > 12);
+    applyHeaderState();
+    window.addEventListener("scroll", applyHeaderState, { passive: true });
+
     if (!toggle || !menu) return;
-    toggle.addEventListener("click", () => {
-      const open = toggle.getAttribute("aria-expanded") === "true";
-      toggle.setAttribute("aria-expanded", String(!open));
-      menu.hidden = open;
-      toggle.innerHTML = `<i data-lucide="${open ? "menu" : "x"}"></i><span class="sr-only">${open ? "開啟" : "關閉"}選單</span>`;
+    const setOpen = (open) => {
+      toggle.setAttribute("aria-expanded", String(open));
+      menu.hidden = !open;
+      document.body.classList.toggle("menu-open", open);
+      toggle.innerHTML = `<i data-lucide="${open ? "x" : "menu"}"></i><span class="sr-only">${open ? "關閉" : "開啟"}選單</span>`;
       window.lucide?.createIcons();
+    };
+    toggle.addEventListener("click", () => setOpen(toggle.getAttribute("aria-expanded") !== "true"));
+    menu.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => setOpen(false)));
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
+        setOpen(false);
+        toggle.focus();
+      }
+    });
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 1080) setOpen(false);
     });
   }
 
