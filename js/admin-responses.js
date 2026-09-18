@@ -166,7 +166,7 @@
     exportButton.setAttribute("aria-busy", "true");
     try {
       const workbook = new window.ExcelJS.Workbook();
-      workbook.creator = "竹縣少代調查系統";
+      workbook.creator = "竹縣兒少代表團調查系統";
       workbook.company = "新竹縣第四屆兒童及少年諮詢代表";
       workbook.created = new Date();
       workbook.modified = new Date();

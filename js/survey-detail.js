@@ -6,13 +6,79 @@
   const appPathname = window.location.pathname.slice(window.APP_CONFIG.basePath.length) || "/";
   const pathParts = appPathname.split("/").filter(Boolean);
   const pathIdentifier = pathParts[0] === "surveys" && pathParts[1] ? decodeURIComponent(pathParts[1]) : "";
-  const identifier = searchParams.get("id") || pathIdentifier || "normal-teaching-2026";
+  const identifier = searchParams.get("id") || pathIdentifier;
   const adminPrint = searchParams.get("adminPrint") === "1";
   let form;
   let startedAt = null;
   let unlocked = false;
   let passwordVerified = false;
   let accessPassword = "";
+
+  function setMeta(selector, content) {
+    const element = document.head.querySelector(selector);
+    if (element) element.setAttribute("content", content);
+  }
+
+  function surveyPublicUrl(target = form) {
+    const siteUrl = String(window.APP_CONFIG.siteUrl || window.location.origin).replace(/\/+$/, "");
+    const surveyIdentifier = encodeURIComponent(target?.slug || target?.id || identifier);
+    return `${siteUrl}/survey-detail.html?id=${surveyIdentifier}`;
+  }
+
+  function updateSurveySeo({ indexable = false } = {}) {
+    if (!form) return;
+    const siteUrl = String(window.APP_CONFIG.siteUrl || window.location.origin).replace(/\/+$/, "");
+    const url = surveyPublicUrl();
+    const title = `${form.title}｜新竹縣第四屆兒少諮詢代表`;
+    const description = String(form.description || "參與新竹縣兒少議題調查，讓真實經驗進入公共決策。")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 160);
+    const socialImage = `${siteUrl}/assets/social-preview.jpg`;
+    const canonical = document.head.querySelector('link[rel="canonical"]');
+
+    document.title = title;
+    if (canonical) canonical.href = url;
+    setMeta('meta[name="description"]', description);
+    setMeta('meta[name="robots"]', indexable ? "index,follow,max-image-preview:large" : "noindex,follow");
+    setMeta('meta[property="og:title"]', title);
+    setMeta('meta[property="og:description"]', description);
+    setMeta('meta[property="og:url"]', url);
+    setMeta('meta[property="og:image"]', socialImage);
+    setMeta('meta[property="og:image:alt"]', `${form.title}議題調查`);
+    setMeta('meta[name="twitter:title"]', title);
+    setMeta('meta[name="twitter:description"]', description);
+    setMeta('meta[name="twitter:image"]', socialImage);
+    setMeta('meta[name="twitter:image:alt"]', `${form.title}議題調查`);
+
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebPage",
+          "@id": `${url}#webpage`,
+          url,
+          name: title,
+          description,
+          isPartOf: { "@id": `${siteUrl}/#website` },
+          about: { "@id": `${siteUrl}/#organization` },
+          datePublished: form.created_at || undefined,
+          dateModified: form.updated_at || undefined,
+          inLanguage: "zh-Hant-TW",
+        },
+        {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "首頁", item: `${siteUrl}/` },
+            { "@type": "ListItem", position: 2, name: "議題調查", item: `${siteUrl}/surveys.html` },
+            { "@type": "ListItem", position: 3, name: form.title, item: url },
+          ],
+        },
+      ],
+    };
+    const structured = document.head.querySelector("[data-seo-structured]");
+    if (structured) structured.textContent = JSON.stringify(structuredData).replaceAll("<", "\\u003c");
+  }
 
   function branchRule(field, answer) {
     const rule = field.branching?.[answer];
@@ -52,7 +118,6 @@
   }
 
   function render() {
-    document.title = `${form.title}｜新竹縣第四屆兒少諮詢代表`;
     const needsPassword = form.visibility === "public_password" && !passwordVerified;
     const responseMarkup = adminPrint ? `
       <div class="questions-shell" data-admin-print-preview>
@@ -342,6 +407,7 @@
     if (!form) throw new Error("FORM_NOT_FOUND");
     const now = Date.now();
     const unavailable = !form.is_open || (form.start_date && new Date(form.start_date).getTime() > now) || (form.end_date && new Date(form.end_date).getTime() < now);
+    updateSurveySeo({ indexable: form.visibility === "public" && !unavailable && !adminPrint });
     if (unavailable && !adminPrint) {
       root.innerHTML = `<section class="success-panel"><span class="success-panel__icon" style="background:#6b7672"><i data-lucide="calendar-x"></i></span><h2>目前無法填寫</h2><p>此調查尚未開始、已截止或暫停開放。</p><a class="button button--secondary" href="${window.HCCCR.appUrl("/surveys")}">返回調查中心</a></section>`;
       window.lucide?.createIcons();

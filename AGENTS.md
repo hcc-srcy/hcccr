@@ -6,7 +6,7 @@
 
 ## 🎯 專案使命與定位
 
-本專案為 **新竹縣第四屆兒童及少年諮詢代表（竹縣少代）** 之官方門戶與不定期兒少議題調查系統：
+本專案為 **新竹縣第四屆兒童及少年諮詢代表（竹縣兒少代表團）** 之官方門戶與不定期兒少議題調查系統：
 1. **官網門戶**：保持極低維護成本的靜態網頁設計。
 2. **議題調查中心 (`/surveys`)**：專為縣內不定期議題調查（如：各校教學正常化實況調查、學生權益調查）設計，前後台均提供媲美 Google 表單 (Google Forms) 的極致流暢操作體驗、動態交叉統計圖表、Excel 匯出、單筆列印與刪除系統。
 
@@ -25,6 +25,7 @@
   - `/contact`：公開聯絡表單，訊息僅可由白名單管理員於收件匣讀取。
   - `/terms`：個人資料保護與隱私權政策條款全文。
 - **樣式規範**：Vanilla CSS，定義 CSS 變數（主題色、圓角、陰影），必須提供專屬 `@media print` 列印樣式。
+- **SEO 與索引邊界**：公開靜態頁必須維護 canonical、Open Graph、Twitter Card 與 JSON-LD。動態問卷預設 `noindex`，只有目前開放的 `public` 問卷可切換為 `index` 並加入部署 sitemap；`public_password`、`unlisted`、未開放問卷、管理後台、回應與列印頁不得被索引。`scripts/build-github-pages.js` 必須依正式網域或 Pages 子路徑重寫 SEO URL，且資料庫暫時不可用時不得使部署失敗。
 
 ### 2. 後端與資料庫 (Supabase & Resend)
 - **後端服務**：Supabase (PostgreSQL / RLS / Auth / Storage)。

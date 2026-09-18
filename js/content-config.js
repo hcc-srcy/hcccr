@@ -38,12 +38,12 @@
     { group: "首頁", key: "home.cta_body", label: "底部號召說明", defaultValue: "填答前會先說明資料蒐集方式與用途。你可以依自己的經驗回答，也可以略過標示為選填的問題。", rows: 3 },
     { group: "首頁", key: "home.footer_description", label: "頁尾組織說明", defaultValue: "本網站由新竹縣第四屆兒童及少年諮詢代表維運，受新竹縣政府社會處指導。", rows: 2 },
 
-    { group: "聯絡頁", key: "contact.eyebrow", label: "頁面短標", defaultValue: "與竹縣少代會聯繫" },
+    { group: "聯絡頁", key: "contact.eyebrow", label: "頁面短標", defaultValue: "與竹縣兒少代表團聯繫" },
     { group: "聯絡頁", key: "contact.title", label: "頁面標題", defaultValue: "聯絡我們" },
     { group: "聯絡頁", key: "contact.lead", label: "頁面說明", defaultValue: "如有調查、兒少權益議題、資料權利或網站使用問題，可透過下方表單聯絡。", rows: 3 },
     { group: "聯絡頁", key: "contact.privacy_note", label: "聯絡資料說明", defaultValue: "姓名、Email 與訊息僅用於處理本次聯絡，不會公開或用於行銷。", rows: 2 },
 
-    { group: "隱私與條款", key: "terms.revision", label: "修訂日期", defaultValue: "最新版本修訂日期：2026 年 8 月 20 日" },
+    { group: "隱私與條款", key: "terms.revision", label: "修訂日期", defaultValue: "最新版本修訂日期：2026 年 9 月 18 日" },
     { group: "隱私與條款", key: "terms.notice", label: "頁首隱私承諾", defaultValue: "我們採取資料最小化原則，不販售資料、不設置廣告追蹤器，公開成果僅呈現去識別化統計。", rows: 2 },
     { group: "隱私與條款", key: "terms.intro_1", label: "總說第一段", defaultValue: "歡迎存取「新竹縣第四屆兒童及少年諮詢代表官方網站」（以下簡稱「本網站」）。本網站由新竹縣第四屆兒童及少年諮詢代表負責維運管理，並受新竹縣政府社會處指導。", rows: 3 },
     { group: "隱私與條款", key: "terms.intro_2", label: "總說第二段", defaultValue: "本網站主要用於辦理縣內不定期兒少權益專題調查。本政策說明我們如何蒐集、處理、利用與保護資料，以及您依法可行使的權利。", rows: 3 },
@@ -67,9 +67,10 @@
     { group: "隱私與條款", key: "terms.service_qr", label: "QR Code 服務說明", defaultValue: "僅於管理員主動產生調查固定網址 QR Code 時傳送該公開網址；不會傳送填答或聯絡內容。" },
     { group: "隱私與條款", key: "terms.service_jsdelivr", label: "jsDelivr 說明", defaultValue: "用於載入 Supabase 官方瀏覽器套件、圖示、後台統計圖表與 Excel 工作簿產生程式。Excel 檔案僅在已授權管理員的瀏覽器中產生，不會將原始回應傳送至 jsDelivr。", rows: 3 },
     { group: "隱私與條款", key: "terms.children", label: "六、未成年人保護", defaultValue: "多數調查提供匿名填寫，且不強制要求超出研究目的所需的資料。學校、年級等欄位將明確標示是否選填及統計用途。填答者應避免在自由文字欄位提供姓名、班級、電話等可直接識別個人的資訊。", rows: 4 },
-    { group: "隱私與條款", key: "terms.retention", label: "七、資料保留與刪除", defaultValue: "調查資料於本屆少代會任期及議題倡議必要期間內保存。聯絡訊息保留至本次事項處理完畢及必要稽核期間，後續由管理團隊刪除。授權管理員得因統計、倡議與內部稽核需要匯出 Excel，並應妥善保管。", rows: 4 },
+    { group: "隱私與條款", key: "terms.retention", label: "七、資料保留與刪除", defaultValue: "調查資料於本屆兒少代表團任期及議題倡議必要期間內保存。聯絡訊息保留至本次事項處理完畢及必要稽核期間，後續由管理團隊刪除。授權管理員得因統計、倡議與內部稽核需要匯出 Excel，並應妥善保管。", rows: 4 },
     { group: "隱私與條款", key: "terms.rights", label: "八、當事人權利", defaultValue: "依《個人資料保護法》第 3 條，您得請求查詢、閱覽、複製、更正、停止蒐集處理利用或刪除資料。如需行使權利，請透過網站聯絡表單提出申請，我們會在確認身分與回應識別資訊後辦理。", rows: 4 },
-    { group: "隱私與條款", key: "terms.changes", label: "九、條款修訂", defaultValue: "本政策得因法令、少代會運作或技術變更修訂。修訂後版本將發布於本頁，重大異動另於首頁公告。" },
+    { group: "隱私與條款", key: "terms.indexing", label: "九、搜尋引擎收錄", defaultValue: "搜尋引擎僅可收錄公開網站頁面及目前開放的公開問卷。管理後台、個別回應、未列出的問卷、密碼保護問卷及管理員列印頁均設定為不收錄；問卷回答與聯絡訊息不會出現在 sitemap，也不會作為公開網頁提供。", rows: 4 },
+    { group: "隱私與條款", key: "terms.changes", label: "十、條款修訂", defaultValue: "本政策得因法令、兒少代表團運作或技術變更修訂。修訂後版本將發布於本頁，重大異動另於首頁公告。" },
     { group: "隱私與條款", key: "terms.publisher", label: "發布單位", defaultValue: "新竹縣第四屆兒童及少年諮詢代表" },
 
     { group: "代表介紹頁", key: "team.hero_eyebrow", label: "主視覺短標", defaultValue: "認識我們" },

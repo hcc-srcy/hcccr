@@ -39,6 +39,52 @@ test("homepage and survey directory render", async ({ page }, testInfo) => {
   expect(errors).toEqual([]);
 });
 
+test("static pages expose canonical, social, and structured SEO metadata", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index,follow,max-image-preview:large");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hcccr.bond/");
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hcccr.bond/assets/social-preview.jpg");
+  const homepageStructured = await page.locator('script[type="application/ld+json"]').textContent();
+  const homepageGraph = JSON.parse(homepageStructured)["@graph"];
+  expect(homepageGraph.find((item) => item["@type"] === "Organization").alternateName).toBe("竹縣兒少代表團");
+
+  for (const [pathname, canonical] of [
+    ["/surveys", "https://hcccr.bond/surveys.html"],
+    ["/contact", "https://hcccr.bond/contact.html"],
+    ["/terms", "https://hcccr.bond/terms.html"],
+  ]) {
+    await page.goto(pathname);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", canonical);
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", canonical);
+    expect(JSON.parse(await page.locator('script[type="application/ld+json"]').textContent())["@graph"]).toBeTruthy();
+  }
+});
+
+test("survey and admin indexing follows the publication boundary", async ({ page }) => {
+  await page.goto("/surveys/normal-teaching-2026");
+  await expect(page.getByRole("heading", { name: "校園教學正常化實況調查" })).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index,follow,max-image-preview:large");
+  const publicCanonical = await page.evaluate(() => `${window.APP_CONFIG.siteUrl}/survey-detail.html?id=normal-teaching-2026`);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", publicCanonical);
+  const surveyStructured = JSON.parse(await page.locator("[data-seo-structured]").textContent());
+  expect(surveyStructured["@graph"].find((item) => item["@type"] === "WebPage").name).toContain("校園教學正常化實況調查");
+
+  await page.goto("/surveys/school-lunch-2026");
+  await expect(page.locator("[data-password-gate]")).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
+
+  await page.goto("/surveys/representative-preview");
+  await expect(page.getByRole("heading", { name: "兒少代表內部測試問卷" })).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
+
+  await page.goto("/surveys/not-a-real-survey");
+  await expect(page.getByRole("heading", { name: "找不到這份調查" })).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,follow");
+
+  await page.goto("/admin/");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex,nofollow");
+});
+
 test("public survey requires consent and submits", async ({ page }) => {
   const errors = watchPageErrors(page);
   await page.goto("/surveys/normal-teaching-2026");
