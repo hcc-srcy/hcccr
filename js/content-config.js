@@ -43,11 +43,11 @@
     { group: "聯絡頁", key: "contact.lead", label: "頁面說明", defaultValue: "如有調查、兒少權益議題、資料權利或網站使用問題，可透過下方表單聯絡。", rows: 3 },
     { group: "聯絡頁", key: "contact.privacy_note", label: "聯絡資料說明", defaultValue: "姓名、Email 與訊息僅用於處理本次聯絡，不會公開或用於行銷。", rows: 2 },
 
-    { group: "隱私與條款", key: "terms.revision", label: "修訂日期", defaultValue: "最新版本修訂日期：2026 年 9 月 18 日" },
+    { group: "隱私與條款", key: "terms.revision", label: "修訂日期", defaultValue: "最新版本修訂日期：2026 年 9 月 19 日" },
     { group: "隱私與條款", key: "terms.notice", label: "頁首隱私承諾", defaultValue: "我們採取資料最小化原則，不販售資料、不設置廣告追蹤器，公開成果僅呈現去識別化統計。", rows: 2 },
     { group: "隱私與條款", key: "terms.intro_1", label: "總說第一段", defaultValue: "歡迎存取「新竹縣第四屆兒童及少年諮詢代表官方網站」（以下簡稱「本網站」）。本網站由新竹縣第四屆兒童及少年諮詢代表負責維運管理，並受新竹縣政府社會處指導。", rows: 3 },
     { group: "隱私與條款", key: "terms.intro_2", label: "總說第二段", defaultValue: "本網站主要用於辦理縣內不定期兒少權益專題調查。本政策說明我們如何蒐集、處理、利用與保護資料，以及您依法可行使的權利。", rows: 3 },
-    { group: "隱私與條款", key: "terms.scope", label: "一、適用範圍", defaultValue: "本政策適用於您在本網站首頁、議題調查總覽、個別調查問卷及聯絡頁所進行的瀏覽、填答與訊息提交行為。公開介面採響應式與可存取設計；首頁會優先呈現目前可參與的調查，調查、提案與代表介紹入口都只導向公開頁面，不會因點選入口本身提交問卷或聯絡資料。單純的排版、導覽或視覺更新不會擴大本政策所載的資料蒐集或利用範圍。", rows: 5 },
+    { group: "隱私與條款", key: "terms.scope", label: "一、適用範圍", defaultValue: "本政策適用於您在本網站首頁、議題調查總覽、個別調查問卷及聯絡頁所進行的瀏覽、填答與訊息提交行為。公開介面採高對比、響應式與可存取設計；首頁會優先呈現目前可參與的調查，調查、提案與代表介紹入口都只導向公開頁面，不會因點選入口本身提交問卷或聯絡資料。單純的排版、導覽或視覺更新不會擴大本政策所載的資料蒐集或利用範圍。", rows: 5 },
     { group: "隱私與條款", key: "terms.survey_collection", label: "調查蒐集項目", defaultValue: "題目回答內容；依問卷需要選填學校、年級或年齡區間" },
     { group: "隱私與條款", key: "terms.survey_purpose", label: "調查資料用途", defaultValue: "產出去識別化統計，作為提案與倡議依據" },
     { group: "隱私與條款", key: "terms.timing_collection", label: "填答歷程蒐集項目", defaultValue: "開始時間、送出時間、作答費時" },
