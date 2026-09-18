@@ -18,7 +18,7 @@
 - 公開聯絡表單與後台收件匣，支援未讀、已讀、已回覆、已封存與單筆刪除。
 - 後台可編輯首頁、聯絡頁與隱私權條款文字；前台以純文字輸出，不接受自訂 HTML。
 - 摘要圖表、就讀階段交叉篩選、個別回應、明細表格、篩選後 Excel 匯出、單筆列印及刪除。
-- 完整 SEO 架構，包含 canonical、Open Graph、Twitter Card、JSON-LD、robots 與部署時動態 sitemap；僅目前開放的公開問卷可被索引。
+- 完整 SEO 架構，包含 canonical、Open Graph、Twitter Card、JSON-LD、robots、部署時動態 sitemap 與 RSS 2.0；僅目前開放的公開問卷可被索引及訂閱。
 - 未設定 Supabase 時自動進入示範模式，測試資料只存在目前分頁的 `sessionStorage`。
 
 示範模式用於介面開發及驗收，不是正式資料儲存。正式發布前必須完成 Supabase 與管理員白名單設定。
@@ -130,7 +130,9 @@ Resend API Key 只填在 Supabase SMTP 後台，不可寫入 GitHub 儲存庫。
 
 [`pages.yml`](.github/workflows/pages.yml) 會在 `main` 每次推送後執行 `npm run build:pages`，依 Actions Variables 建立自訂網域根路徑與 `404.html` 相容層的靜態成品，再自動部署至 GitHub Pages。GitHub Pages 不支援 Cloudflare `_redirects`，因此其問卷連結使用 `survey-detail.html?id={slug}`；既有 `/surveys/{slug}` 分享網址則由 `404.html` 相容處理。
 
-建置腳本會依自訂網域或 GitHub Pages 子路徑重寫 canonical、Open Graph、JSON-LD、`robots.txt` 與 `sitemap.xml`。若 Supabase 公開設定可用，sitemap 會透過 `list_public_forms` RPC 加入目前開放的 `public` 問卷；密碼保護、未列出、未開始、已截止與暫停問卷一律不加入。RPC 暫時無法連線時仍會產生靜態頁面 sitemap，不會中斷部署。
+建置腳本會依自訂網域或 GitHub Pages 子路徑重寫 canonical、Open Graph、JSON-LD、`robots.txt`、`sitemap.xml` 與 RSS 2.0 `feed.xml`。若 Supabase 公開設定可用，sitemap 與 RSS 會透過 `list_public_forms` RPC 加入目前開放的 `public` 問卷；密碼保護、未列出、未開始、已截止與暫停問卷一律不加入。RPC 暫時無法連線時仍會產生有效的靜態 sitemap 與 RSS，不會中斷部署。
+
+公開頁面均提供 RSS 自動探索標記，訂閱網址為 `https://hcccr.bond/feed.xml`。RSS 只包含公開網站介紹與公開問卷的標題、說明及網址，不包含題目答案或聯絡訊息。
 
 管理後台、代表個人頁與含權杖的聯絡對話頁含 `noindex`，Cloudflare 選用部署亦由 `_headers` 回傳 `X-Robots-Tag`。動態問卷預設 `noindex`，只有載入後確認為目前開放的 `public` 問卷才切換為可索引；本專案未因 SEO 加入 Google Analytics 或其他追蹤器。
 
@@ -170,6 +172,7 @@ Resend API Key 只填在 Supabase SMTP 後台，不可寫入 GitHub 儲存庫。
 │   ├── content.html
 │   └── response-detail.html
 ├── contact.html
+├── feed.xml
 ├── robots.txt
 ├── sitemap.xml
 ├── assets/

@@ -43,6 +43,7 @@ test("static pages expose canonical, social, and structured SEO metadata", async
   await page.goto("/");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index,follow,max-image-preview:large");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hcccr.bond/");
+  await expect(page.locator('link[rel="alternate"][type="application/rss+xml"]')).toHaveAttribute("href", "https://hcccr.bond/feed.xml");
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hcccr.bond/assets/social-preview.jpg");
   const homepageStructured = await page.locator('script[type="application/ld+json"]').textContent();
   const homepageGraph = JSON.parse(homepageStructured)["@graph"];
@@ -58,9 +59,27 @@ test("static pages expose canonical, social, and structured SEO metadata", async
   ]) {
     await page.goto(pathname);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", canonical);
+    await expect(page.locator('link[rel="alternate"][type="application/rss+xml"]')).toHaveAttribute("href", "https://hcccr.bond/feed.xml");
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", canonical);
     expect(JSON.parse(await page.locator('script[type="application/ld+json"]').textContent())["@graph"]).toBeTruthy();
   }
+});
+
+test("robots, sitemap, and RSS discovery files are valid public endpoints", async ({ request }) => {
+  const robots = await request.get("/robots.txt");
+  expect(robots.ok()).toBe(true);
+  expect(await robots.text()).toContain("Sitemap: https://hcccr.bond/sitemap.xml");
+
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.ok()).toBe(true);
+  expect(await sitemap.text()).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
+
+  const feed = await request.get("/feed.xml");
+  expect(feed.ok()).toBe(true);
+  const feedXml = await feed.text();
+  expect(feedXml).toContain('<rss version="2.0"');
+  expect(feedXml).toContain('<atom:link href="https://hcccr.bond/feed.xml" rel="self" type="application/rss+xml"/>');
+  expect(feedXml).not.toContain("public_password");
 });
 
 test("survey and admin indexing follows the publication boundary", async ({ page }) => {
