@@ -93,7 +93,7 @@
 .survey-layout {
   min-height: 100vh;
   padding: 48px 0 92px;
-  background: #edf1ef;
+  background: #f3f6f5;
 }
 
 .survey-layout__inner {
@@ -111,32 +111,32 @@
   align-items: center;
   gap: 20px;
   padding: 0 24px;
-  color: white;
-  background: rgba(14, 64, 58, 0.96);
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(14px) saturate(150%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid var(--line);
 }
 
 .survey-topbar .brand {
-  color: white;
+  color: var(--ink);
 }
 
 .survey-topbar .brand__mark {
-  color: var(--ink);
-  background: var(--sun);
-  border-color: rgba(255, 255, 255, 0.24);
+  color: white;
+  background: var(--primary);
+  border-color: var(--primary-soft);
 }
 
 .survey-topbar .icon-button {
-  color: white;
-  background: transparent;
-  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--muted);
+  background: white;
+  border-color: var(--line);
 }
 
 .survey-topbar .icon-button:hover {
-  color: var(--ink);
-  background: var(--sun);
-  border-color: var(--sun);
+  color: var(--primary);
+  background: var(--primary-soft);
+  border-color: #bddbd4;
 }
 
 .survey-topbar .brand__mark {
@@ -196,22 +196,22 @@
   position: relative;
   overflow: hidden;
   margin-bottom: 22px;
-  color: white;
-  background: var(--primary-dark);
-  border-color: var(--primary-dark);
-  border-top: 0;
-  border-left: 8px solid var(--sun);
+  color: var(--ink);
+  background: white;
+  border-color: var(--line);
+  border-left: 6px solid var(--accent);
 }
 
 .survey-header-card h1 {
   margin: 16px 0 10px;
-  font-size: clamp(2rem, 5.4vw, 3rem);
+  font-size: clamp(1.9rem, 5vw, 2.65rem);
   line-height: 1.25;
+  overflow-wrap: anywhere;
 }
 
 .survey-header-card > p {
   margin: 0;
-  color: rgba(255, 255, 255, 0.76);
+  color: var(--muted);
 }
 
 .survey-meta {
@@ -220,14 +220,14 @@
   gap: 10px 22px;
   margin-top: 22px;
   padding-top: 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-top: 1px solid var(--line);
 }
 
 .survey-meta span {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
   font-size: 0.83rem;
 }
 

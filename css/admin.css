@@ -453,10 +453,11 @@ textarea.form-control {
 
 .dashboard-overview {
   margin: -40px -32px 34px;
-  padding: 44px 32px 30px;
-  color: white;
-  background: #143f3a;
-  border-bottom: 6px solid var(--sun);
+  padding: 38px 32px 30px;
+  color: var(--ink);
+  background: #eef4f2;
+  border-top: 4px solid var(--accent);
+  border-bottom: 1px solid var(--line);
 }
 
 .dashboard-overview .admin-page-heading {
@@ -468,16 +469,16 @@ textarea.form-control {
 }
 
 .dashboard-overview .admin-page-heading h2 {
-  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-size: clamp(1.9rem, 3vw, 2.55rem);
 }
 
 .dashboard-overview .admin-page-heading p {
-  color: rgba(255, 255, 255, 0.68);
+  color: var(--muted);
 }
 
 .dashboard-overview__eyebrow {
   margin: 0 0 8px !important;
-  color: var(--sun) !important;
+  color: var(--accent-dark) !important;
   font-size: 0.75rem !important;
   font-weight: 900;
 }
@@ -488,7 +489,7 @@ textarea.form-control {
 
 .dashboard-overview .kpi {
   color: var(--ink);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--line);
 }
 
 .admin-mobile-toggle {
