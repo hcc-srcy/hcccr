@@ -752,3 +752,327 @@
   .dialog__actions { display: grid; grid-template-columns: 1fr 1fr; }
   .dialog__actions .button { width: 100%; }
 }
+
+/* Enterprise administration workspace */
+:root {
+  --admin-sidebar: 258px;
+  --admin-topbar: 66px;
+}
+
+.admin-body { background: #eef2f3; }
+
+.admin-login {
+  grid-template-columns: minmax(440px, 0.88fr) minmax(520px, 1.12fr);
+  background: #eef2f3;
+  border-top: 0;
+  box-shadow: inset 0 4px 0 var(--primary);
+}
+
+.admin-login__form { padding: 56px; }
+
+.login-panel {
+  width: min(460px, 100%);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.login-panel .brand {
+  margin-bottom: 66px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.login-panel h1 {
+  font-size: 2.35rem;
+  font-weight: 820;
+}
+
+.login-panel > p { max-width: 390px; margin: 12px 0 30px; }
+
+.login-form {
+  gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.login-panel__footer { margin-top: 30px; }
+
+.admin-login__visual {
+  align-items: center;
+  background-color: #101b21;
+  background-position: center;
+}
+
+.admin-login__visual::before { background: rgba(7, 22, 28, 0.82); }
+
+.admin-login__visual::after {
+  content: "HCCCR / ADMINISTRATIVE SYSTEM / AUTHORIZED ACCESS";
+  top: 62px;
+  right: 58px;
+  width: 240px;
+  color: rgba(255, 255, 255, 0.42);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1.7;
+  writing-mode: horizontal-tb;
+}
+
+.admin-login__visual > div {
+  max-width: 610px;
+  padding: 34px 0 34px 34px;
+  border-left: 2px solid var(--primary);
+}
+
+.admin-login__visual .eyebrow { color: #dbe7e9; }
+
+.admin-login__visual h2 {
+  font-size: clamp(2.4rem, 4.3vw, 4.25rem);
+  font-weight: 820;
+  line-height: 1.1;
+}
+
+.admin-login__visual p:last-child { color: rgba(255, 255, 255, 0.68); line-height: 1.85; }
+
+.admin-sidebar {
+  padding: 18px 14px;
+  color: #c2cdd1;
+  background: #111b21;
+  border-right-color: #263740;
+}
+
+.admin-sidebar .brand {
+  color: white;
+  border-bottom-color: #2d3e46;
+}
+
+.admin-sidebar .brand__mark {
+  width: 38px;
+  height: 38px;
+  flex-basis: 38px;
+  box-shadow: none;
+}
+
+.admin-sidebar .brand__text small { color: #7f949c; }
+
+.admin-nav__label {
+  color: #71858e;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.6rem;
+  font-weight: 750;
+}
+
+.admin-nav a,
+.admin-nav button {
+  min-height: 44px;
+  border-radius: 2px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.admin-nav a:hover,
+.admin-nav button:hover {
+  color: white;
+  background: #1a2a31;
+  border-color: #31434c;
+}
+
+.admin-nav a[aria-current="page"] {
+  color: white;
+  background: #17363a;
+  border-color: #285154;
+  box-shadow: inset 3px 0 0 var(--signal);
+}
+
+.nav-badge {
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.admin-sidebar__footer { border-top-color: #2d3e46; }
+
+.admin-topbar {
+  min-height: var(--admin-topbar);
+  padding: 10px 30px;
+  background: rgba(255, 255, 255, 0.98);
+  border-bottom-color: var(--line);
+}
+
+.admin-topbar__title h1 {
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.admin-user { color: var(--muted); }
+
+.admin-user__avatar {
+  width: 34px;
+  height: 34px;
+  background: var(--primary);
+  border-radius: 0;
+}
+
+.admin-content {
+  width: min(calc(100% - 64px), 1420px);
+  padding-block: 40px 78px;
+}
+
+.admin-page-heading {
+  margin-bottom: 28px;
+  padding-left: 18px;
+  border-left: 3px solid var(--primary);
+}
+
+.admin-page-heading--secondary {
+  margin-top: 54px;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.admin-page-heading h2 {
+  font-size: clamp(1.55rem, 2.35vw, 2.1rem);
+  font-weight: 820;
+}
+
+.dashboard-overview__eyebrow {
+  color: var(--accent-dark) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.64rem !important;
+  font-weight: 800;
+}
+
+.kpi-strip {
+  margin-bottom: 24px;
+  border-top: 1px solid var(--line);
+  border-left: 3px solid var(--primary);
+  border-radius: 2px;
+}
+
+.kpi {
+  min-height: 112px;
+  padding: 20px 22px;
+}
+
+.kpi__label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.kpi__value { font-size: 1.75rem; font-weight: 820; }
+
+.admin-body .panel {
+  border-radius: 2px;
+  box-shadow: none;
+}
+
+.admin-body .panel__header {
+  min-height: 56px;
+  padding-inline: 18px;
+  background: #f8fafb;
+}
+
+.admin-body .panel__header h2,
+.admin-body .panel__header h3 { font-weight: 800; }
+.admin-body .panel__body { padding: 22px; }
+
+.toolbar {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border-radius: 2px;
+}
+
+.builder-layout {
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 24px;
+}
+
+.switch span { border-radius: 12px; }
+
+.field-editor {
+  border-left-width: 3px;
+  border-radius: 2px;
+}
+
+.field-editor--section {
+  background: #fffdf7;
+  border-color: #e4d59b;
+  border-left-color: var(--signal);
+}
+
+.field-editor__body { padding-block: 22px; }
+.field-editor__hint { color: #685100; }
+.options-editor { background: #f3f6f7; }
+
+.branching-editor {
+  background: #f1f6fa;
+  border-color: #b9cede;
+}
+
+.branching-editor summary { color: var(--accent-dark); }
+.branching-list { border-top-color: #b9cede; }
+
+.add-field-bar {
+  border-radius: 2px;
+}
+
+.qr-preview { border-color: var(--line-strong); }
+.inbox-table tr.is-unread td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+
+.response-row,
+.response-block,
+.chart-panel,
+.team-editor__row {
+  border-radius: 2px;
+}
+
+.response-block { border-left-width: 3px; }
+
+.chart-panel {
+  border-top: 1px solid var(--line);
+  border-left: 3px solid var(--primary);
+}
+
+.team-editor__avatar,
+.photo-uploader__preview { border-radius: 2px; }
+
+.dialog-scrim { background: rgba(8, 20, 26, 0.76); }
+
+.dialog {
+  border-top: 1px solid var(--line-strong);
+  border-left: 4px solid var(--primary);
+  border-radius: 2px;
+}
+
+.dialog__hint { border-left-width: 3px; }
+
+@media (max-width: 960px) {
+  :root { --admin-sidebar: 248px; }
+  .admin-sidebar { box-shadow: 16px 0 40px rgba(17, 27, 33, 0.22); }
+  .admin-content { width: min(calc(100% - 40px), 1420px); }
+}
+
+@media (max-width: 900px) {
+  .admin-login {
+    padding: 28px;
+    box-shadow: inset 0 3px 0 var(--primary);
+  }
+}
+
+@media (max-width: 760px) {
+  .login-panel { padding: 0; }
+  .login-panel .brand { margin-bottom: 44px; }
+  .admin-topbar { padding-inline: 14px; }
+  .admin-content { width: min(calc(100% - 24px), 1420px); padding-block: 26px 54px; }
+  .admin-page-heading { padding-left: 13px; }
+  .kpi { min-height: 96px; padding: 16px; }
+}
+
+@media (max-width: 480px) {
+  .admin-login { padding: 20px; }
+  .login-panel h1 { font-size: 2rem; }
+  .admin-topbar__actions .button { box-shadow: none; }
+}
