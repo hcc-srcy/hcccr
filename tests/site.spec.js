@@ -52,7 +52,17 @@ test("Bauhaus design tokens and responsive layouts remain consistent", async ({ 
 
   for (const width of [320, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    for (const pathname of ["/", "/surveys", "/team.html", "/admin/"]) {
+    for (const pathname of [
+      "/",
+      "/surveys",
+      "/surveys/normal-teaching-2026",
+      "/team.html",
+      "/rights.html",
+      "/proposals.html",
+      "/contact",
+      "/terms",
+      "/admin/",
+    ]) {
       await page.goto(pathname);
       await expectNoHorizontalOverflow(page);
     }

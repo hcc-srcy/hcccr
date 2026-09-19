@@ -22,9 +22,9 @@
     root.innerHTML = `
       <div class="member-missing">
         <p class="eyebrow">找不到這位代表</p>
-        <h1 style="margin:8px 0 12px">頁面不存在或名單已更新</h1>
-        <p style="color:var(--muted)">這位代表的資料可能已被移除，或連結不正確。</p>
-        <p style="margin-top:18px"><a class="button button--secondary" href="${window.HCCCR.appUrl("/team.html")}"><i data-lucide="arrow-left"></i> 回到代表名單</a></p>
+        <h1 class="member-missing__title">頁面不存在或名單已更新</h1>
+        <p class="member-missing__text">這位代表的資料可能已被移除，或連結不正確。</p>
+        <p class="member-missing__actions"><a class="button button--secondary" href="${window.HCCCR.appUrl("/team.html")}"><i data-lucide="arrow-left"></i> 回到代表名單</a></p>
       </div>`;
     window.lucide?.createIcons();
   }

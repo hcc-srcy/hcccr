@@ -21,11 +21,11 @@
 
   function renderMissing() {
     root.innerHTML = `
-      <div class="thread-page__panel" style="text-align:center">
+      <div class="thread-page__panel thread-page__panel--centered">
         <p class="eyebrow">找不到這則對話</p>
-        <h2 style="margin:8px 0 12px">連結無效或已被移除</h2>
-        <p style="color:var(--muted)">請確認網址是否完整，或透過聯絡表單重新與我們聯繫。</p>
-        <p style="margin-top:18px"><a class="button button--secondary" href="${window.HCCCR.appUrl("/contact")}">前往聯絡我們</a></p>
+        <h2 class="thread-page__status-title">連結無效或已被移除</h2>
+        <p class="thread-page__status-text">請確認網址是否完整，或透過聯絡表單重新與我們聯繫。</p>
+        <p class="thread-page__status-actions"><a class="button button--secondary" href="${window.HCCCR.appUrl("/contact")}">前往聯絡我們</a></p>
       </div>`;
   }
 
@@ -37,11 +37,11 @@
     root.innerHTML = `
       <div class="thread-page__panel">
         <p class="eyebrow">主旨</p>
-        <h2 style="margin:6px 0 0">${escape(thread.subject)}</h2>
+        <h2 class="thread-page__subject">${escape(thread.subject)}</h2>
         <div class="thread-page__meta"><span><i data-lucide="calendar"></i> 建立於 ${escape(window.HCCCR.formatDate(thread.created_at, true))}</span>${closed ? '<span class="tag">此對話已封存</span>' : ""}</div>
         <div class="thread-scroll" data-thread-scroll>${entries.map(bubbleMarkup).join("")}</div>
         ${closed
-          ? '<p class="empty-state" style="margin-top:16px">這則對話已封存，若需要進一步協助，請透過聯絡表單重新來信。</p>'
+          ? '<p class="empty-state thread-page__archived">這則對話已封存，若需要進一步協助，請透過聯絡表單重新來信。</p>'
           : `<form class="thread-reply" data-thread-reply-form>
               <label class="form-label sr-only" for="thread-reply-body">回覆內容</label>
               <textarea class="form-control" id="thread-reply-body" name="body" rows="4" maxlength="5000" placeholder="輸入你的回覆…" required></textarea>

@@ -142,7 +142,7 @@
         <h1>${window.HCCCR.escapeHtml(form.title)}</h1><p>${window.HCCCR.escapeHtml(form.description)}</p>
         <div class="survey-meta"><span><i data-lucide="clock-3"></i> 約 ${form.estimated_minutes || 3} 分鐘</span><span><i data-lucide="calendar-days"></i> 截止 ${window.HCCCR.formatDate(form.end_date)}</span>${form.is_edited ? `<span><i data-lucide="pencil-line"></i> 修訂於 ${window.HCCCR.formatDate(form.updated_at, true)}</span>` : ""}</div>
       </article>
-      <div class="notice notice--demo no-print" data-demo-only hidden style="margin-bottom:18px"><i data-lucide="flask-conical"></i><p>目前為示範模式，送出內容只暫存於這個瀏覽器分頁。</p></div>
+      <div class="notice notice--demo survey-demo-notice no-print" data-demo-only hidden><i data-lucide="flask-conical"></i><p>目前為示範模式，送出內容只暫存於這個瀏覽器分頁。</p></div>
       ${needsPassword ? `<section class="password-card" data-password-gate><div class="gate-heading"><span class="gate-heading__icon"><i data-lucide="key-round"></i></span><div><h2>輸入活動密碼</h2><p>此調查限受邀參與者填寫。</p></div></div><form class="gate-body" data-password-form><label for="access-password">活動密碼</label><input id="access-password" name="password" type="password" autocomplete="one-time-code" required><p class="field-message" data-password-error></p><div class="gate-actions"><button class="button button--small" type="submit">驗證密碼 <i data-lucide="arrow-right"></i></button></div></form></section>` : ""}
       ${responseMarkup}
       <p class="survey-footnote">本問卷由新竹縣兒少諮詢代表發布 · <a href="${window.HCCCR.appUrl("/terms")}">隱私權政策</a></p>`;
@@ -398,7 +398,7 @@
 
   try {
     if (adminPrint && !await window.HCCCR_DATA.getAdminSession()) {
-      root.innerHTML = `<section class="success-panel"><span class="success-panel__icon" style="background:#D52B24"><i data-lucide="shield-x"></i></span><h2>僅限管理員列印</h2><p>請先登入管理後台，再從表單建構器開啟空白問卷列印。</p><a class="button button--secondary" href="${window.HCCCR.appUrl("/admin/")}">前往管理後台</a></section>`;
+      root.innerHTML = `<section class="success-panel"><span class="success-panel__icon success-panel__icon--danger"><i data-lucide="shield-x"></i></span><h2>僅限管理員列印</h2><p>請先登入管理後台，再從表單建構器開啟空白問卷列印。</p><a class="button button--secondary" href="${window.HCCCR.appUrl("/admin/")}">前往管理後台</a></section>`;
       window.lucide?.createIcons();
       return;
     }
@@ -409,7 +409,7 @@
     const unavailable = !form.is_open || (form.start_date && new Date(form.start_date).getTime() > now) || (form.end_date && new Date(form.end_date).getTime() < now);
     updateSurveySeo({ indexable: form.visibility === "public" && !unavailable && !adminPrint });
     if (unavailable && !adminPrint) {
-      root.innerHTML = `<section class="success-panel"><span class="success-panel__icon" style="background:#2D5DA1"><i data-lucide="calendar-x"></i></span><h2>目前無法填寫</h2><p>此調查尚未開始、已截止或暫停開放。</p><a class="button button--secondary" href="${window.HCCCR.appUrl("/surveys")}">返回調查中心</a></section>`;
+      root.innerHTML = `<section class="success-panel"><span class="success-panel__icon success-panel__icon--blue"><i data-lucide="calendar-x"></i></span><h2>目前無法填寫</h2><p>此調查尚未開始、已截止或暫停開放。</p><a class="button button--secondary" href="${window.HCCCR.appUrl("/surveys")}">返回調查中心</a></section>`;
       window.lucide?.createIcons();
       return;
     }
@@ -419,7 +419,7 @@
       window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.print()));
     }
   } catch (error) {
-    root.innerHTML = `<section class="success-panel"><span class="success-panel__icon" style="background:#D52B24"><i data-lucide="file-question"></i></span><h2>找不到這份調查</h2><p>網址可能有誤，或調查已經移除。</p><a class="button button--secondary" href="${window.HCCCR.appUrl("/surveys")}">查看其他調查</a></section>`;
+    root.innerHTML = `<section class="success-panel"><span class="success-panel__icon success-panel__icon--danger"><i data-lucide="file-question"></i></span><h2>找不到這份調查</h2><p>網址可能有誤，或調查已經移除。</p><a class="button button--secondary" href="${window.HCCCR.appUrl("/surveys")}">查看其他調查</a></section>`;
     window.lucide?.createIcons();
     console.error(error);
   }
