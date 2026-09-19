@@ -30,7 +30,7 @@
   }
 
   function renderMember(member) {
-    document.title = `${member.name}｜新竹縣第四屆兒少諮詢代表`;
+    document.title = `${member.name}｜新竹縣兒少諮詢代表`;
     const breadcrumb = document.querySelector("[data-breadcrumb-name]");
     if (breadcrumb) breadcrumb.textContent = member.name;
 

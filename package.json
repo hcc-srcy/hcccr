@@ -2,7 +2,7 @@
   "name": "hcccr",
   "version": "0.1.0",
   "private": true,
-  "description": "新竹縣第四屆兒童及少年諮詢代表官方網站與議題調查系統",
+  "description": "新竹縣兒少諮詢代表官方網站與議題調查系統",
   "scripts": {
     "build:pages": "node scripts/build-github-pages.js",
     "dev": "wrangler pages dev . --port 8788",

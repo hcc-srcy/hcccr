@@ -7,7 +7,7 @@
     const content = { ...(window.HCCCR_CONTENT_DEFAULTS || {}), ...stored };
     nodes.forEach((node) => {
       const value = content[node.dataset.contentKey];
-      if (value !== undefined) node.textContent = value;
+      if (value !== undefined) node.textContent = window.HCCCR_CONTENT_NORMALIZE?.(value) ?? value;
     });
     document.documentElement.dataset.contentReady = "true";
   } catch (error) {

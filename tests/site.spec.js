@@ -18,7 +18,7 @@ async function expectNoHorizontalOverflow(page) {
 test("homepage and survey directory render", async ({ page }, testInfo) => {
   const errors = watchPageErrors(page);
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("新竹縣第四屆");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("新竹縣");
   await expect(page.locator(".hero__image")).toHaveJSProperty("complete", true);
   await expect(page.locator("[data-home-surveys] .survey-card")).toHaveCount(2);
   await expect(page.locator(".pathways a")).toHaveCount(3);
@@ -44,6 +44,21 @@ test("homepage and survey directory render", async ({ page }, testInfo) => {
   expect(errors).toEqual([]);
 });
 
+test("Bauhaus design tokens and responsive layouts remain consistent", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(247, 244, 236)");
+  await expect(page.locator(".hero__actions .button").first()).toHaveCSS("border-top-width", "2px");
+  await expect(page.locator(".hero__actions .button").first()).toHaveCSS("box-shadow", /rgb\(27, 27, 27\)/);
+
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const pathname of ["/", "/surveys", "/team.html", "/admin/"]) {
+      await page.goto(pathname);
+      await expectNoHorizontalOverflow(page);
+    }
+  }
+});
+
 test("static pages expose canonical, social, and structured SEO metadata", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index,follow,max-image-preview:large");
@@ -52,7 +67,19 @@ test("static pages expose canonical, social, and structured SEO metadata", async
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hcccr.bond/assets/social-preview.jpg");
   const homepageStructured = await page.locator('script[type="application/ld+json"]').textContent();
   const homepageGraph = JSON.parse(homepageStructured)["@graph"];
-  expect(homepageGraph.find((item) => item["@type"] === "Organization").alternateName).toBe("竹縣兒少代表團");
+  expect(homepageGraph.find((item) => item["@type"] === "Organization").alternateName).toEqual(expect.arrayContaining([
+    "新竹縣兒少代表",
+    "新竹縣兒童及少年諮詢代表",
+    "竹縣兒少代表團",
+    "兒少代表",
+  ]));
+  expect(homepageGraph.find((item) => item["@type"] === "Organization").knowsAbout).toEqual(expect.arrayContaining([
+    "新竹縣兒少權益",
+    "兒少公共參與",
+    "兒童權利公約",
+  ]));
+  await expect(page).toHaveTitle(/新竹縣兒少諮詢代表/);
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /新竹縣政府社會處/);
 
   for (const [pathname, canonical] of [
     ["/surveys", "https://hcccr.bond/surveys.html"],

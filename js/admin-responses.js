@@ -167,7 +167,7 @@
     try {
       const workbook = new window.ExcelJS.Workbook();
       workbook.creator = "竹縣兒少代表團調查系統";
-      workbook.company = "新竹縣第四屆兒童及少年諮詢代表";
+      workbook.company = "新竹縣兒少諮詢代表";
       workbook.created = new Date();
       workbook.modified = new Date();
       setWorkbookStyles(workbook, data);
@@ -219,7 +219,7 @@
         type: isPie ? "doughnut" : "bar",
         data: {
           labels: Object.keys(counts),
-          datasets: [{ data: Object.values(counts), backgroundColor: isPie ? ["#1d625b", "#d7553e", "#e8b94f", "#4e8196", "#72827d"] : "#2b766e", borderColor: "#1d625b", borderWidth: isPie ? 0 : 1, borderRadius: isPie ? 0 : 3 }],
+          datasets: [{ data: Object.values(counts), backgroundColor: isPie ? ["#D52B24", "#1646B8", "#F2C230", "#2D5DA1", "#1B1B1B"] : "#1646B8", borderColor: "#1B1B1B", borderWidth: isPie ? 0 : 1, borderRadius: isPie ? 0 : 3 }],
         },
         options: {
           responsive: true,

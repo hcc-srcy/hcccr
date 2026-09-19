@@ -5,6 +5,7 @@
   const fields = window.HCCCR_CONTENT_FIELDS || [];
   const defaults = window.HCCCR_CONTENT_DEFAULTS || {};
   const groups = [...new Set(fields.map((field) => field.group))];
+  const normalize = window.HCCCR_CONTENT_NORMALIZE || ((value) => String(value ?? ""));
   const tabs = document.querySelector("[data-content-tabs]");
   const panels = document.querySelector("[data-content-panels]");
   let activeGroup = groups[0] || "";
@@ -24,7 +25,7 @@
       const groupFields = fields.filter((field) => field.group === group);
       return `<section class="panel content-panel" data-content-panel="${escape(group)}" ${index === 0 ? "" : "hidden"}><div class="panel__header"><h3>${escape(group)}</h3><span class="tag">${groupFields.length} 個欄位</span></div><div class="panel__body content-editor-grid">${groupFields.map((field) => {
         const id = fieldId(field.key);
-        const value = content[field.key] ?? field.defaultValue;
+        const value = normalize(content[field.key] ?? field.defaultValue);
         const rows = field.rows || (String(value).length > 100 ? 3 : 2);
         return `<div class="content-editor-field"><label class="form-label" for="${id}">${escape(field.label)}</label><div class="content-editor-control"><textarea class="form-control" id="${id}" name="${escape(field.key)}" rows="${rows}" maxlength="12000">${escape(value)}</textarea><button class="icon-button" type="button" data-reset-content="${escape(field.key)}" title="恢復預設文字"><i data-lucide="rotate-ccw"></i><span class="sr-only">恢復${escape(field.label)}預設文字</span></button></div></div>`;
       }).join("")}</div></section>`;
@@ -60,7 +61,7 @@
     saveButtons.forEach((button) => { button.disabled = true; });
     try {
       const values = new FormData(form);
-      const content = Object.fromEntries(fields.map((field) => [field.key, String(values.get(field.key) ?? "")]));
+      const content = Object.fromEntries(fields.map((field) => [field.key, normalize(values.get(field.key))]));
       if (content["proposals.items_json"]) {
         const proposals = JSON.parse(content["proposals.items_json"]);
         if (!Array.isArray(proposals)) throw new Error("提案資料必須是 JSON 陣列");
@@ -78,7 +79,7 @@
 
   try {
     const stored = await window.HCCCR_DATA.getSiteContent();
-    render({ ...defaults, ...stored });
+    render({ ...defaults, ...Object.fromEntries(Object.entries(stored).map(([key, value]) => [key, normalize(value)])) });
     showGroup(activeGroup);
   } catch (error) {
     console.error(error);

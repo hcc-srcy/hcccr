@@ -1,12 +1,24 @@
 (function () {
+  function normalizeBrandContent(value) {
+    return String(value ?? "")
+      .replace(/新竹縣\s*第\s*(?:四|4)\s*屆\s*兒童及少年諮詢代表/g, "新竹縣兒少諮詢代表")
+      .replace(/新竹縣\s*第\s*(?:四|4)\s*屆\s*兒少諮詢代表/g, "新竹縣兒少諮詢代表")
+      .replace(/第\s*(?:四|4)\s*屆\s*竹縣兒少代表團/g, "竹縣兒少代表團")
+      .replace(/第\s*(?:四|4)\s*屆\s*兒童及少年諮詢代表/g, "兒少諮詢代表")
+      .replace(/第\s*(?:四|4)\s*屆\s*兒少諮詢代表/g, "兒少諮詢代表")
+      .replace(/第\s*(?:四|4)\s*屆\s*兒少代表/g, "兒少代表")
+      .replace(/本\s*屆兒少代表團任期/g, "兒少代表團執行期間")
+      .replace(/第\s*(?:四|4)\s*屆/g, "");
+  }
+
   const fields = [
-    { group: "首頁", key: "home.announcement", label: "頂部公告", defaultValue: "第四屆兒少代表議題調查現正進行中" },
+    { group: "首頁", key: "home.announcement", label: "頂部公告", defaultValue: "兒少代表議題調查現正進行中" },
     { group: "首頁", key: "home.hero_eyebrow", label: "主視覺短標", defaultValue: "讓兒少的聲音進入公共決策" },
-    { group: "首頁", key: "home.hero_title", label: "主標題", defaultValue: "新竹縣第四屆\n兒少諮詢代表", multiline: true },
-    { group: "首頁", key: "home.hero_lead", label: "主視覺說明", defaultValue: "我們蒐集縣內兒童與少年的真實經驗，將學習、生活與權益議題整理成可被看見、被討論、被改變的提案。", rows: 3 },
+    { group: "首頁", key: "home.hero_title", label: "主標題", defaultValue: "新竹縣\n兒少諮詢代表", multiline: true },
+    { group: "首頁", key: "home.hero_lead", label: "主視覺說明", defaultValue: "我們蒐集新竹縣兒童與少年的真實經驗，將校園生活、兒少權益與公共參與議題整理成可被看見、被討論、被改變的提案。", rows: 3 },
     { group: "首頁", key: "home.about_eyebrow", label: "關於少代短標", defaultValue: "兒少參與，不只是被傾聽" },
     { group: "首頁", key: "home.about_title", label: "關於少代標題", defaultValue: "把生活中的問題，帶進能改變它的地方。" },
-    { group: "首頁", key: "home.about_body", label: "關於少代說明", defaultValue: "兒少諮詢代表由新竹縣兒童與少年組成。我們透過訪談、調查與討論，理解不同地區、年齡與生活背景的需求，並向縣府提出具體建議。", rows: 3 },
+    { group: "首頁", key: "home.about_body", label: "關於少代說明", defaultValue: "兒少諮詢代表由新竹縣兒童與少年組成。我們透過訪談、調查與討論，理解不同地區、年齡與生活背景的需求，並就新竹縣兒少政策向縣府提出具體建議。", rows: 3 },
     { group: "首頁", key: "home.principle_1_title", label: "原則 1 標題", defaultValue: "真實蒐集" },
     { group: "首頁", key: "home.principle_1_body", label: "原則 1 說明", defaultValue: "從兒少的日常經驗出發，不替填答者預設答案。" },
     { group: "首頁", key: "home.principle_2_title", label: "原則 2 標題", defaultValue: "安全保護" },
@@ -18,8 +30,8 @@
     { group: "首頁", key: "home.surveys_lead", label: "調查區說明", defaultValue: "每一份匿名回應，都會讓我們更靠近真實的校園與生活現場。" },
     { group: "首頁", key: "home.stats_open_label", label: "統計｜開放中調查標籤", defaultValue: "開放中的調查" },
     { group: "首頁", key: "home.stats_responses_label", label: "統計｜累積回應標籤", defaultValue: "累積回應人次" },
-    { group: "首頁", key: "home.stats_terms_value", label: "統計｜服務屆數數字", defaultValue: "4" },
-    { group: "首頁", key: "home.stats_terms_label", label: "統計｜服務屆數標籤", defaultValue: "屆兒少諮詢代表" },
+    { group: "首頁", key: "home.stats_actions_value", label: "統計｜行動面向數字", defaultValue: "3" },
+    { group: "首頁", key: "home.stats_actions_label", label: "統計｜行動面向標籤", defaultValue: "調查、提案、倡議" },
     { group: "首頁", key: "home.team_eyebrow", label: "團隊預覽短標", defaultValue: "認識我們" },
     { group: "首頁", key: "home.team_title", label: "團隊預覽標題", defaultValue: "由兒少組成，為兒少發聲" },
     { group: "首頁", key: "home.team_lead", label: "團隊預覽說明", defaultValue: "來自新竹縣不同地區、學校與年齡層的代表，各自關注不同的兒少議題。" },
@@ -36,7 +48,7 @@
     { group: "首頁", key: "home.cta_eyebrow", label: "底部號召短標", defaultValue: "你的經驗很重要" },
     { group: "首頁", key: "home.cta_title", label: "底部號召標題", defaultValue: "從一份問卷，開始讓改變發生。" },
     { group: "首頁", key: "home.cta_body", label: "底部號召說明", defaultValue: "填答前會先說明資料蒐集方式與用途。你可以依自己的經驗回答，也可以略過標示為選填的問題。", rows: 3 },
-    { group: "首頁", key: "home.footer_description", label: "頁尾組織說明", defaultValue: "本網站由新竹縣第四屆兒童及少年諮詢代表維運，受新竹縣政府社會處指導。", rows: 2 },
+    { group: "首頁", key: "home.footer_description", label: "頁尾組織說明", defaultValue: "本網站由新竹縣兒少諮詢代表維運，受新竹縣政府社會處指導。", rows: 2 },
 
     { group: "聯絡頁", key: "contact.eyebrow", label: "頁面短標", defaultValue: "與竹縣兒少代表團聯繫" },
     { group: "聯絡頁", key: "contact.title", label: "頁面標題", defaultValue: "聯絡我們" },
@@ -45,7 +57,7 @@
 
     { group: "隱私與條款", key: "terms.revision", label: "修訂日期", defaultValue: "最新版本修訂日期：2026 年 9 月 19 日" },
     { group: "隱私與條款", key: "terms.notice", label: "頁首隱私承諾", defaultValue: "我們採取資料最小化原則，不販售資料、不設置廣告追蹤器，公開成果僅呈現去識別化統計。", rows: 2 },
-    { group: "隱私與條款", key: "terms.intro_1", label: "總說第一段", defaultValue: "歡迎存取「新竹縣第四屆兒童及少年諮詢代表官方網站」（以下簡稱「本網站」）。本網站由新竹縣第四屆兒童及少年諮詢代表負責維運管理，並受新竹縣政府社會處指導。", rows: 3 },
+    { group: "隱私與條款", key: "terms.intro_1", label: "總說第一段", defaultValue: "歡迎存取「新竹縣兒少諮詢代表官方網站」（以下簡稱「本網站」）。本網站由新竹縣兒少諮詢代表負責維運管理，並受新竹縣政府社會處指導。", rows: 3 },
     { group: "隱私與條款", key: "terms.intro_2", label: "總說第二段", defaultValue: "本網站主要用於辦理縣內不定期兒少權益專題調查。本政策說明我們如何蒐集、處理、利用與保護資料，以及您依法可行使的權利。", rows: 3 },
     { group: "隱私與條款", key: "terms.scope", label: "一、適用範圍", defaultValue: "本政策適用於您在本網站首頁、議題調查總覽、個別調查問卷及聯絡頁所進行的瀏覽、填答與訊息提交行為。公開介面採高對比、響應式與可存取設計；首頁會優先呈現目前可參與的調查，調查、提案與代表介紹入口都只導向公開頁面，不會因點選入口本身提交問卷或聯絡資料。單純的排版、導覽或視覺更新不會擴大本政策所載的資料蒐集或利用範圍。", rows: 5 },
     { group: "隱私與條款", key: "terms.survey_collection", label: "調查蒐集項目", defaultValue: "題目回答內容；依問卷需要選填學校、年級或年齡區間" },
@@ -67,17 +79,17 @@
     { group: "隱私與條款", key: "terms.service_qr", label: "QR Code 服務說明", defaultValue: "僅於管理員主動產生調查固定網址 QR Code 時傳送該公開網址；不會傳送填答或聯絡內容。" },
     { group: "隱私與條款", key: "terms.service_jsdelivr", label: "jsDelivr 說明", defaultValue: "用於載入 Supabase 官方瀏覽器套件、圖示、後台統計圖表與 Excel 工作簿產生程式。Excel 檔案僅在已授權管理員的瀏覽器中產生，不會將原始回應傳送至 jsDelivr。", rows: 3 },
     { group: "隱私與條款", key: "terms.children", label: "六、未成年人保護", defaultValue: "多數調查提供匿名填寫，且不強制要求超出研究目的所需的資料。學校、年級等欄位將明確標示是否選填及統計用途。填答者應避免在自由文字欄位提供姓名、班級、電話等可直接識別個人的資訊。", rows: 4 },
-    { group: "隱私與條款", key: "terms.retention", label: "七、資料保留與刪除", defaultValue: "調查資料於本屆兒少代表團任期及議題倡議必要期間內保存。聯絡訊息保留至本次事項處理完畢及必要稽核期間，後續由管理團隊刪除。授權管理員得因統計、倡議與內部稽核需要匯出 Excel，並應妥善保管。", rows: 4 },
+    { group: "隱私與條款", key: "terms.retention", label: "七、資料保留與刪除", defaultValue: "調查資料於兒少代表團執行期間及議題倡議必要期間內保存。聯絡訊息保留至本次事項處理完畢及必要稽核期間，後續由管理團隊刪除。授權管理員得因統計、倡議與內部稽核需要匯出 Excel，並應妥善保管。", rows: 4 },
     { group: "隱私與條款", key: "terms.rights", label: "八、當事人權利", defaultValue: "依《個人資料保護法》第 3 條，您得請求查詢、閱覽、複製、更正、停止蒐集處理利用或刪除資料。如需行使權利，請透過網站聯絡表單提出申請，我們會在確認身分與回應識別資訊後辦理。", rows: 4 },
     { group: "隱私與條款", key: "terms.indexing", label: "九、搜尋引擎收錄", defaultValue: "搜尋引擎僅可收錄公開網站頁面及目前開放的公開問卷。管理後台、個別回應、代表個人頁、含權杖的聯絡對話頁、未列出的問卷、密碼保護問卷及管理員列印頁均設定為不收錄；sitemap 與 RSS 只包含公開頁面及公開問卷的標題、說明與網址，不包含問卷回答或聯絡訊息。", rows: 4 },
     { group: "隱私與條款", key: "terms.changes", label: "十、條款修訂", defaultValue: "本政策得因法令、兒少代表團運作或技術變更修訂。修訂後版本將發布於本頁，重大異動另於首頁公告。" },
-    { group: "隱私與條款", key: "terms.publisher", label: "發布單位", defaultValue: "新竹縣第四屆兒童及少年諮詢代表" },
+    { group: "隱私與條款", key: "terms.publisher", label: "發布單位", defaultValue: "新竹縣兒少諮詢代表" },
 
     { group: "代表介紹頁", key: "team.hero_eyebrow", label: "主視覺短標", defaultValue: "認識我們" },
-    { group: "代表介紹頁", key: "team.hero_title", label: "主標題", defaultValue: "新竹縣第四屆\n兒少諮詢代表", multiline: true },
+    { group: "代表介紹頁", key: "team.hero_title", label: "主標題", defaultValue: "新竹縣\n兒少諮詢代表", multiline: true },
     { group: "代表介紹頁", key: "team.hero_lead", label: "主視覺說明", defaultValue: "我們是一群由新竹縣兒童與少年組成的諮詢代表，透過調查、討論與提案，把生活中的真實經驗帶進縣府的決策現場。", rows: 3 },
     { group: "代表介紹頁", key: "team.team_eyebrow", label: "團隊區短標", defaultValue: "我們的團隊" },
-    { group: "代表介紹頁", key: "team.team_title", label: "團隊區標題", defaultValue: "第四屆兒少諮詢代表" },
+    { group: "代表介紹頁", key: "team.team_title", label: "團隊區標題", defaultValue: "兒少諮詢代表" },
     { group: "代表介紹頁", key: "team.team_lead", label: "團隊區說明", defaultValue: "代表們來自新竹縣不同地區、學校與年齡層，各自關注不同的兒少議題。點選卡片可以看每一位的完整介紹。", rows: 3 },
     { group: "代表介紹頁", key: "team.cta_eyebrow", label: "底部號召短標", defaultValue: "你的意見很重要" },
     { group: "代表介紹頁", key: "team.cta_title", label: "底部號召標題", defaultValue: "有想讓我們知道的事嗎？" },
@@ -151,10 +163,11 @@
     { group: "兒童權利公約頁", key: "team.rights_resource_2_title", label: "延伸閱讀2｜標題", defaultValue: "國家人權委員會｜兒童權利公約專頁" },
     { group: "兒童權利公約頁", key: "team.rights_resource_2_body", label: "延伸閱讀2｜說明", defaultValue: "國家人權委員會對公約落實情形的獨立評估意見。" },
     { group: "兒童權利公約頁", key: "team.rights_cta_eyebrow", label: "底部號召短標", defaultValue: "想認識推動這些權利的人嗎？" },
-    { group: "兒童權利公約頁", key: "team.rights_cta_title", label: "底部號召標題", defaultValue: "認識新竹縣第四屆兒少諮詢代表" },
+    { group: "兒童權利公約頁", key: "team.rights_cta_title", label: "底部號召標題", defaultValue: "認識新竹縣兒少諮詢代表" },
     { group: "兒童權利公約頁", key: "team.rights_cta_body", label: "底部號召說明", defaultValue: "看看我們如何把這些原則落實到日常提案裡，並隨時歡迎透過聯絡表單分享你的想法。", rows: 2 },
   ];
 
+  window.HCCCR_CONTENT_NORMALIZE = normalizeBrandContent;
   window.HCCCR_CONTENT_FIELDS = fields;
-  window.HCCCR_CONTENT_DEFAULTS = Object.fromEntries(fields.map((field) => [field.key, field.defaultValue]));
+  window.HCCCR_CONTENT_DEFAULTS = Object.fromEntries(fields.map((field) => [field.key, normalizeBrandContent(field.defaultValue)]));
 })();
