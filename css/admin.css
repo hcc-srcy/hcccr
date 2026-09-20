@@ -74,6 +74,8 @@
 .admin-main { grid-column: 2; min-width: 0; }
 .admin-topbar { position: sticky; z-index: 40; top: 0; min-height: var(--admin-topbar); display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 10px 32px; background: var(--paper); border-bottom: 1px solid var(--line-strong); }
 .admin-topbar__title { display: flex; align-items: center; gap: 12px; }
+.admin-topbar__title,
+.admin-topbar__actions { min-width: 0; }
 .admin-topbar__title::before { content: ""; width: 14px; height: 14px; background: var(--blue); }
 .admin-topbar__title h1 { margin: 0; font-size: 0.92rem; font-weight: 900; }
 .admin-topbar__actions { display: flex; align-items: center; gap: 9px; }
@@ -197,7 +199,12 @@
 /* Analysis and responses */
 .tabs-control,
 .content-tabs { margin-bottom: 24px; }
-.content-tabs { max-width: 100%; overflow-x: auto; }
+.admin-body .segmented-control { max-width: 100%; display: inline-flex; overflow-x: auto; background: var(--paper-muted); border: 1px solid var(--ink); overscroll-behavior-inline: contain; -webkit-overflow-scrolling: touch; }
+.admin-body .segmented-control button { min-height: 44px; flex: 0 0 auto; padding: 8px 16px; color: var(--ink); background: transparent; border: 0; border-right: 1px solid var(--ink); font-size: 0.76rem; font-weight: 900; white-space: nowrap; cursor: pointer; }
+.admin-body .segmented-control button:last-child { border-right: 0; }
+.admin-body .segmented-control button:hover { background: var(--blue-soft); }
+.admin-body .segmented-control button[aria-pressed="true"] { background: var(--yellow-soft); }
+.content-tabs { overflow-x: auto; }
 .tab-panel { min-width: 0; }
 .response-list { display: grid; gap: 12px; }
 .response-row { min-width: 0; display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: 15px; align-items: center; padding: 16px 18px; background: var(--paper); border: 1px solid var(--line-strong); }
@@ -263,13 +270,17 @@
   .branching-row { grid-template-columns: 1fr; }
   .inbox-layout { grid-template-columns: 1fr; }
   .inbox-detail { position: static; }
+  .kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 1000px) {
   :root { --admin-sidebar: 260px; }
+  .admin-login { display: block; min-height: 100vh; min-height: 100dvh; padding: 32px; border-width: 2px; }
+  .admin-login__form { min-height: calc(100vh - 76px); min-height: calc(100dvh - 76px); padding: 0; }
+  .admin-login__visual { display: none; }
   .admin-app { grid-template-columns: 1fr; }
   .admin-main { grid-column: 1; }
-  .admin-sidebar { transform: translateX(-105%); transition: transform var(--motion); box-shadow: 4px 0 0 var(--ink); }
+  .admin-sidebar { width: min(var(--admin-sidebar), calc(100vw - 48px)); transform: translateX(-105%); transition: transform var(--motion); box-shadow: 4px 0 0 var(--ink); }
   .admin-sidebar.is-open { transform: translateX(0); }
   .admin-scrim { position: fixed; z-index: 55; inset: 0; background: rgba(27, 27, 27, 0.64); }
   .admin-scrim.is-open,
@@ -280,12 +291,6 @@
   .builder-layout { grid-template-columns: 1fr; }
   .builder-sidebar { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .chart-grid { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 900px) {
-  .admin-login { display: block; min-height: 100vh; padding: 32px; border-width: 2px; }
-  .admin-login__form { min-height: calc(100vh - 76px); padding: 0; }
-  .admin-login__visual { display: none; }
 }
 
 @media (max-width: 760px) {
@@ -306,6 +311,10 @@
   .toolbar { align-items: stretch; flex-direction: column; }
   .toolbar__group { align-items: stretch; flex-direction: column; }
   .toolbar .form-control { width: 100%; }
+  .page-actions { width: 100%; }
+  .page-actions .button { flex: 1 1 180px; }
+  .admin-body .panel__header { align-items: flex-start; flex-wrap: wrap; }
+  .admin-body .panel__body { padding: 20px 18px; }
   .settings-grid { grid-template-columns: 1fr; }
   .settings-grid .span-2 { grid-column: auto; }
   .builder-sidebar { grid-template-columns: 1fr; }
@@ -320,23 +329,35 @@
   .response-block dt { border-right: 0; border-bottom: 2px solid var(--ink); }
   .team-editor__row { grid-template-columns: 44px minmax(0, 1fr); }
   .team-editor__actions { grid-column: 1 / -1; justify-content: flex-end; }
+  .team-editor__save,
+  .inbox-detail__actions { align-items: stretch; flex-wrap: wrap; }
   .proposal-timeline-fields { grid-template-columns: 1fr; }
+  .photo-uploader { align-items: flex-start; flex-wrap: wrap; }
   .dialog-scrim { padding: 12px; }
   .dialog { max-height: calc(100vh - 24px); border-left-width: 5px; }
 }
 
 @media (max-width: 480px) {
   .admin-login { padding: 16px; border-width: 2px; }
-  .admin-topbar__title h1 { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .admin-topbar { gap: 8px; }
+  .admin-topbar__title { gap: 8px; }
+  .admin-topbar__title h1 { max-width: 74px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .admin-topbar__actions { gap: 5px; }
   .admin-topbar__actions .button { min-width: 42px; padding-inline: 9px; box-shadow: var(--shadow-xs); }
   .admin-action-label { display: none; }
-  .kpi__label { font-size: 0.62rem; }
-  .field-editor__body { padding-right: 8px; }
+  .kpi-strip { grid-template-columns: 1fr; }
+  .kpi { min-height: 96px; }
+  .kpi__label { font-size: 0.68rem; }
+  .field-editor__body { padding-right: 8px; padding-left: 8px; }
   .add-field-bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
   .response-row { grid-template-columns: 40px minmax(0, 1fr); }
   .response-row .button { grid-column: 1 / -1; }
-  .photo-uploader { align-items: flex-start; }
+  .admin-body .segmented-control { width: 100%; }
+  .admin-body .segmented-control button { flex: 1 0 auto; padding-inline: 12px; }
+  .photo-uploader__controls { width: 100%; }
+  .photo-uploader__controls .button { flex: 1 1 100%; }
+  .team-editor__save .button,
+  .inbox-detail__actions .button { flex: 1 1 100%; }
   .dialog__actions { display: grid; grid-template-columns: 1fr 1fr; }
   .dialog__actions .button { width: 100%; }
 }

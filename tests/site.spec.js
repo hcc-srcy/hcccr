@@ -15,6 +15,16 @@ async function expectNoHorizontalOverflow(page) {
   expect(dimensions.contentWidth).toBeLessThanOrEqual(dimensions.viewportWidth);
 }
 
+async function expectInsideViewport(locator) {
+  await expect(locator).toBeVisible();
+  const bounds = await locator.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { left: rect.left, right: rect.right, viewportWidth: document.documentElement.clientWidth };
+  });
+  expect(bounds.left).toBeGreaterThanOrEqual(-1);
+  expect(bounds.right).toBeLessThanOrEqual(bounds.viewportWidth + 1);
+}
+
 async function getContrastRatio(locator) {
   return locator.evaluate((element) => {
     const parseRgb = (value) => value.match(/[\d.]+/g).slice(0, 3).map(Number);
@@ -90,6 +100,27 @@ test("editorial design tokens and responsive layouts remain consistent", async (
     ]) {
       await page.goto(pathname);
       await expectNoHorizontalOverflow(page);
+
+      if (pathname === "/" && width <= 960) {
+        await expect(page.locator(".site-nav")).toBeHidden();
+        await expectInsideViewport(page.locator("[data-menu-toggle]"));
+        await expectInsideViewport(page.locator(".hero__actions .button").first());
+      }
+
+      if (pathname === "/team.html" && width === 768) {
+        const columns = await page.locator(".team-grid").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length);
+        expect(columns).toBe(2);
+      }
+
+      if (pathname === "/terms" && width <= 560) {
+        const columns = await page.locator(".site-footer__main").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length);
+        expect(columns).toBe(1);
+      }
+
+      if (pathname === "/admin/" && width <= 960) {
+        await expect(page.locator(".admin-login__visual")).toBeHidden();
+        await expectInsideViewport(page.locator(".login-panel"));
+      }
     }
   }
 });
@@ -385,6 +416,8 @@ test("admin demo login, dashboard, builder and analytics work", async ({ page })
   await expectNoHorizontalOverflow(page);
 
   await page.goto("/admin/builder.html?id=f8a7b8c9-d0e1-4f2a-9b3c-4d5e6f708192");
+  await page.setViewportSize({ width: 320, height: 900 });
+  await expectInsideViewport(page.locator(".admin-topbar__actions"));
   await expect(page.locator('input[name="title"]')).toHaveValue("校園教學正常化實況調查");
   const firstBranchingEditor = page.locator('[data-field-index="0"] [data-branching-editor]');
   await firstBranchingEditor.locator("summary").click();
