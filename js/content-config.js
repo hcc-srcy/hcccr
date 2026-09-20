@@ -18,7 +18,7 @@
     { group: "首頁", key: "home.hero_lead", label: "主視覺說明", defaultValue: "我們蒐集新竹縣兒童與少年的真實經驗，將校園生活、兒少權益與公共參與議題整理成可被看見、被討論、被改變的提案。", rows: 3 },
     { group: "首頁", key: "home.about_eyebrow", label: "關於少代短標", defaultValue: "兒少參與，不只是被傾聽" },
     { group: "首頁", key: "home.about_title", label: "關於少代標題", defaultValue: "把生活中的問題，帶進能改變它的地方。" },
-    { group: "首頁", key: "home.about_body", label: "關於少代說明", defaultValue: "兒少諮詢代表由新竹縣兒童與少年組成。我們透過訪談、調查與討論，理解不同地區、年齡與生活背景的需求，並就新竹縣兒少政策向縣府提出具體建議。", rows: 3 },
+    { group: "首頁", key: "home.about_body", label: "關於少代說明", defaultValue: "兒少諮詢代表由新竹縣兒童與少年組成。我們透過訪談、調查與討論，理解不同地區、年齡與生活背景的需求，並就新竹縣兒少政策向新竹縣政府相關局處提出具體建議。", rows: 3 },
     { group: "首頁", key: "home.principle_1_title", label: "原則 1 標題", defaultValue: "真實蒐集" },
     { group: "首頁", key: "home.principle_1_body", label: "原則 1 說明", defaultValue: "從兒少的日常經驗出發，不替填答者預設答案。" },
     { group: "首頁", key: "home.principle_2_title", label: "原則 2 標題", defaultValue: "安全保護" },
@@ -52,7 +52,7 @@
 
     { group: "聯絡頁", key: "contact.eyebrow", label: "頁面短標", defaultValue: "與竹縣兒少代表團聯繫" },
     { group: "聯絡頁", key: "contact.title", label: "頁面標題", defaultValue: "聯絡我們" },
-    { group: "聯絡頁", key: "contact.lead", label: "頁面說明", defaultValue: "如有調查、兒少權益議題、資料權利或網站使用問題，可透過下方表單聯絡。", rows: 3 },
+    { group: "聯絡頁", key: "contact.lead", label: "頁面說明", defaultValue: "如想反映新竹縣校園生活、兒少權益、公共參與或議題調查相關問題，可透過下方表單聯絡新竹縣兒少代表。", rows: 3 },
     { group: "聯絡頁", key: "contact.privacy_note", label: "聯絡資料說明", defaultValue: "姓名、Email 與訊息僅用於處理本次聯絡，不會公開或用於行銷。", rows: 2 },
 
     { group: "隱私與條款", key: "terms.revision", label: "修訂日期", defaultValue: "最新版本修訂日期：2026 年 9 月 20 日" },
@@ -87,7 +87,7 @@
 
     { group: "代表介紹頁", key: "team.hero_eyebrow", label: "主視覺短標", defaultValue: "認識我們" },
     { group: "代表介紹頁", key: "team.hero_title", label: "主標題", defaultValue: "新竹縣\n兒少諮詢代表", multiline: true },
-    { group: "代表介紹頁", key: "team.hero_lead", label: "主視覺說明", defaultValue: "我們是一群由新竹縣兒童與少年組成的諮詢代表，透過調查、討論與提案，把生活中的真實經驗帶進縣府的決策現場。", rows: 3 },
+    { group: "代表介紹頁", key: "team.hero_lead", label: "主視覺說明", defaultValue: "我們是一群由新竹縣兒童與少年組成、受新竹縣政府社會處指導的諮詢代表，透過調查、討論與提案，把生活中的真實經驗帶進公共決策現場。", rows: 3 },
     { group: "代表介紹頁", key: "team.team_eyebrow", label: "團隊區短標", defaultValue: "我們的團隊" },
     { group: "代表介紹頁", key: "team.team_title", label: "團隊區標題", defaultValue: "兒少諮詢代表" },
     { group: "代表介紹頁", key: "team.team_lead", label: "團隊區說明", defaultValue: "代表們來自新竹縣不同地區、學校與年齡層，各自關注不同的兒少議題。點選卡片可以看每一位的完整介紹。", rows: 3 },
@@ -153,7 +153,7 @@
     { group: "兒童權利公約頁", key: "team.rights_faq_q2", label: "常見問題2｜問題", defaultValue: "我還沒滿 18 歲，這些權利跟我有關係嗎？" },
     { group: "兒童權利公約頁", key: "team.rights_faq_a2", label: "常見問題2｜回答", defaultValue: "有關係。公約所稱兒童泛指未滿 18 歲之人，你在學校、家庭與社區生活中所享有的表意、參與與受保護權利，都受到公約與國內法保障。", rows: 3 },
     { group: "兒童權利公約頁", key: "team.rights_faq_q3", label: "常見問題3｜問題", defaultValue: "如果覺得自己的意見沒有被重視，可以怎麼做？" },
-    { group: "兒童權利公約頁", key: "team.rights_faq_a3", label: "常見問題3｜回答", defaultValue: "可以先跟導師、輔導室或家長反映，也歡迎直接透過聯絡表單告訴兒少諮詢代表；我們會將蒐集到的意見整理成具體提案，向縣府倡議改善。", rows: 3 },
+    { group: "兒童權利公約頁", key: "team.rights_faq_a3", label: "常見問題3｜回答", defaultValue: "可以先跟導師、輔導室或家長反映，也歡迎直接透過聯絡表單告訴兒少諮詢代表；我們會將蒐集到的意見整理成具體提案，向新竹縣政府相關局處倡議改善。", rows: 3 },
     { group: "兒童權利公約頁", key: "team.rights_faq_q4", label: "常見問題4｜問題", defaultValue: "兒少諮詢代表在落實公約上扮演什麼角色？" },
     { group: "兒童權利公約頁", key: "team.rights_faq_a4", label: "常見問題4｜回答", defaultValue: "我們是兒少表達意見的正式管道之一，透過議題調查、委員會議與提案，把生活中的困難轉化成政策討論，落實「尊重兒童意見」原則。", rows: 3 },
     { group: "兒童權利公約頁", key: "team.rights_resources_eyebrow", label: "延伸閱讀｜短標", defaultValue: "延伸閱讀" },

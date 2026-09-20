@@ -166,11 +166,14 @@ test("static pages expose canonical, social, and structured SEO metadata", async
   ]));
   expect(homepageGraph.find((item) => item["@type"] === "Organization").knowsAbout).toEqual(expect.arrayContaining([
     "新竹縣兒少權益",
+    "新竹縣政府兒少政策",
+    "新竹縣政府社會處兒少服務",
     "兒少公共參與",
     "兒童權利公約",
   ]));
   await expect(page).toHaveTitle(/新竹縣兒少諮詢代表/);
   await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /新竹縣政府社會處/);
+  await expect(page.locator("#about")).toContainText("新竹縣政府相關局處");
 
   for (const [pathname, canonical] of [
     ["/surveys", "https://hcccr.bond/surveys.html"],
@@ -186,6 +189,13 @@ test("static pages expose canonical, social, and structured SEO metadata", async
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", canonical);
     expect(JSON.parse(await page.locator('script[type="application/ld+json"]').textContent())["@graph"]).toBeTruthy();
   }
+
+  await page.goto("/team.html");
+  await expect(page.locator("main")).toContainText("新竹縣政府社會處");
+  await page.goto("/surveys");
+  await expect(page.locator("main")).toContainText("新竹縣政府相關單位");
+  await page.goto("/proposals.html");
+  await expect(page.locator("main")).toContainText("新竹縣政府回應");
 });
 
 test("robots, sitemap, and RSS discovery files are valid public endpoints", async ({ request }) => {
