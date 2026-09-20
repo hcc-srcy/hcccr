@@ -44,11 +44,11 @@ test("homepage and survey directory render", async ({ page }, testInfo) => {
   expect(errors).toEqual([]);
 });
 
-test("Bauhaus design tokens and responsive layouts remain consistent", async ({ page }) => {
+test("editorial design tokens and responsive layouts remain consistent", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(247, 244, 236)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(243, 240, 232)");
   await expect(page.locator(".hero__actions .button").first()).toHaveCSS("border-top-width", "2px");
-  await expect(page.locator(".hero__actions .button").first()).toHaveCSS("box-shadow", /rgb\(27, 27, 27\)/);
+  await expect(page.locator(".hero__actions .button").first()).toHaveCSS("box-shadow", /rgb\(32, 32, 32\)/);
 
   for (const width of [320, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });

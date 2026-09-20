@@ -6,7 +6,7 @@ module.exports = defineConfig({
   fullyParallel: false,
   reporter: "line",
   use: {
-    baseURL: "http://127.0.0.1:8791",
+    baseURL: "http://127.0.0.1:8790",
     channel: "chrome",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
@@ -16,8 +16,8 @@ module.exports = defineConfig({
     { name: "mobile", use: { ...devices["Pixel 7"], channel: "chrome" } },
   ],
   webServer: {
-    command: "npx wrangler pages dev . --port 8791",
-    url: "http://127.0.0.1:8791",
+    command: "npx wrangler pages dev . --port 8790",
+    url: "http://127.0.0.1:8790",
     reuseExistingServer: true,
     timeout: 120000,
   },

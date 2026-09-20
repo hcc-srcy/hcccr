@@ -1,9 +1,9 @@
 .analytics-filter-bar {
   margin-bottom: 18px;
   padding: 14px 16px;
-  background: white;
+  background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
 }
 
 .analytics-filter-bar .form-label {
