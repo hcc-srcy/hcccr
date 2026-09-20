@@ -56,8 +56,7 @@
 .admin-sidebar { position: fixed; z-index: 60; inset: 0 auto 0 0; width: var(--admin-sidebar); display: flex; flex-direction: column; padding: 24px 18px; color: var(--paper); background: var(--ink); border-right: 4px solid var(--blue); }
 .admin-sidebar::after { display: none; }
 .admin-sidebar .brand { margin: 0 4px 28px; padding-bottom: 26px; color: var(--paper); border-bottom: 1px solid #5e5e5e; }
-.admin-sidebar .brand__mark { width: 44px; height: 44px; flex-basis: 44px; border-color: var(--paper); box-shadow: 2px 2px 0 var(--blue); }
-.admin-sidebar .brand__mark::after { border-color: var(--paper); }
+.admin-sidebar .brand__mark { width: 48px; height: 48px; flex-basis: 48px; }
 .admin-sidebar .brand__text strong { font-size: 0.84rem; }
 .admin-sidebar .brand__text small { color: var(--paper-muted); font-size: 0.62rem; }
 .admin-nav { display: grid; gap: 6px; }

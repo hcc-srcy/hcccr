@@ -15,10 +15,29 @@ async function expectNoHorizontalOverflow(page) {
   expect(dimensions.contentWidth).toBeLessThanOrEqual(dimensions.viewportWidth);
 }
 
+async function getContrastRatio(locator) {
+  return locator.evaluate((element) => {
+    const parseRgb = (value) => value.match(/[\d.]+/g).slice(0, 3).map(Number);
+    const luminance = (rgb) => {
+      const channels = rgb.map((channel) => {
+        const value = channel / 255;
+        return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return (0.2126 * channels[0]) + (0.7152 * channels[1]) + (0.0722 * channels[2]);
+    };
+    const style = getComputedStyle(element);
+    const foreground = luminance(parseRgb(style.color));
+    const background = luminance(parseRgb(style.backgroundColor));
+    return (Math.max(foreground, background) + 0.05) / (Math.min(foreground, background) + 0.05);
+  });
+}
+
 test("homepage and survey directory render", async ({ page }, testInfo) => {
   const errors = watchPageErrors(page);
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("新竹縣");
+  await expect(page.locator(".site-header .brand__mark img")).toHaveAttribute("src", "/assets/site-logo.webp");
+  await expect(page.locator(".site-header .brand__mark img")).toHaveJSProperty("naturalWidth", 256);
   await expect(page.locator(".hero__image")).toHaveJSProperty("complete", true);
   await expect(page.locator("[data-home-surveys] .survey-card")).toHaveCount(2);
   await expect(page.locator(".pathways a")).toHaveCount(3);
@@ -49,6 +68,8 @@ test("editorial design tokens and responsive layouts remain consistent", async (
   await expect(page.locator("body")).toHaveCSS("background-color", "rgb(247, 242, 230)");
   await expect(page.locator(".hero__actions .button").first()).toHaveCSS("border-top-width", "2px");
   await expect(page.locator(".hero__actions .button").first()).toHaveCSS("box-shadow", /rgba?\(47, 40, 32/);
+  expect(await getContrastRatio(page.locator(".hero__actions .button").first())).toBeGreaterThanOrEqual(4.5);
+  expect(await getContrastRatio(page.locator(".home-about .mission-copy > p:not(.eyebrow)"))).toBeGreaterThanOrEqual(4.5);
 
   for (const width of [320, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });

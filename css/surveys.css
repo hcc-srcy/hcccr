@@ -61,8 +61,7 @@
 }
 
 .survey-topbar .brand { color: var(--paper); }
-.survey-topbar .brand__mark { width: 40px; height: 40px; flex-basis: 40px; border-color: var(--paper); box-shadow: 2px 2px 0 var(--blue); font-size: 0.68rem; }
-.survey-topbar .brand__mark::after { border-color: var(--paper); }
+.survey-topbar .brand__mark { width: 44px; height: 44px; flex-basis: 44px; }
 .survey-topbar .brand__text strong { font-size: 0.86rem; }
 .survey-topbar__actions { display: flex; align-items: center; gap: 8px; }
 .survey-topbar .icon-button { color: var(--paper); background: transparent; border-color: var(--paper); box-shadow: none; }
@@ -128,12 +127,12 @@
 
 .questions-shell { position: relative; min-width: 0; max-width: 100%; }
 .questions-list { min-width: 0; max-width: 100%; display: grid; gap: 18px; counter-reset: question; }
-.survey-section-heading { position: relative; min-width: 0; margin: 42px 0 6px; padding: 30px 34px 28px; color: var(--paper); background: var(--blue); border: 2px solid var(--ink); scroll-margin-top: 92px; }
+.survey-section-heading { position: relative; min-width: 0; margin: 42px 0 6px; padding: 30px 34px 28px; color: var(--ink); background: var(--paper-muted); border: 1px solid var(--line-strong); border-left: 5px solid var(--blue); scroll-margin-top: 92px; }
 .survey-section-heading:first-child { margin-top: 0; }
 .survey-section-heading::after { display: none; }
-.survey-section-heading > span { display: block; margin-bottom: 7px; color: #e6ecdb; font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
-.survey-section-heading h2 { max-width: calc(100% - 54px); margin: 0; color: var(--paper); font-size: 1.9rem; font-weight: 900; line-height: 1.25; overflow-wrap: anywhere; word-break: break-word; }
-.survey-section-heading p { max-width: 680px; margin: 9px 0 0; color: var(--paper); opacity: 0.82; overflow-wrap: anywhere; }
+.survey-section-heading > span { display: block; margin-bottom: 7px; color: var(--blue-ink); font-family: var(--font-display); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; }
+.survey-section-heading h2 { max-width: calc(100% - 54px); margin: 0; color: var(--ink); font-size: 1.9rem; font-weight: 900; line-height: 1.25; overflow-wrap: anywhere; word-break: break-word; }
+.survey-section-heading p { max-width: 680px; margin: 9px 0 0; color: var(--ink-soft); overflow-wrap: anywhere; }
 
 .questions-shell.is-locked .questions-list { opacity: 0.25; filter: grayscale(1); user-select: none; }
 .locked-overlay { position: absolute; z-index: 4; inset: 0; min-height: 300px; display: grid; place-items: start center; padding-top: 88px; }
