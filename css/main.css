@@ -511,9 +511,9 @@ a { -webkit-tap-highlight-color: transparent; }
 .page-hero { position: relative; min-height: 550px; overflow: hidden; color: var(--ink); background: var(--paper); border-bottom: 2px solid var(--ink); }
 .page-hero::before { content: ""; position: absolute; top: 50px; right: 0; bottom: 50px; width: 41%; background-color: transparent; background-image: url("../assets/guanxi-hero.webp"); background-position: center; background-repeat: no-repeat; background-size: contain; filter: saturate(0.72) contrast(1.04); }
 .page-hero::after { display: none; }
-.team-page .page-hero::before { background-image: url("../assets/hero-team.webp"); filter: none; }
-.rights-page .page-hero::before { background-image: url("../assets/hero-rights.webp"); filter: none; }
-.proposals-page .page-hero::before { background-image: url("../assets/hero-proposals.webp"); filter: none; }
+.team-page .page-hero::before { background-image: url("../assets/hero-team.svg"); filter: none; }
+.rights-page .page-hero::before { background-image: url("../assets/hero-rights.svg"); filter: none; }
+.proposals-page .page-hero::before { background-image: url("../assets/hero-proposals.svg"); filter: none; }
 .page-hero__inner { position: relative; z-index: 1; min-height: 550px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding-block: 70px; }
 .page-hero__inner > * { max-width: 53%; }
 .page-hero h1,
