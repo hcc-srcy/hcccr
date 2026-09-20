@@ -66,7 +66,7 @@
 .admin-nav button { position: relative; min-height: 48px; display: flex; align-items: center; gap: 11px; padding: 9px 11px; color: var(--paper); background: transparent; border: 2px solid transparent; border-radius: 0; font-size: 0.8rem; font-weight: 700; text-align: left; text-decoration: none; cursor: pointer; }
 .admin-nav a:hover,
 .admin-nav button:hover { color: var(--ink); background: var(--paper); border-color: var(--paper); }
-.admin-nav a[aria-current="page"] { color: var(--paper); background: var(--blue); border-color: #8fae82; }
+.admin-nav a[aria-current="page"] { color: var(--paper); background: var(--blue); border-color: #6f8bc2; }
 .admin-nav a[aria-current="page"]::before { content: ""; position: absolute; left: -7px; width: 4px; height: 24px; background: var(--paper); }
 .admin-nav svg { width: 18px; height: 18px; stroke-width: 2.4; }
 .nav-badge { min-width: 22px; height: 22px; display: inline-flex; justify-content: center; align-items: center; margin-left: auto; padding: 0 6px; color: var(--paper); background: var(--red); border: 1px solid var(--paper); font-size: 0.66rem; font-weight: 900; }
