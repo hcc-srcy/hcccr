@@ -74,6 +74,9 @@ test("static pages expose canonical, social, and structured SEO metadata", async
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index,follow,max-image-preview:large");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://hcccr.bond/");
   await expect(page.locator('link[rel="alternate"][type="application/rss+xml"]')).toHaveAttribute("href", "https://hcccr.bond/feed.xml");
+  await expect(page.locator('link[rel="icon"][sizes="any"]')).toHaveAttribute("href", "/favicon.ico");
+  await expect(page.locator('link[rel="icon"][sizes="32x32"]')).toHaveAttribute("href", "/favicon-32x32.png");
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute("href", "/apple-touch-icon.png");
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://hcccr.bond/assets/social-preview.jpg");
   const homepageStructured = await page.locator('script[type="application/ld+json"]').textContent();
   const homepageGraph = JSON.parse(homepageStructured)["@graph"];
@@ -122,6 +125,11 @@ test("robots, sitemap, and RSS discovery files are valid public endpoints", asyn
   expect(feedXml).toContain('<rss version="2.0"');
   expect(feedXml).toContain('<atom:link href="https://hcccr.bond/feed.xml" rel="self" type="application/rss+xml"/>');
   expect(feedXml).not.toContain("public_password");
+
+  for (const pathname of ["/favicon.ico", "/favicon-32x32.png", "/apple-touch-icon.png"]) {
+    const icon = await request.get(pathname);
+    expect(icon.ok()).toBe(true);
+  }
 });
 
 test("survey and admin indexing follows the publication boundary", async ({ page }) => {
