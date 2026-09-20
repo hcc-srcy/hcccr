@@ -72,6 +72,13 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+body:not(.admin-body):not([data-admin-page]) {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body:not(.admin-body):not([data-admin-page]) > main { flex: 1 0 auto; }
 body.menu-open { overflow: hidden; }
 img { display: block; max-width: 100%; }
 svg { flex: 0 0 auto; }
@@ -487,7 +494,7 @@ a { -webkit-tap-highlight-color: transparent; }
 .back-to-top svg { width: 19px; height: 19px; }
 
 /* Footer */
-.site-footer { color: var(--paper); background: var(--ink); border-top: 4px solid var(--blue); }
+.site-footer { flex: 0 0 auto; margin-top: auto; color: var(--paper); background: var(--ink); border-top: 4px solid var(--blue); }
 .site-footer__main { display: grid; grid-template-columns: minmax(300px, 1.5fr) repeat(2, minmax(150px, 0.6fr)); gap: 70px; padding-block: 68px 54px; }
 .site-footer .brand { color: var(--paper); }
 .site-footer .brand__mark { background: none; }

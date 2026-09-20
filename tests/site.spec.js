@@ -94,6 +94,28 @@ test("editorial design tokens and responsive layouts remain consistent", async (
   }
 });
 
+test("public pages share the same complete footer", async ({ page }) => {
+  for (const pathname of [
+    "/",
+    "/surveys",
+    "/surveys/normal-teaching-2026",
+    "/team.html",
+    "/team-member.html?id=demo-1",
+    "/rights.html",
+    "/proposals.html",
+    "/contact",
+    "/terms",
+    "/message-thread.html",
+  ]) {
+    await page.goto(pathname);
+    const footer = page.locator(".site-footer");
+    await expect(footer.locator(".site-footer__main")).toHaveCount(1);
+    await expect(footer.locator(".footer-links")).toHaveCount(2);
+    await expect(footer.locator("a")).toHaveCount(10);
+    await expect(footer.locator(".site-footer__bottom")).toContainText("CC BY-SA 4.0");
+  }
+});
+
 test("static pages expose canonical, social, and structured SEO metadata", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "index,follow,max-image-preview:large");
