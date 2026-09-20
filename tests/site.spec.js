@@ -66,7 +66,11 @@ test("homepage and survey directory render", async ({ page }, testInfo) => {
 test("editorial design tokens and responsive layouts remain consistent", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("body")).toHaveCSS("background-color", "rgb(247, 242, 230)");
+  await expect(page.locator(".site-header .brand__mark")).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(page.locator(".site-header .brand__mark")).toHaveCSS("border-top-width", "0px");
+  await expect(page.locator(".site-header .brand__mark")).toHaveCSS("box-shadow", "none");
   await expect(page.locator(".hero__actions .button").first()).toHaveCSS("border-top-width", "2px");
+  await expect(page.locator(".hero__actions .button").first()).toHaveCSS("background-color", "rgb(169, 88, 73)");
   await expect(page.locator(".hero__actions .button").first()).toHaveCSS("box-shadow", /rgba?\(47, 40, 32/);
   expect(await getContrastRatio(page.locator(".hero__actions .button").first())).toBeGreaterThanOrEqual(4.5);
   expect(await getContrastRatio(page.locator(".home-about .mission-copy > p:not(.eyebrow)"))).toBeGreaterThanOrEqual(4.5);
