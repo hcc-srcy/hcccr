@@ -419,7 +419,9 @@
       window.requestAnimationFrame(() => window.requestAnimationFrame(() => window.print()));
     }
   } catch (error) {
-    root.innerHTML = `<section class="success-panel"><span class="success-panel__icon success-panel__icon--danger"><i data-lucide="file-question"></i></span><h2>找不到這份調查</h2><p>網址可能有誤，或調查已經移除。</p><a class="button button--secondary" href="${window.HCCCR.appUrl("/surveys")}">查看其他調查</a></section>`;
+    root.innerHTML = identifier
+      ? `<section class="success-panel"><span class="success-panel__icon success-panel__icon--danger"><i data-lucide="file-question"></i></span><h2>找不到這份調查</h2><p>網址可能有誤，或調查已經移除。</p><a class="button button--secondary" href="${window.HCCCR.appUrl("/surveys")}">查看其他調查</a></section>`
+      : `<section class="success-panel"><span class="success-panel__icon success-panel__icon--danger"><i data-lucide="file-question"></i></span><h2>找不到頁面</h2><p>你要找的網址不存在，可能是網址打錯或連結已失效。</p><a class="button button--secondary" href="${window.HCCCR.appUrl("/")}">回到首頁</a></section>`;
     window.lucide?.createIcons();
     console.error(error);
   }

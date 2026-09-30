@@ -219,7 +219,7 @@
         type: isPie ? "doughnut" : "bar",
         data: {
           labels: Object.keys(counts),
-          datasets: [{ data: Object.values(counts), backgroundColor: isPie ? ["#244F9E", "#6E89BD", "#A9B8D4", "#D2DAE8", "#68645D"] : "#244F9E", borderColor: "#202020", borderWidth: isPie ? 0 : 1, borderRadius: isPie ? 0 : 3 }],
+          datasets: [{ data: Object.values(counts), backgroundColor: isPie ? ["#51684a", "#a95849", "#dba552", "#8a7355", "#9db08f"] : "#51684a", borderColor: "#4b4234", borderWidth: isPie ? 0 : 1, borderRadius: isPie ? 0 : 3 }],
         },
         options: {
           responsive: true,

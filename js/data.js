@@ -12,7 +12,7 @@
       is_open: true,
       is_edited: true,
       start_date: "2026-08-12T00:00:00+08:00",
-      end_date: "2026-09-30T23:59:59+08:00",
+      end_date: "2026-12-31T23:59:59+08:00",
       created_at: "2026-08-10T10:00:00+08:00",
       updated_at: "2026-08-18T16:20:00+08:00",
       estimated_minutes: 4,
